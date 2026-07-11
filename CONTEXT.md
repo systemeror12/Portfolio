@@ -127,3 +127,23 @@ _Avoid_: Solely built the entire HRIS, merely assisted the team
 **Upstream Work**:
 Code and behavior inherited from the original source of a fork, rather than authored by Jerome.
 _Avoid_: My work, project contribution
+
+**Featured Personal System**:
+The actively maintained `dots-hyprland-xenrya` fork, presented separately from the three professional and R&D case studies to demonstrate ongoing Linux desktop engineering, maintenance, and review-driven improvement. Its public presentation must distinguish Upstream Work from Jerome's own contributions.
+_Avoid_: Original dotfiles project, professional case study, repository showcase
+
+**Fork Motivation**:
+Jerome adopted the upstream dotfiles because he valued their visual design, then forked them as his daily desktop foundation to address his own usability, performance, and workflow needs.
+_Avoid_: Designed the original desktop, replaced the upstream project
+
+**Personal System Contribution**:
+Jerome's work on the Featured Personal System, grouped into workspace and wallpaper state, launcher performance and correctness, and cross-process reliability rather than presented as an undifferentiated commit feed.
+_Avoid_: Fork activity, repository changes
+
+**Upstream Contribution**:
+Jerome's original per-workspace wallpaper feature contribution to `yurihikari/ml4w-lightcrimson-dotfiles`, later reworked and merged by the upstream maintainer with explicit public credit to `@systemeror12` as the original feature author.
+_Avoid_: Maintained the upstream project, authored the maintainer's rework, unmerged contribution
+
+**Tool I Use**:
+An upstream application that is part of Jerome's active workflow but is not Project Evidence unless he makes a demonstrable contribution. Odysseus and T3 Code belong in this category and should link to their upstream projects.
+_Avoid_: Active tech stack, my project, contributed fork
