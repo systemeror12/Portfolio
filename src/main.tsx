@@ -1,34 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { ArrowDownRight, ArrowRight, Check, Code, Layers3, LockKeyhole, Mail, Menu, Network, X } from 'lucide-react'
+import { projectEvidence, workingMethod } from './content'
 import './styles.css'
-
-const evidence = [
-  {
-    key: 'lead',
-    type: 'Lead Case Study',
-    title: 'Multi-company HRIS',
-    summary: 'One shared Odoo deployment replaced disconnected HR and payroll work with an approved flow from attendance, overtime, and leave through payslip calculation.',
-    contribution: 'Designed and implemented most core HR workflows—including Attendance, Recruitment, and Payroll—and the dashboard within a broader cross-functional delivery.',
-    signals: ['Company-specific rules', 'Access boundaries', 'Payroll Validation'],
-  },
-  {
-    key: 'integration',
-    type: 'Integration Case Study',
-    title: 'Regional payment integration',
-    summary: 'A complete Payment Provider Module brought the client-required Regional Payment Provider into Odoo e-commerce and e-learning checkout.',
-    contribution: 'Mapped Payment Outcomes into Odoo transaction state, validated provider signatures, retained provider references, and made repeated webhooks safe.',
-    signals: ['Verified webhooks', 'Idempotent updates', 'Failure states'],
-  },
-  {
-    key: 'research',
-    type: 'AI R&D Case Study',
-    title: 'Access-scoped Odoo answers',
-    summary: 'A working internal prototype demonstrated that the company’s agreed conversational scenarios were technically feasible inside Odoo.',
-    contribution: 'Explored retrieval grounded in authorized business records, privacy boundaries, conversational workflows, and an Ungrounded Fallback.',
-    signals: ['Internal R&D', 'Access-scoped retrieval', 'Grounded responses'],
-  },
-]
+import './production.css'
 
 function Header() {
   const [open, setOpen] = React.useState(false)
@@ -74,27 +49,21 @@ function Hero() {
 function Evidence() {
   return <section className="evidence" id="evidence">
     <div className="section-heading"><div><span>Selected Project Evidence</span><h2>Systems in operating context.</h2></div><p>Each case explains the operation, my responsibility, the architecture, its boundaries, and a result I can defend in an interview.</p></div>
-    <div className="evidence-list">{evidence.map((item, index) => <article key={item.key}>
+    <div className="evidence-list">{projectEvidence.map((item, index) => <article key={item.key}>
       <div className="case-id"><span>SYS / 0{index + 1}</span><small>{item.type}</small></div>
-      <div className="case-main"><h3>{item.title}</h3><p>{item.summary}</p></div>
-      <div className="case-detail"><span>Contribution</span><p>{item.contribution}</p><ul>{item.signals.map(signal => <li key={signal}>{signal}</li>)}</ul></div>
+      <div className="case-main"><h3>{item.title}</h3><span>Operational problem</span><p>{item.problem}</p><span>Contribution</span><p>{item.contribution}</p></div>
+      <div className="case-detail"><span>Architecture</span><p>{item.architecture}</p><span>Boundary</span><p>{item.boundary}</p><span>Verified Result</span><p>{item.result}</p><ul>{item.signals.map(signal => <li key={signal}>{signal}</li>)}</ul></div>
       <ArrowDownRight className="case-arrow"/>
     </article>)}</div>
   </section>
 }
 
 function Approach() {
-  const steps = [
-    ['Trace the operation', 'Start with the people, records, approvals, and outcomes the system must support.'],
-    ['Define the boundaries', 'Make permissions, company rules, external ownership, and confidentiality explicit.'],
-    ['Design the failure path', 'Treat retries, invalid state, missing context, and customer-facing outcomes as first-class behavior.'],
-    ['Validate the result', 'Compare the implemented flow with representative scenarios and the operation’s expected outcome.'],
-  ]
-  return <section className="approach" id="approach"><div className="approach-intro"><span>Working method</span><h2>Reliability starts before the code.</h2><p>My platform work connects technical behavior to the operation it serves. That means understanding what must remain true when data, organizations, and external systems cross boundaries.</p></div><ol>{steps.map(([title, text], index) => <li key={title}><span>0{index + 1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></section>
+  return <section className="approach" id="approach"><div className="approach-intro"><span>Working method</span><h2>Reliability starts before the code.</h2><p>My platform work connects technical behavior to the operation it serves. That means understanding what must remain true when data, organizations, and external systems cross boundaries.</p></div><ol>{workingMethod.map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.description}</p></div></li>)}</ol></section>
 }
 
 function Capabilities() {
-  return <section className="capabilities"><div><span>Platform depth</span><h2>Odoo is the deepest platform.<br/>The engineering practice is broader.</h2></div><div className="capability-grid"><div><small>Platform adaptation</small><p>Odoo modules, ORM, OWL, QWeb, multi-company workflows, and operational reporting.</p></div><div><small>Integration reliability</small><p>REST APIs, authenticated callbacks, transaction state, retries, and failure handling.</p></div><div><small>Delivery environment</small><p>Python, JavaScript, PostgreSQL, Linux, Docker, Bash, Git, and cross-functional implementation.</p></div></div></section>
+  return <section className="capabilities"><div><span>Platform depth</span><h2>Odoo is the deepest platform.<br/>The engineering practice is broader.</h2></div><div className="capability-grid"><div><small>Platform adaptation</small><p>Odoo modules, ORM, OWL, QWeb, multi-company workflows, and operational reporting.</p></div><div><small>Integration reliability</small><p>REST APIs, Verified Payment Webhooks, transaction state, retries, and failure handling.</p></div><div><small>Delivery environment</small><p>Python, JavaScript, PostgreSQL, Linux, Docker, Bash, Git, and cross-functional implementation.</p></div></div></section>
 }
 
 function Contact() {
