@@ -13,13 +13,15 @@ import {
   X,
 } from "lucide-react";
 import { projectEvidence, workingMethod } from "./content";
+import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { InternalLink } from "./navigation";
 import "./styles.css";
 
 const caseStudyPath = "/work/multi-company-hris";
+const aiCaseStudyPath = "/work/ai-odoo-rnd";
 
-function Header({ isCaseStudy = false }: { isCaseStudy?: boolean }) {
+function Header({ currentPath }: { currentPath?: string }) {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -45,19 +47,26 @@ function Header({ isCaseStudy = false }: { isCaseStudy?: boolean }) {
       <nav className={open ? "open" : ""} aria-label="Primary navigation">
         <InternalLink
           to="/"
-          aria-current={!isCaseStudy ? "page" : undefined}
+          aria-current={!currentPath ? "page" : undefined}
           onClick={closeMenu}
         >
           Home
         </InternalLink>
         <InternalLink
           to={caseStudyPath}
-          aria-current={isCaseStudy ? "page" : undefined}
+          aria-current={currentPath === caseStudyPath ? "page" : undefined}
           onClick={closeMenu}
         >
           Case study
         </InternalLink>
-        {!isCaseStudy && (
+        <InternalLink
+          to={aiCaseStudyPath}
+          aria-current={currentPath === aiCaseStudyPath ? "page" : undefined}
+          onClick={closeMenu}
+        >
+          AI R&amp;D
+        </InternalLink>
+        {!currentPath && (
           <>
             <InternalLink to="/#approach" onClick={closeMenu}>
               Approach
@@ -183,6 +192,11 @@ function Evidence() {
               {item.key === "lead" && (
                 <InternalLink className="case-link" to={caseStudyPath}>
                   Open the Lead Case Study <ArrowRight />
+                </InternalLink>
+              )}
+              {item.key === "research" && (
+                <InternalLink className="case-link" to={aiCaseStudyPath}>
+                  Open the AI R&amp;D Case Study <ArrowRight />
                 </InternalLink>
               )}
             </div>
@@ -322,8 +336,13 @@ function App() {
   }, []);
   return path === caseStudyPath ? (
     <>
-      <Header isCaseStudy />
+      <Header currentPath={path} />
       <LeadCaseStudy />
+    </>
+  ) : path === aiCaseStudyPath ? (
+    <>
+      <Header currentPath={path} />
+      <AiOdooRndCaseStudy />
     </>
   ) : (
     <Home />
