@@ -17,11 +17,13 @@ import {
 import { projectEvidence, workingMethod } from "./content";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
+import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
 import { InternalLink } from "./navigation";
 import "./styles.css";
 
 const caseStudyPath = "/work/multi-company-hris";
 const aiCaseStudyPath = "/work/ai-odoo-rnd";
+const paymentProviderCaseStudyPath = "/work/payment-provider";
 
 function Header({ currentPath }: { currentPath?: string }) {
   const [open, setOpen] = React.useState(false);
@@ -67,6 +69,15 @@ function Header({ currentPath }: { currentPath?: string }) {
           onClick={closeMenu}
         >
           AI R&amp;D
+        </InternalLink>
+        <InternalLink
+          to={paymentProviderCaseStudyPath}
+          aria-current={
+            currentPath === paymentProviderCaseStudyPath ? "page" : undefined
+          }
+          onClick={closeMenu}
+        >
+          Integration
         </InternalLink>
         {!currentPath && (
           <>
@@ -199,6 +210,14 @@ function Evidence() {
               {item.key === "research" && (
                 <InternalLink className="case-link" to={aiCaseStudyPath}>
                   Open the AI R&amp;D Case Study <ArrowRight />
+                </InternalLink>
+              )}
+              {item.key === "integration" && (
+                <InternalLink
+                  className="case-link"
+                  to={paymentProviderCaseStudyPath}
+                >
+                  Open the Integration Case Study <ArrowRight />
                 </InternalLink>
               )}
             </div>
@@ -410,6 +429,11 @@ function App() {
     <>
       <Header currentPath={path} />
       <AiOdooRndCaseStudy />
+    </>
+  ) : path === paymentProviderCaseStudyPath ? (
+    <>
+      <Header currentPath={path} />
+      <PaymentProviderCaseStudy />
     </>
   ) : (
     <Home />

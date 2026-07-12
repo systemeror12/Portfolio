@@ -99,6 +99,83 @@ test("a Hiring Manager can inspect the AI R&D Case Study", async ({ page }) => {
   await expect(page.getByText(/unrestricted vector search/i)).toHaveCount(0);
 });
 
+test("a Hiring Manager can inspect the anonymized Integration Case Study", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await page
+    .getByRole("link", { name: /open the integration case study/i })
+    .click();
+  await expect(page).toHaveURL("/work/payment-provider");
+  await expect(
+    page.getByRole("heading", { name: "Payment Provider Module" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("figure", { name: /reconstructed payment flow/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Verified Payment Webhook", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Idempotent Payment Update", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Payment Outcomes", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/pending, successful, failed, and cancelled/i),
+  ).toBeVisible();
+  await expect(page.getByText(/Payfusion/i)).toHaveCount(0);
+
+  const backToHome = page.getByRole("link", { name: "Back to home" });
+  await backToHome.focus();
+  await expect(backToHome).toBeFocused();
+  await backToHome.press("Enter");
+  await expect(page).toHaveURL("/");
+});
+
+test("the Integration Case Study opens directly with complete evidence", async ({
+  page,
+}) => {
+  await page.goto("/work/payment-provider");
+
+  if (await page.getByRole("button", { name: "Open navigation" }).isVisible()) {
+    await page.getByRole("button", { name: "Open navigation" }).click();
+  }
+  await expect(
+    page.getByRole("link", { name: "Integration", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(
+    page.getByRole("heading", {
+      name: /make an unsupported checkout provider dependable/i,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: /treat the webhook as an untrusted repeated message/i,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: /a payment result is only accepted after verification/i,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: /required checkout with authenticated, duplicate-safe updates/i,
+    }),
+  ).toBeVisible();
+  await expect(page.locator(".technologies").getByText("Odoo", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Payfusion/i)).toHaveCount(0);
+  await expect(page.getByText(/increased conversions/i)).toHaveCount(0);
+  await expect(page.getByText(/faster payments/i)).toHaveCount(0);
+  await expect(page.getByText(/payment volume/i)).toHaveCount(0);
+  await expect(page.getByText(/latency reduction/i)).toHaveCount(0);
+  await expect(page.getByText(/client company|client organization/i)).toHaveCount(0);
+  await expect(page.getByText(/sk_live|api[_ -]?key|secret=/i)).toHaveCount(0);
+});
+
 test("the AI R&D Case Study opens directly with its complete evidence", async ({
   page,
 }) => {
