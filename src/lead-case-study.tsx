@@ -73,7 +73,7 @@ function NarrativeSection({
 function PayrollFlow() {
   return (
     <figure
-      className="payroll-flow"
+      className="case-study-flow"
       role="img"
       aria-label="Payroll calculation flow"
     >
