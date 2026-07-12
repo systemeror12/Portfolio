@@ -7,7 +7,7 @@ const leadCaseStudy = {
   summary:
     "One shared Odoo deployment serving multiple legal companies, with common platform capabilities and company-specific employees, payroll rules, permissions, and reporting.",
   focus: "Custom Payroll",
-  evidenceBoundary: "Multiple legal companies; no confidential scale",
+  evidenceBoundary: "Multiple legal companies; sanitized reconstruction",
   problem: {
     label: "Problem and constraints",
     title:
@@ -118,8 +118,8 @@ function PayrollFlow() {
         </div>
       </div>
       <div className="flow-note">
-        <LockKeyhole /> Sanitized reconstruction; no client identity, data, or
-        Confidential Scale is shown.
+        <LockKeyhole /> Sanitized reconstruction; no client identity or data
+        is shown.
       </div>
     </figure>
   );

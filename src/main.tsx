@@ -29,16 +29,24 @@ const dotsHyprlandCaseStudyPath = "/systems/dots-hyprland";
 
 function Header({ currentPath }: { currentPath?: string }) {
   const [open, setOpen] = React.useState(false);
+  const menuButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  const closeMenu = (restoreFocus = false) => {
+    setOpen(false);
+    if (restoreFocus) {
+      requestAnimationFrame(() => menuButtonRef.current?.focus());
+    }
+  };
+  const closeMenuAfterNavigation = () => closeMenu();
 
   React.useEffect(() => {
     if (!open) return;
-    const close = (event: KeyboardEvent) =>
-      event.key === "Escape" && setOpen(false);
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu(true);
+    };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [open]);
-
-  const closeMenu = () => setOpen(false);
 
   return (
     <header className="site-header">
@@ -54,21 +62,21 @@ function Header({ currentPath }: { currentPath?: string }) {
         <InternalLink
           to="/"
           aria-current={!currentPath ? "page" : undefined}
-          onClick={closeMenu}
+          onClick={closeMenuAfterNavigation}
         >
           Home
         </InternalLink>
         <InternalLink
           to={caseStudyPath}
           aria-current={currentPath === caseStudyPath ? "page" : undefined}
-          onClick={closeMenu}
+          onClick={closeMenuAfterNavigation}
         >
           Case study
         </InternalLink>
         <InternalLink
           to={aiCaseStudyPath}
           aria-current={currentPath === aiCaseStudyPath ? "page" : undefined}
-          onClick={closeMenu}
+          onClick={closeMenuAfterNavigation}
         >
           AI R&amp;D
         </InternalLink>
@@ -77,7 +85,7 @@ function Header({ currentPath }: { currentPath?: string }) {
           aria-current={
             currentPath === paymentProviderCaseStudyPath ? "page" : undefined
           }
-          onClick={closeMenu}
+          onClick={closeMenuAfterNavigation}
         >
           Integration
         </InternalLink>
@@ -86,22 +94,23 @@ function Header({ currentPath }: { currentPath?: string }) {
           aria-current={
             currentPath === dotsHyprlandCaseStudyPath ? "page" : undefined
           }
-          onClick={closeMenu}
+          onClick={closeMenuAfterNavigation}
         >
           Personal system
         </InternalLink>
         {!currentPath && (
           <>
-            <InternalLink to="/#approach" onClick={closeMenu}>
+            <InternalLink to="/#approach" onClick={closeMenuAfterNavigation}>
               Approach
             </InternalLink>
-            <InternalLink to="/#contact" onClick={closeMenu}>
+            <InternalLink to="/#contact" onClick={closeMenuAfterNavigation}>
               Contact
             </InternalLink>
           </>
         )}
       </nav>
       <button
+        ref={menuButtonRef}
         className="menu-button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
