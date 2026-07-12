@@ -16,7 +16,6 @@ import { projectEvidence, workingMethod } from "./content";
 import { LeadCaseStudy } from "./lead-case-study";
 import { InternalLink } from "./navigation";
 import "./styles.css";
-import "./production.css";
 
 const caseStudyPath = "/work/multi-company-hris";
 
