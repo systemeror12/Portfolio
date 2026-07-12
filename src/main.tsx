@@ -18,12 +18,14 @@ import { projectEvidence, workingMethod } from "./content";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
+import { DotsHyprlandCaseStudy } from "./dots-hyprland-case-study";
 import { InternalLink } from "./navigation";
 import "./styles.css";
 
 const caseStudyPath = "/work/multi-company-hris";
 const aiCaseStudyPath = "/work/ai-odoo-rnd";
 const paymentProviderCaseStudyPath = "/work/payment-provider";
+const dotsHyprlandCaseStudyPath = "/systems/dots-hyprland";
 
 function Header({ currentPath }: { currentPath?: string }) {
   const [open, setOpen] = React.useState(false);
@@ -78,6 +80,15 @@ function Header({ currentPath }: { currentPath?: string }) {
           onClick={closeMenu}
         >
           Integration
+        </InternalLink>
+        <InternalLink
+          to={dotsHyprlandCaseStudyPath}
+          aria-current={
+            currentPath === dotsHyprlandCaseStudyPath ? "page" : undefined
+          }
+          onClick={closeMenu}
+        >
+          Personal system
         </InternalLink>
         {!currentPath && (
           <>
@@ -238,6 +249,34 @@ function Evidence() {
           </article>
         ))}
       </div>
+    </section>
+  );
+}
+
+function PersonalSystem() {
+  return (
+    <section className="personal-system" aria-labelledby="personal-system-title">
+      <div className="personal-system-heading">
+        <span>Featured Personal System</span>
+        <h2 id="personal-system-title">A desktop platform I keep improving.</h2>
+      </div>
+      <article>
+        <div>
+          <span className="system-id">SYS / PERSONAL</span>
+          <small>Actively maintained fork</small>
+        </div>
+        <div>
+          <h3>dots-hyprland</h3>
+          <p>
+            A daily Hyprland desktop foundation whose upstream visual design I
+            admire, extended with my own workspace state, launcher behavior,
+            and cross-process reliability work.
+          </p>
+          <InternalLink className="case-link" to={dotsHyprlandCaseStudyPath}>
+            Inspect the Personal System <ArrowRight />
+          </InternalLink>
+        </div>
+      </article>
     </section>
   );
 }
@@ -405,6 +444,7 @@ function Home() {
       <Header />
       <Hero />
       <Evidence />
+      <PersonalSystem />
       <Approach />
       <Capabilities />
       <ToolsIUse />
@@ -434,6 +474,11 @@ function App() {
     <>
       <Header currentPath={path} />
       <PaymentProviderCaseStudy />
+    </>
+  ) : path === dotsHyprlandCaseStudyPath ? (
+    <>
+      <Header currentPath={path} />
+      <DotsHyprlandCaseStudy />
     </>
   ) : (
     <Home />

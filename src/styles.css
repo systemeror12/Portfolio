@@ -289,6 +289,53 @@ svg {
   border-bottom: 1px solid var(--line);
   position: relative;
 }
+.personal-system {
+  padding: 105px 5vw;
+  background: #d9e7e5;
+}
+.personal-system-heading {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 680px);
+  gap: 8vw;
+  padding-bottom: 34px;
+  border-bottom: 2px solid var(--ink);
+}
+.personal-system-heading > span,
+.system-id,
+.personal-system article small {
+  font: 500 8px "DM Mono";
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #47767c;
+}
+.personal-system-heading h2 {
+  margin: 0;
+  font: 500 clamp(34px, 4vw, 58px)/1 "Space Grotesk";
+  letter-spacing: -0.055em;
+}
+.personal-system article {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 680px);
+  gap: 8vw;
+  padding: 42px 0 0;
+}
+.personal-system article small {
+  display: block;
+  margin-top: 12px;
+  color: #356a70;
+}
+.personal-system h3 {
+  margin: 0 0 14px;
+  font: 500 28px "Space Grotesk";
+  letter-spacing: -0.045em;
+}
+.personal-system article p {
+  max-width: 670px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--slate);
+}
 .case-id span,
 .case-id small {
   display: block;
@@ -994,7 +1041,114 @@ footer {
   text-transform: uppercase;
   color: #748892;
 }
+.maintenance-label {
+  display: inline-block;
+  margin: 23px 0 -4px !important;
+  padding: 7px 9px;
+  border: 1px solid #578986;
+  color: var(--teal) !important;
+  font: 500 8px "DM Mono" !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.case-hero-meta a,
+.personal-contributions a,
+.upstream-contribution a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--teal);
+  font: 500 9px "DM Mono";
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.case-hero-meta a svg,
+.personal-contributions a svg,
+.upstream-contribution a svg {
+  width: 13px;
+}
+.personal-contributions {
+  padding: 88px 10vw;
+  background: #162630;
+  color: var(--cloud);
+}
+.personal-contributions-heading {
+  display: grid;
+  grid-template-columns: 185px minmax(0, 680px);
+  gap: 8vw;
+  margin-bottom: 52px;
+}
+.personal-contributions h2,
+.upstream-contribution h2 {
+  margin: 0;
+  font: 500 clamp(32px, 4.1vw, 56px)/1 "Space Grotesk";
+  letter-spacing: -0.06em;
+}
+.personal-contributions ol {
+  max-width: 945px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #49606b;
+}
+.personal-contributions li {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 25px;
+  padding: 26px 0;
+  border-bottom: 1px solid #49606b;
+}
+.personal-contributions li > span {
+  font: 400 9px "DM Mono";
+  color: var(--teal);
+}
+.personal-contributions h3 {
+  margin: 0 0 10px;
+  font: 500 24px "Space Grotesk";
+}
+.personal-contributions p,
+.upstream-contribution p {
+  max-width: 680px;
+  margin: 0 0 15px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #a8bbc2;
+}
+.upstream-contribution {
+  padding: 88px 10vw;
+  display: grid;
+  grid-template-columns: 185px minmax(0, 760px);
+  gap: 8vw;
+  background: #203541;
+  color: var(--cloud);
+}
+.upstream-contribution > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.upstream-contribution > div:first-child svg {
+  width: 24px;
+  color: var(--sand);
+}
 @media (max-width: 700px) {
+  .personal-system {
+    padding: 75px 20px;
+  }
+  .personal-system-heading,
+  .personal-system article,
+  .personal-contributions-heading,
+  .upstream-contribution {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .personal-contributions,
+  .upstream-contribution {
+    padding: 65px 20px;
+  }
+  .personal-contributions-heading {
+    margin-bottom: 32px;
+  }
   .case-hero {
     min-height: auto;
     padding: 70px 20px;
