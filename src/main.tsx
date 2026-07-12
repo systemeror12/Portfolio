@@ -5,6 +5,8 @@ import {
   ArrowRight,
   Check,
   Code,
+  Download,
+  ExternalLink,
   Layers3,
   LockKeyhole,
   Mail,
@@ -283,6 +285,60 @@ function Capabilities() {
     </section>
   );
 }
+
+function ToolsIUse() {
+  return (
+    <section className="tools" aria-label="Tools I Use">
+      <div className="tools-heading">
+        <span>Tools I Use</span>
+        <h2>Part of the working environment.</h2>
+        <p>
+          These upstream tools support the way I plan, investigate, and deliver
+          work. They are included here as workflow context.
+        </p>
+      </div>
+      <div className="tools-list">
+        <article>
+          <div>
+            <small>Local AI workspace</small>
+            <h3>Odysseus</h3>
+          </div>
+          <p>
+            A self-hosted workspace I use to explore ideas and keep AI-assisted
+            work close to my local development environment.
+          </p>
+          <a
+            href="https://github.com/pewdiepie-archdaemon/odysseus"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open Odysseus upstream project"
+          >
+            Upstream project <ExternalLink />
+          </a>
+        </article>
+        <article>
+          <div>
+            <small>Agent workspace</small>
+            <h3>T3 Code</h3>
+          </div>
+          <p>
+            A coding-agent workspace I use to keep implementation, review, and
+            delivery conversations connected to the codebase.
+          </p>
+          <a
+            href="https://github.com/pingdotgg/t3code"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open T3 Code upstream project"
+          >
+            Upstream project <ExternalLink />
+          </a>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function Contact() {
   return (
     <footer id="contact">
@@ -303,7 +359,17 @@ function Contact() {
           target="_blank"
           rel="noreferrer"
         >
-          <Code /> View GitHub <ArrowRight />
+          <Code /> View GitHub profile <ArrowRight />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/jerome-vrixen-mendoza-59b927293/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Network /> View LinkedIn profile <ArrowRight />
+        </a>
+        <a href="/jerome-mendoza-resume.pdf" download>
+          <Download /> Download web-safe resume <ArrowRight />
         </a>
       </div>
       <div className="footer-line">
@@ -322,6 +388,7 @@ function Home() {
       <Evidence />
       <Approach />
       <Capabilities />
+      <ToolsIUse />
       <Contact />
     </main>
   );

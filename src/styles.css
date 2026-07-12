@@ -424,6 +424,84 @@ svg {
   line-height: 1.75;
   color: var(--slate);
 }
+.tools {
+  padding: 105px 5vw 115px;
+  background: var(--cloud);
+}
+.tools-heading {
+  display: grid;
+  grid-template-columns: 180px 1fr 0.8fr;
+  gap: 30px;
+  align-items: start;
+  padding-bottom: 42px;
+  border-bottom: 2px solid var(--ink);
+}
+.tools-heading > span {
+  font: 500 9px "DM Mono";
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #47767c;
+}
+.tools-heading h2 {
+  margin: 0;
+  font: 500 clamp(34px, 4vw, 58px)/1 "Space Grotesk";
+  letter-spacing: -0.055em;
+}
+.tools-heading p {
+  margin: 0;
+  color: var(--slate);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.tools-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-left: 180px;
+}
+.tools-list article {
+  min-height: 245px;
+  padding: 30px 30px 28px 0;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--line);
+}
+.tools-list article + article {
+  padding-left: 30px;
+  border-left: 1px solid var(--line);
+}
+.tools-list small {
+  color: #47767c;
+  font: 500 8px "DM Mono";
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tools-list h3 {
+  margin: 12px 0 0;
+  font: 500 27px "Space Grotesk";
+  letter-spacing: -0.045em;
+}
+.tools-list p {
+  margin: 28px 0;
+  color: var(--slate);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.tools-list a {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  padding-bottom: 6px;
+  border-bottom: 1px solid currentColor;
+  color: #356a70;
+  font: 500 9px "DM Mono";
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tools-list a svg {
+  width: 14px;
+}
 footer {
   padding: 115px 5vw 32px;
   background: var(--night);
@@ -500,6 +578,15 @@ footer {
     grid-column: 2;
   }
   .contact-links {
+    margin-left: 140px;
+  }
+  .tools-heading {
+    grid-template-columns: 140px 1fr;
+  }
+  .tools-heading p {
+    grid-column: 2;
+  }
+  .tools-list {
     margin-left: 140px;
   }
 }
@@ -633,6 +720,26 @@ footer {
     padding: 25px 0;
     border-right: 0;
     border-bottom: 1px solid var(--line);
+  }
+  .tools {
+    padding: 85px 20px;
+  }
+  .tools-heading {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .tools-heading p {
+    grid-column: 1;
+  }
+  .tools-list {
+    grid-template-columns: 1fr;
+    margin: 0;
+  }
+  .tools-list article,
+  .tools-list article + article {
+    min-height: 0;
+    padding: 28px 0;
+    border-left: 0;
   }
   footer {
     padding: 85px 20px 28px;
