@@ -586,7 +586,7 @@ footer {
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
-.contact-links a + a {
+.contact-links a:nth-child(even) {
   padding-left: 28px;
   border-left: 1px solid var(--dark-line);
 }
@@ -801,7 +801,7 @@ footer {
     grid-template-columns: 1fr;
     margin: 55px 0 80px;
   }
-  .contact-links a + a {
+  .contact-links a:nth-child(even) {
     padding-left: 0;
     border-left: 0;
   }
