@@ -19,12 +19,14 @@ import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
 import { DotsHyprlandCaseStudy } from "./dots-hyprland-case-study";
+import { PublicSectorHrisCaseStudy } from "./public-sector-hris-case-study";
 import { InternalLink } from "./navigation";
 import "./styles.css";
 
 const caseStudyPath = "/work/multi-company-hris";
 const aiCaseStudyPath = "/work/ai-odoo-rnd";
 const paymentProviderCaseStudyPath = "/work/payment-provider";
+const publicSectorCaseStudyPath = "/work/public-sector-hris";
 const dotsHyprlandCaseStudyPath = "/systems/dots-hyprland";
 
 function Header({ currentPath }: { currentPath?: string }) {
@@ -88,6 +90,15 @@ function Header({ currentPath }: { currentPath?: string }) {
           onClick={closeMenuAfterNavigation}
         >
           Integration
+        </InternalLink>
+        <InternalLink
+          to={publicSectorCaseStudyPath}
+          aria-current={
+            currentPath === publicSectorCaseStudyPath ? "page" : undefined
+          }
+          onClick={closeMenuAfterNavigation}
+        >
+          Public sector
         </InternalLink>
         <InternalLink
           to={dotsHyprlandCaseStudyPath}
@@ -238,6 +249,14 @@ function Evidence() {
                   to={paymentProviderCaseStudyPath}
                 >
                   Open the Integration Case Study <ArrowRight />
+                </InternalLink>
+              )}
+              {item.key === "public-sector" && (
+                <InternalLink
+                  className="case-link"
+                  to={publicSectorCaseStudyPath}
+                >
+                  Open the Public Sector HRIS Case Study <ArrowRight />
                 </InternalLink>
               )}
             </div>
@@ -483,6 +502,11 @@ function App() {
     <>
       <Header currentPath={path} />
       <PaymentProviderCaseStudy />
+    </>
+  ) : path === publicSectorCaseStudyPath ? (
+    <>
+      <Header currentPath={path} />
+      <PublicSectorHrisCaseStudy />
     </>
   ) : path === dotsHyprlandCaseStudyPath ? (
     <>

@@ -71,6 +71,28 @@ export const projectEvidence: ProjectEvidence[] = [
       "Ungrounded Fallback",
     ],
   },
+  {
+    key: "public-sector",
+    type: "Public Sector HRIS Case Study",
+    title: "Government Water District HRIS",
+    problem:
+      "A Government Water District could not fully trust the device punches that its reports, overtime, leave, and pass slips depended on.",
+    contribution:
+      "Built the attendance engine, overtime requests, Biometric Import, Personnel Action Form, and Leave Monetization outright, and extended My Dashboard and recruitment. Largest contributor on a five-person delivery team over roughly three months.",
+    architecture:
+      "A single Attendance Day evaluation path resolves each day into the Authoritative Punch Record, fed by Biometric Import.",
+    boundary:
+      "Attendance Corrections are approval-gated and evidence-backed; voiding restores previous values, and corrections never recalculate overtime on their own.",
+    result:
+      "Delivered auditable attendance, overtime derived from validated punches, and self-service Personnel Action Form and Leave Monetization requests with approval routing.",
+    signals: [
+      "Authoritative Punch Record",
+      "Attendance Correction",
+      "Biometric Import",
+      "Unified ISO Workflow",
+      "My Dashboard",
+    ],
+  },
 ];
 
 export const workingMethod = [

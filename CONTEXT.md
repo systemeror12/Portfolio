@@ -124,6 +124,46 @@ _Avoid_: Approximate company count, approximate employee count
 Jerome designed and implemented most core HR workflows—including Attendance, Recruitment, and Payroll—and the dashboard within a broader client implementation delivered with a cross-functional team.
 _Avoid_: Solely built the entire HRIS, merely assisted the team
 
+**Public Sector HRIS Case Study**:
+The fourth piece of Project Evidence: the Government Water District HRIS, led by attendance integrity and supported by self-service HR workflows. Distinct from the Multi-Company HRIS Lead Case Study.
+_Avoid_: Featured project, government client system
+
+**Government Water District**:
+The anonymized public sector client name. The real name and its abbreviation stay confidential.
+_Avoid_: The district's real name, real client identity
+
+**Authoritative Punch Record**:
+The single daily punch record per employee that reports, overtime, leave, and pass slips are read from, replacing separate legacy attendance layers.
+_Avoid_: Raw biometric log, attendance summary sheet
+
+**Attendance Correction**:
+An approved, evidence-backed fix to a wrong or missing punch. Voiding restores previous effective values; corrections never recalculate overtime on their own.
+_Avoid_: Manual punch edit, overtime recalculation
+
+**Biometric Import**:
+The workbook import that moves device punches into the attendance engine through a dedicated adapter module, including overnight shifts crossing midnight.
+_Avoid_: Manual punch encoding, device sync
+
+**Personnel Action Form**:
+The module for personnel movements, with salary matrix and step selection computing the new wage automatically.
+_Avoid_: Salary change ticket, promotion form
+
+**Leave Monetization**:
+The self-service request converting accrued leave credits to cash through an approval workflow.
+_Avoid_: Leave cash-out, automatic payout
+
+**My Dashboard**:
+The HR-only dashboard view with a department breakdown widget, rewritten from AbstractModels to controllers with parallel KPI and chart loading.
+_Avoid_: Employee dashboard, AbstractModels report
+
+**Unified ISO Workflow**:
+The shared workflow states that five ISO Management models (context, risk, EIA, HIRAC, OTP) were migrated onto, replacing per-model state machines with one auditable lifecycle plus regression tests.
+_Avoid_: ISO compliance certification, generic task status
+
+**Government Recruitment Workflow**:
+The Public Sector HRIS recruitment path including PDS tab restructuring and the distinct Plantilla and Job Order appointment tracks with their own letters and state guards.
+_Avoid_: Generic applicant tracking, HR hiring pipeline
+
 **Upstream Work**:
 Code and behavior inherited from the original source of a fork, rather than authored by Jerome.
 _Avoid_: My work, project contribution
