@@ -19,6 +19,53 @@ test("a Hiring Manager can open the Public Sector HRIS Case Study from the navig
   await expect(page).toHaveURL("/");
 });
 
+test("a Hiring Manager can reach the Public Sector HRIS Case Study from the Evidence card", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await expect(page.locator(".evidence-list article")).toHaveCount(4);
+  await page
+    .getByRole("link", { name: /open the public sector hris case study/i })
+    .click();
+  await expect(page).toHaveURL("/work/public-sector-hris");
+  await expect(
+    page.getByRole("heading", { name: "Government Water District HRIS" }),
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "Back to home" }).click();
+  await expect(page).toHaveURL("/");
+});
+
+test("the Public Sector HRIS Evidence card carries its standing and signal chips without excluded claims", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const card = page
+    .locator(".evidence-list article")
+    .filter({ hasText: "Government Water District HRIS" });
+  await expect(card).toBeVisible();
+  await expect(
+    card.getByText(/largest contributor on a five-person delivery team/i),
+  ).toBeVisible();
+  for (const signal of [
+    "Authoritative Punch Record",
+    "Attendance Correction",
+    "Biometric Import",
+    "Unified ISO Workflow",
+    "My Dashboard",
+  ]) {
+    await expect(card.getByText(signal, { exact: true })).toBeVisible();
+  }
+
+  const cardText = await card.innerText();
+  expect(cardText).not.toMatch(/in production|deployed to production|rollout/i);
+  expect(cardText).not.toMatch(/\b\d+\s+(commits?|merged|MRs?)\b/i);
+  expect(cardText).not.toMatch(/gitlab|merge request/i);
+  expect(cardText).not.toMatch(/\bcwd\b/i);
+});
+
 test("the Public Sector HRIS Case Study opens directly with an accessible attendance flow", async ({
   page,
 }) => {
