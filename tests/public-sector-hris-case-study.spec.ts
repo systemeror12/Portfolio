@@ -61,6 +61,8 @@ test("the Public Sector HRIS Evidence card carries its standing and signal chips
 
   const cardText = await card.innerText();
   expect(cardText).not.toMatch(/in production|deployed to production|rollout/i);
+  expect(cardText).not.toMatch(/end-to-end test|\be2e\b/i);
+  expect(cardText).not.toMatch(/in progress|in flight|ongoing work/i);
   expect(cardText).not.toMatch(/\b\d+\s+(commits?|merged|MRs?)\b/i);
   expect(cardText).not.toMatch(/gitlab|merge request/i);
   expect(cardText).not.toMatch(/\bcwd\b/i);
@@ -148,6 +150,7 @@ test("the Public Sector HRIS Case Study contains no excluded claims", async ({
   const pageText = await page.locator("body").innerText();
   expect(pageText).not.toMatch(/in production|deployed to production|rollout/i);
   expect(pageText).not.toMatch(/end-to-end test|\be2e\b/i);
+  expect(pageText).not.toMatch(/in progress|in flight|ongoing work/i);
   expect(pageText).not.toMatch(/\b\d+\s+(commits?|merged|MRs?)\b/i);
   expect(pageText).not.toMatch(/gitlab|merge request/i);
   expect(pageText).not.toMatch(/\bcwd\b/i);
