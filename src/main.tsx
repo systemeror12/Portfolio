@@ -251,6 +251,14 @@ function Evidence() {
                   Open the Integration Case Study <ArrowRight />
                 </InternalLink>
               )}
+              {item.key === "public-sector" && (
+                <InternalLink
+                  className="case-link"
+                  to={publicSectorCaseStudyPath}
+                >
+                  Open the Public Sector HRIS Case Study <ArrowRight />
+                </InternalLink>
+              )}
             </div>
             <div className="case-detail">
               <span>Architecture</span>
