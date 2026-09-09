@@ -24,8 +24,22 @@ test("a Hiring Manager can inspect the Featured Personal System", async ({
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "A desktop platform I keep improving." }),
+    page.getByRole("heading", { name: "Personal Projects" }),
   ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Lingkod HR" })).toBeVisible();
+  await expect(
+    page.getByText("In development · Private project", { exact: true }),
+  ).toBeVisible();
+  for (const technology of [
+    "Next.js",
+    "React",
+    "NestJS",
+    "PostgreSQL",
+    "Prisma",
+    "Docker",
+  ]) {
+    await expect(page.getByText(technology, { exact: true })).toBeVisible();
+  }
   await page
     .getByRole("link", { name: /inspect the personal system/i })
     .click();
@@ -51,8 +65,8 @@ test("the Personal System route loads directly with evidence and safe attributio
     await page.getByRole("button", { name: "Open navigation" }).click();
   }
   await expect(
-    page.getByRole("link", { name: "Personal system", exact: true }),
-  ).toHaveAttribute("aria-current", "page");
+    page.getByRole("link", { name: "Personal projects", exact: true }),
+  ).toHaveAttribute("href", "/#personal-projects");
   await expect(page.getByText("Workspace wallpaper state", { exact: true })).toBeVisible();
   await expect(page.getByText("Launcher performance and correctness", { exact: true })).toBeVisible();
   await expect(page.getByText("Cross-process reliability", { exact: true })).toBeVisible();

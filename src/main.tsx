@@ -101,13 +101,10 @@ function Header({ currentPath }: { currentPath?: string }) {
           Public sector
         </InternalLink>
         <InternalLink
-          to={dotsHyprlandCaseStudyPath}
-          aria-current={
-            currentPath === dotsHyprlandCaseStudyPath ? "page" : undefined
-          }
+          to="/#personal-projects"
           onClick={closeMenuAfterNavigation}
         >
-          Personal system
+          Personal projects
         </InternalLink>
         {!currentPath && (
           <>
@@ -281,20 +278,46 @@ function Evidence() {
   );
 }
 
-function PersonalSystem() {
+function PersonalProjects() {
   return (
-    <section className="personal-system" aria-labelledby="personal-system-title">
-      <div className="personal-system-heading">
-        <span>Featured Personal System</span>
-        <h2 id="personal-system-title">A desktop platform I keep improving.</h2>
+    <section
+      className="personal-projects"
+      id="personal-projects"
+      aria-labelledby="personal-projects-title"
+    >
+      <div className="personal-projects-heading">
+        <span>Independent work</span>
+        <h2 id="personal-projects-title">Personal Projects</h2>
       </div>
-      <article>
+      <article aria-labelledby="lingkod-hr-title">
         <div>
-          <span className="system-id">SYS / PERSONAL</span>
+          <span className="system-id">Personal project</span>
+          <small>In development · Private project</small>
+        </div>
+        <div>
+          <h3 id="lingkod-hr-title">Lingkod HR</h3>
+          <p>
+            A personal HR information system project for Philippine government
+            agencies, focused on position management, personnel records, and
+            recruitment workflows.
+          </p>
+          <div className="project-stack">
+            <span id="lingkod-stack-label">Tech stack</span>
+            <ul aria-labelledby="lingkod-stack-label">
+              {["Next.js", "React", "NestJS", "PostgreSQL", "Prisma", "Docker"].map(
+                (technology) => <li key={technology}>{technology}</li>,
+              )}
+            </ul>
+          </div>
+        </div>
+      </article>
+      <article aria-labelledby="dots-hyprland-title">
+        <div>
+          <span className="system-id">Personal system</span>
           <small>Actively maintained fork</small>
         </div>
         <div>
-          <h3>dots-hyprland</h3>
+          <h3 id="dots-hyprland-title">dots-hyprland</h3>
           <p>
             A daily Hyprland desktop foundation whose upstream visual design I
             admire, extended with my own workspace state, launcher behavior,
@@ -472,7 +495,7 @@ function Home() {
       <Header />
       <Hero />
       <Evidence />
-      <PersonalSystem />
+      <PersonalProjects />
       <Approach />
       <Capabilities />
       <ToolsIUse />
