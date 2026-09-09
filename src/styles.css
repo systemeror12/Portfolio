@@ -289,52 +289,78 @@ svg {
   border-bottom: 1px solid var(--line);
   position: relative;
 }
-.personal-system {
+.personal-projects {
   padding: 105px 5vw;
   background: #d9e7e5;
 }
-.personal-system-heading {
+.personal-projects-heading {
   display: grid;
   grid-template-columns: 180px minmax(0, 680px);
   gap: 8vw;
   padding-bottom: 34px;
   border-bottom: 2px solid var(--ink);
 }
-.personal-system-heading > span,
+.personal-projects-heading > span,
 .system-id,
-.personal-system article small {
+.personal-projects article small {
   font: 500 8px "DM Mono";
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #47767c;
 }
-.personal-system-heading h2 {
+.personal-projects-heading h2 {
   margin: 0;
   font: 500 clamp(34px, 4vw, 58px)/1 "Space Grotesk";
   letter-spacing: -0.055em;
 }
-.personal-system article {
+.personal-projects article {
   display: grid;
   grid-template-columns: 180px minmax(0, 680px);
   gap: 8vw;
-  padding: 42px 0 0;
+  padding: 36px 0;
 }
-.personal-system article small {
+.personal-projects article small {
   display: block;
   margin-top: 12px;
   color: #356a70;
 }
-.personal-system h3 {
+.personal-projects h3 {
   margin: 0 0 14px;
   font: 500 28px "Space Grotesk";
   letter-spacing: -0.045em;
 }
-.personal-system article p {
+.personal-projects article p {
   max-width: 670px;
   margin: 0;
   font-size: 15px;
   line-height: 1.8;
   color: var(--slate);
+}
+.personal-projects article + article {
+  border-top: 1px solid var(--line);
+}
+.project-stack {
+  margin-top: 24px;
+}
+.project-stack > span {
+  font: 500 10px "DM Mono";
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #356a70;
+}
+.project-stack ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.project-stack li {
+  padding: 8px 11px;
+  border: 1px solid #9fb1b5;
+  font: 500 12px "DM Mono";
+  color: var(--ink);
 }
 .case-id span,
 .case-id small {
@@ -1132,11 +1158,11 @@ footer {
   color: var(--sand);
 }
 @media (max-width: 700px) {
-  .personal-system {
+  .personal-projects {
     padding: 75px 20px;
   }
-  .personal-system-heading,
-  .personal-system article,
+  .personal-projects-heading,
+  .personal-projects article,
   .personal-contributions-heading,
   .upstream-contribution {
     grid-template-columns: 1fr;

@@ -187,3 +187,11 @@ _Avoid_: Maintained the upstream project, authored the maintainer's rework, unme
 **Tool I Use**:
 An upstream application that is part of Jerome's active workflow but is not Project Evidence unless he makes a demonstrable contribution. Odysseus and T3 Code belong in this category and should link to their upstream projects.
 _Avoid_: Active tech stack, my project, contributed fork
+
+**Lingkod HR**:
+Jerome's personal project currently in development in a private repository, with public Project Evidence limited to a high-level project description and its verified technology stack.
+_Avoid_: Public source project, delivered client system, detailed technical case study
+
+**Personal Projects**:
+A dedicated portfolio section for Jerome's personal Project Evidence, presenting Lingkod HR first and the Featured Personal System second.
+_Avoid_: Tools I Use, professional case studies
