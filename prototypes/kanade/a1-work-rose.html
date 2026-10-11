@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jerome Mendoza, platform engineer</title>
+<meta name="description" content="Jerome Mendoza builds HR, payroll, and payment systems in the Philippines.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#06060b;
+  --night:#0d0c14;
+  --dusk:#1a1724;
+  --plum:#2b2436;
+  --stain:#4a3a63;
+  --bronze:#9b8794;
+  --mist:#9a8fab;
+  --lilac:#cfc8de;
+  --silver:#ece8f4;
+  --glow:#f0b4dc;
+  --rose:#bb6688;
+  --peri:#a599d8;
+  --hair:rgba(207,200,222,.14);
+  --serif:"Shippori Mincho","Hiragino Mincho ProN",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans",system-ui,sans-serif;
+  --wrap:min(1200px, calc(100vw - 48px));
+}
+*{box-sizing:border-box}
+html{background:var(--void);color:var(--silver);scroll-behavior:smooth}
+body{margin:0;font:400 17px/1.75 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background:radial-gradient(1100px 700px at 15% 0%, rgba(74,58,99,.22), transparent 70%), radial-gradient(900px 700px at 100% 60%, rgba(43,36,54,.35), transparent 70%), var(--void)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--glow);outline-offset:4px;border-radius:3px}
+.skip{position:absolute;left:16px;top:-60px;background:var(--silver);color:var(--void);padding:10px 14px;border-radius:6px;z-index:10;text-decoration:none;font-weight:500}
+.skip:focus{top:12px}
+
+.top{position:fixed;inset:0 0 auto;z-index:5;display:flex;align-items:center;gap:32px;padding:18px max(24px, calc((100vw - 1200px)/2));background:linear-gradient(rgba(6,6,11,.92), rgba(6,6,11,0))}
+.mark{font:500 18px/1 var(--serif);text-decoration:none;margin-right:auto}
+.top nav{display:flex;gap:26px}
+.top nav a{font-size:15px;color:var(--mist);text-decoration:none;transition:color .2s}
+.top nav a:hover{color:var(--silver)}
+.clock{margin:0;font-size:15px;color:var(--mist);font-variant-numeric:tabular-nums;white-space:nowrap}
+.clock b{font:500 17px/1 var(--serif);color:var(--silver);margin-left:6px}
+
+/* hero */
+.hero{position:relative;min-height:max(700px, 100svh);overflow:hidden;display:grid;align-items:center}
+.hero > svg{position:absolute;inset:0;width:100%;height:100%}
+.sparkle{animation:twinkle 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+.frag{animation:float 9s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes float{to{transform:translate(4px,-8px) rotate(8deg)}}
+.glass{animation:shimmer 7s ease-in-out infinite}
+@keyframes shimmer{50%{opacity:.55}}
+.hero-copy{position:relative;width:var(--wrap);margin:0 auto;padding:120px 0 80px}
+.hero-copy::before{content:"";position:absolute;inset:40px -60px 0 -120px;z-index:-1;background:radial-gradient(60% 60% at 32% 50%, rgba(6,6,11,.88), transparent 75%)}
+.who{margin:0 0 28px;color:var(--mist);font-size:16px}
+.who strong{color:var(--silver);font-weight:500}
+h1{font:400 clamp(46px, 6vw, 86px)/1.02 var(--serif);margin:0;letter-spacing:-.015em;max-width:9.5em}
+h1 em{font-style:normal;color:var(--glow)}
+.lede{max-width:34em;margin:34px 0 0;font-size:19px;color:#cbc4d9}
+.actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:40px}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 24px;border-radius:999px;font-size:16px;font-weight:500;text-decoration:none;transition:all .2s}
+.btn-solid{background:var(--silver);color:var(--void)}
+.btn-solid:hover{background:#fff;box-shadow:0 0 30px rgba(240,180,220,.35)}
+.btn-line{border:1px solid rgba(236,232,244,.32);color:var(--silver)}
+.btn-line:hover{border-color:var(--glow);color:var(--glow)}
+.heart-label{position:absolute;font:400 15px/1.3 var(--serif);color:var(--glow);pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 1.2s}
+.heart-label.on{opacity:1}
+
+/* five-line staff with an iron heart: the section divider */
+.staff-rule{display:block;width:var(--wrap);height:44px;margin:0 auto;color:var(--bronze)}
+.staff-rule path{fill:none;stroke:currentColor;stroke-width:1;vector-effect:non-scaling-stroke}
+
+section{position:relative}
+.wrap{width:var(--wrap);margin:0 auto}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:end;padding:130px 0 70px}
+h2{font:400 clamp(36px, 4.6vw, 64px)/1.08 var(--serif);margin:0;letter-spacing:-.01em}
+.sec-head p{margin:0;color:#bdb5cc;max-width:30em}
+
+/* cases */
+.case{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;padding:64px 0 72px;border-top:1px solid var(--hair)}
+.case-head{position:sticky;top:96px;align-self:start}
+.no{display:block;font:400 120px/0.9 var(--serif);color:transparent;-webkit-text-stroke:1px rgba(155,135,148,.6);transition:color 1.4s, text-shadow 1.4s;margin-bottom:22px}
+.case.lit .no{color:rgba(74,58,99,.45);text-shadow:0 0 40px rgba(240,180,220,.3)}
+.kind{margin:0 0 8px;font-size:15px;color:var(--mist)}
+h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
+.for{margin:18px 0 0;font:400 19px/1.55 var(--serif);color:var(--mist);max-width:20em}
+.note{display:inline-block;margin-top:22px;padding:8px 14px;border:1px dashed rgba(240,180,220,.55);border-radius:10px;color:var(--glow);font-size:15px;line-height:1.5}
+.problem{margin:0 0 34px;font:400 24px/1.55 var(--serif);color:var(--silver)}
+.case dl{margin:0}
+.case dl div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:24px;padding:20px 0;border-top:1px solid var(--hair)}
+.case dt{color:var(--mist);font-size:15px;padding-top:2px}
+.case dd{margin:0;color:#d4cee0}
+.case .result{position:relative;border-top-color:rgba(240,180,220,.45)}
+.case .result dt{color:var(--glow)}
+.case .result dd{color:var(--silver)}
+.case .result svg{position:absolute;left:-34px;top:20px;width:18px;height:18px;filter:drop-shadow(0 0 6px rgba(240,180,220,.8))}
+.terms{margin:26px 0 0;font-size:15px;color:var(--mist)}
+.terms span{color:#cbc4d9}
+.more{display:inline-block;margin-top:22px;color:var(--peri);text-underline-offset:5px;text-decoration-thickness:1px}
+.more:hover{color:var(--silver)}
+
+/* personal */
+.after{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:28px;align-items:start}
+.piece{position:relative;background:linear-gradient(180deg, rgba(43,36,54,.7), rgba(26,23,36,.55));border:1px solid var(--hair);border-radius:24px;padding:36px}
+.piece .status{margin:0 0 18px;font-size:15px;color:var(--mist)}
+.piece .status svg{width:13px;height:13px;margin-right:9px;vertical-align:-1px}
+.piece h3{font-size:34px}
+.piece p{color:#cbc4d9}
+.stack{margin:22px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;color:var(--silver)}
+.split{display:grid;grid-template-columns:1fr 1fr;margin-top:26px;border-top:1px solid var(--hair)}
+.split div{padding:20px 22px 4px 0}
+.split div+div{padding-left:22px;border-left:1px solid var(--hair)}
+.split h4{margin:0 0 6px;font:500 17px/1.3 var(--serif)}
+.split div+div h4{color:var(--glow)}
+.split p{margin:0;font-size:16px}
+.credit{margin:26px 0 0;padding-top:18px;border-top:1px solid var(--hair);font-size:15px;color:var(--mist) !important}
+.credit code{font:inherit;color:var(--silver)}
+.tools{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:28px;padding:30px 0 0;border-top:1px solid var(--hair)}
+.tools h3{font-size:24px}
+.tools p.lab{margin:0;color:var(--mist);font-size:15px}
+.tool h4{margin:0;font:500 22px/1.3 var(--serif)}
+.tool p{margin:6px 0 10px;color:#bdb5cc;font-size:16px}
+.tool a{color:var(--peri);font-size:15px;text-underline-offset:5px}
+
+/* method: a four-note phrase on a staff */
+.phrase{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px;position:relative;
+  background:repeating-linear-gradient(180deg, rgba(155,135,148,.55) 0 1px, transparent 1px 9px) 0 6px/100% 37px no-repeat}
+.phrase li{position:relative;padding-top:78px}
+.phrase li::before{content:"";position:absolute;left:14px;width:15px;height:11px;border-radius:50%;background:var(--lilac);transform:rotate(-22deg)}
+.phrase li::after{content:"";position:absolute;left:27px;width:1.5px;height:34px;background:var(--lilac)}
+.phrase li:nth-child(1)::before{top:37px}.phrase li:nth-child(1)::after{top:7px}
+.phrase li:nth-child(2)::before{top:28px}.phrase li:nth-child(2)::after{top:-2px}
+.phrase li:nth-child(3)::before{top:19px}.phrase li:nth-child(3)::after{top:-11px}
+.phrase li:nth-child(4)::before{top:10px;background:var(--glow);box-shadow:0 0 16px 3px rgba(240,180,220,.6)}
+.phrase li:nth-child(4)::after{top:-20px;background:var(--glow)}
+.phrase .n{font:400 15px/1 var(--serif);color:var(--mist)}
+.phrase h3{font-size:26px;margin:10px 0}
+.phrase p{margin:0;color:#bdb5cc;font-size:16px}
+
+/* contact */
+.contact{padding:150px 0 60px}
+.contact h2{max-width:15em}
+.contact > .wrap > p{max-width:32em;color:#bdb5cc;margin:26px 0 0}
+.mail{display:inline-block;margin-top:48px;font:400 clamp(24px, 3.4vw, 44px)/1.2 var(--serif);text-decoration:none;color:var(--silver);border-bottom:1px solid rgba(240,180,220,.5);padding-bottom:6px;transition:color .2s, border-color .2s;overflow-wrap:anywhere}
+.mail:hover{color:var(--glow);border-color:var(--glow)}
+.links{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:120px;padding:26px 0 40px;border-top:1px solid var(--hair);font-size:15px;color:var(--mist)}
+
+.js .rise{opacity:0;transform:translateY(18px);transition:opacity .9s ease, transform .9s ease}
+.js .rise.in{opacity:1;transform:none}
+
+@media (max-width: 900px){
+  .top nav{display:none}
+  .sec-head{grid-template-columns:1fr;gap:20px;padding:100px 0 44px}
+  .case{grid-template-columns:1fr;gap:28px;padding:48px 0 56px}
+  .case-head{position:static}
+  .no{font-size:84px;margin-bottom:14px}
+  .after{grid-template-columns:1fr}
+  .tools{grid-template-columns:1fr;gap:22px}
+  .phrase{grid-template-columns:1fr 1fr;row-gap:44px;background:none}
+  .phrase li{padding-top:0}
+  .phrase li::before,.phrase li::after{display:none}
+}
+@media (max-width: 560px){
+  body{font-size:16px}
+  .hero{align-items:end;min-height:max(900px, 100svh)}
+  .hero-copy{padding:0 0 64px}
+  .hero-copy::before{inset:-40px -40px -20px -40px;background:linear-gradient(transparent, rgba(6,6,11,.92) 30%)}
+  .lede{font-size:17px}
+  .problem{font-size:20px}
+  .case dl div{grid-template-columns:1fr;gap:4px}
+  .case .result svg{left:-20px;width:14px}
+  .piece{padding:26px 22px}
+  .split{grid-template-columns:1fr}
+  .split div+div{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
+  .phrase{grid-template-columns:1fr}
+  .clock span{display:none}
+  .btn{flex:1;justify-content:center}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .js .rise{opacity:1;transform:none;transition:none}
+  .sparkle,.frag,.glass{animation:none}
+  .no,.heart-label{transition:none}
+}
+/* work: a rose window held in place while the cases scroll past; each pane lights for its case */
+.rw{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:64px;margin-top:10px}
+.rw-stick{position:sticky;top:11vh;align-self:start;height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#roseDial{display:block;width:min(100%, 64vh);height:auto;overflow:visible}
+.rw-for{margin:0;font:400 22px/1.3 var(--serif);text-align:center;min-height:1.3em}
+.rw-for span{color:var(--mist);font-size:17px}
+.rw-for b{font-weight:400;color:var(--glow);transition:opacity .35s ease}
+.rw-for b.out{opacity:0}
+.petal{opacity:.42;transition:opacity .9s ease}
+.petal.on{opacity:1}
+.petal .lit{opacity:0;transition:opacity .9s ease}
+.petal.on .lit{opacity:1}
+.petal .rn{font:400 26px var(--serif);fill:var(--lilac);opacity:.7;transition:fill .9s, opacity .9s}
+.petal.on .rn{fill:#fff4fb;opacity:1}
+.petal .rec{font:400 13px var(--sans);fill:var(--mist);letter-spacing:.02em}
+.petal.on .rec{fill:var(--lilac)}
+.rw-hand{transition:transform 1.5s cubic-bezier(.5,0,.15,1)}
+.rc{min-height:82vh;padding:9vh 0;display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--hair)}
+.rc:first-child{border-top:0}
+.rc-mini{display:none}
+.rc-kind{display:flex;align-items:baseline;gap:14px;margin:0 0 10px;font-size:15px;color:var(--mist)}
+.rc-kind span{font:400 40px/1 var(--serif);color:transparent;-webkit-text-stroke:1px rgba(155,135,148,.7);transition:color .9s, text-shadow .9s}
+.rc.on .rc-kind span{color:rgba(74,58,99,.5);-webkit-text-stroke-color:var(--glow);text-shadow:0 0 24px rgba(240,180,220,.4)}
+.rc-for{margin:14px 0 0;font:400 19px/1.55 var(--serif);color:var(--mist);max-width:24em}
+.rc .note{display:inline-block;align-self:flex-start;margin:18px 0 0;padding:8px 14px;border:1px dashed rgba(240,180,220,.55);border-radius:10px;color:var(--glow);font-size:15px;line-height:1.5}
+.rc-problem{margin:26px 0 22px;font:400 22px/1.55 var(--serif)}
+.rc-dl{margin:0}
+.rc-dl div{display:grid;grid-template-columns:140px minmax(0,1fr);gap:22px;padding:16px 0;border-top:1px solid var(--hair)}
+.rc-dl dt{color:var(--mist);font-size:15px;padding-top:2px}
+.rc-dl dd{margin:0;color:#d4cee0;font-size:16px}
+.rc-dl .hold dt{color:var(--peri)}
+.rc-dl .result{border-top-color:rgba(240,180,220,.45)}
+.rc-dl .result dt{display:flex;align-items:center;gap:8px;color:var(--glow)}
+.rc-dl .result dt svg{flex:none;width:13px;height:13px;filter:drop-shadow(0 0 6px rgba(240,180,220,.8))}
+.rc-dl .result dd{color:var(--silver)}
+.rc .terms{margin-top:20px}
+.rc .more{align-self:flex-start}
+@media (max-width: 900px){
+  .rw{grid-template-columns:1fr;gap:0}
+  .rw-stick{display:none}
+  .rc{min-height:0;padding:52px 0}
+  .rc-mini{display:block;width:96px;height:96px;margin:0 0 18px;overflow:visible}
+}
+@media (max-width: 560px){
+  .rc-problem{font-size:20px}
+  .rc-dl div{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion: reduce){
+  .rw-hand,.petal,.petal .lit,.rw-for b{transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="mark" href="#">Jerome Mendoza</a>
+  <nav aria-label="Sections">
+    <a href="#work">Work</a>
+    <a href="#after">After hours</a>
+    <a href="#method">Method</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <p class="clock" id="clock"><span>Manila</span><b>--:--</b></p>
+</header>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="spark" viewBox="-10 -10 20 20"><path d="M0 -10 L1.6 -1.6 L10 0 L1.6 1.6 L0 10 L-1.6 1.6 L-10 0 L-1.6 -1.6 Z" fill="#f0b4dc"/></symbol>
+</svg>
+
+<main id="main">
+<section class="hero" aria-labelledby="hero-title">
+  <svg id="scene" aria-hidden="true"></svg>
+  <span class="heart-label" id="heartLabel" aria-hidden="true">someone, paid right</span>
+  <div class="hero-copy">
+    <p class="who"><strong>Jerome Mendoza</strong>, platform engineer in the Philippines</p>
+    <h1 id="hero-title">Every record ends with <em>a&nbsp;person.</em></h1>
+    <p class="lede">A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets paid, or doesn't. I build the HR, payroll, and payment systems that make sure they do.</p>
+    <div class="actions">
+      <a class="btn btn-solid" href="#work">See the work</a>
+      <a class="btn btn-line" href="mailto:mendozajeromevrixen@gmail.com">Email me</a>
+    </div>
+  </div>
+</section>
+
+<svg class="staff-rule" viewBox="0 0 1200 44" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M0 10 H560 M0 16 H560 M0 22 H560 M0 28 H560 M0 34 H560 M640 10 H1200 M640 16 H1200 M640 22 H1200 M640 28 H1200 M640 34 H1200 M600 38 C 580 26, 576 12, 590 10 C 597 9, 600 15, 600 18 C 600 15, 603 9, 610 10 C 624 12, 620 26, 600 38 Z M560 22 C 570 22, 576 18, 584 14 M640 22 C 630 22, 624 18, 616 14"/></svg>
+
+<section id="work" aria-labelledby="work-title">
+  <div class="wrap">
+    <div class="sec-head rise">
+      <h2 id="work-title">Four systems, and who they were for.</h2>
+      <p>One window, four panes. As you read, each one lights for the people it was built for. Most of it was built with a team, so I've said which parts were mine. Client names stay private.</p>
+    </div>
+    <div class="rw">
+      <div class="rw-stick" aria-hidden="true">
+        <svg id="roseDial" viewBox="-262 -262 524 524"></svg>
+        <p class="rw-for"><span>for</span> <b id="rwFor">HR and payroll teams</b></p>
+      </div>
+      <div class="rw-cases">
+        <article class="rc" data-for="HR and payroll teams" data-records="attendance · overtime · leave · payroll rules" aria-labelledby="r1">
+          <svg class="rc-mini" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+          <p class="rc-kind"><span aria-hidden="true">I</span>Lead case study</p>
+          <h3 id="r1">Multi-Company HRIS</h3>
+          <p class="rc-for">for HR and payroll teams at multiple legal companies, now sharing one platform</p>
+          <p class="rc-problem">Several legal companies were running HR and payroll by hand, in disconnected pieces. They needed one approved flow.</p>
+          <dl class="rc-dl">
+            <div><dt>What I built</dt><dd>Most of the core HR workflows, including Attendance, Recruitment, and Payroll, plus the dashboard, as part of a larger cross-functional delivery.</dd></div>
+            <div><dt>How it fits</dt><dd>One shared Odoo deployment feeds approved attendance, overtime, and leave into Custom Payroll, where every payslip calculation can be traced back.</dd></div>
+            <div class="hold"><dt>The line it holds</dt><dd>Each company keeps its own permissions and Philippine Payroll Rules, even on the shared platform.</dd></div>
+            <div class="result"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>What changed</dt><dd>Manual HR and payroll work became one approved path from attendance to payslip, checked before rollout against representative scenarios, HR's manual calculations, edge cases, and client acceptance.</dd></div>
+          </dl>
+          <p class="terms">Key ideas: <span>Philippine Payroll Rules, Payroll Input, Payroll Validation</span></p>
+          <a class="more" href="#">Read the full case study</a>
+        </article>
+
+        <article class="rc" data-for="customers at checkout" data-records="checkout · webhook · signature · one charge" aria-labelledby="r2">
+          <svg class="rc-mini" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+          <p class="rc-kind"><span aria-hidden="true">II</span>Integration case study</p>
+          <h3 id="r2">Payment Provider Module</h3>
+          <p class="rc-for">for customers at checkout, who should only ever be charged once</p>
+          <p class="rc-problem">The client's required regional payment provider had no Odoo integration, for either e-commerce or e-learning checkout.</p>
+          <dl class="rc-dl">
+            <div><dt>What I built</dt><dd>A complete Odoo extension modeled on the native provider modules, including checkout behavior and transaction-state mapping.</dd></div>
+            <div><dt>How it fits</dt><dd>A verified webhook matches the provider's reference to an Odoo transaction before applying an idempotent update.</dd></div>
+            <div class="hold"><dt>The line it holds</dt><dd>No payment outcome is accepted until the signature checks out. A webhook that arrives twice can't fulfill an order twice.</dd></div>
+            <div class="result"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>What changed</dt><dd>Customers pay with the required provider directly in Odoo e-commerce and e-learning checkout, with authenticated, duplicate-safe transaction updates.</dd></div>
+          </dl>
+          <p class="terms">Key ideas: <span>Verified Payment Webhook, Idempotent Payment Update, Payment Outcome</span></p>
+          <a class="more" href="#">Read the full case study</a>
+        </article>
+
+        <article class="rc" data-for="employees asking questions" data-records="question · access rules · records · answer" aria-labelledby="r3">
+          <svg class="rc-mini" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+          <p class="rc-kind"><span aria-hidden="true">III</span>AI research and development</p>
+          <h3 id="r3">Access-Scoped Retrieval</h3>
+          <p class="rc-for">for employees asking questions, who should only see what they're allowed to</p>
+          <p class="note">An internal prototype. It proved the idea works. It was never a production deployment.</p>
+          <p class="rc-problem">Could a chatbot answer from real Odoo business records without crossing anyone's access boundaries? The company wanted to find out.</p>
+          <dl class="rc-dl">
+            <div><dt>What I built</dt><dd>A working internal prototype covering retrieval, conversational flows, privacy boundaries, external AI integration, and failure handling.</dd></div>
+            <div><dt>How it fits</dt><dd>A RAG pipeline uses OpenAI embedding vectors to find relevant records, then grounds the answer in them.</dd></div>
+            <div class="hold"><dt>The line it holds</dt><dd>Odoo access rules apply before retrieval. If no authorized record supports an answer, it says so and points to HR instead of guessing.</dd></div>
+            <div class="result"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>What changed</dt><dd>The prototype completed every agreed end-to-end chatbot scenario: an R&amp;D success, not a client launch.</dd></div>
+          </dl>
+          <p class="terms">Key ideas: <span>Odoo-Grounded Answer, Access-Scoped Retrieval, Ungrounded Fallback</span></p>
+          <a class="more" href="#">Read the full case study</a>
+        </article>
+
+        <article class="rc" data-for="the water district's staff" data-records="punch · import · correction · one record" aria-labelledby="r4">
+          <svg class="rc-mini" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+          <p class="rc-kind"><span aria-hidden="true">IV</span>Public sector case study</p>
+          <h3 id="r4">Government Water District HRIS</h3>
+          <p class="rc-for">for the staff whose leave, overtime, and pass slips all hang on one punch</p>
+          <p class="rc-problem">A government water district couldn't fully trust its device punches, and its reports, overtime, leave, and pass slips all depended on them.</p>
+          <dl class="rc-dl">
+            <div><dt>What I built</dt><dd>The attendance engine, overtime requests, Biometric Import, Personnel Action Form, and Leave Monetization, plus extensions to My Dashboard and recruitment. The largest contributor on a five-person team, over roughly three months.</dd></div>
+            <div><dt>How it fits</dt><dd>One evaluation path resolves each attendance day into a single Authoritative Punch Record, fed by Biometric Import, including overnight shifts.</dd></div>
+            <div class="hold"><dt>The line it holds</dt><dd>Corrections need approval and evidence. Voiding one restores the previous values, and a correction never recalculates overtime on its own.</dd></div>
+            <div class="result"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>What changed</dt><dd>Auditable attendance, overtime derived from validated punches, and self-service Personnel Action Form and Leave Monetization requests with approval routing.</dd></div>
+          </dl>
+          <p class="terms">Key ideas: <span>Authoritative Punch Record, Attendance Correction, Biometric Import, Unified ISO Workflow</span></p>
+          <a class="more" href="#">Read the full case study</a>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<svg class="staff-rule" viewBox="0 0 1200 44" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M0 10 H560 M0 16 H560 M0 22 H560 M0 28 H560 M0 34 H560 M640 10 H1200 M640 16 H1200 M640 22 H1200 M640 28 H1200 M640 34 H1200 M600 38 C 580 26, 576 12, 590 10 C 597 9, 600 15, 600 18 C 600 15, 603 9, 610 10 C 624 12, 620 26, 600 38 Z M560 22 C 570 22, 576 18, 584 14 M640 22 C 630 22, 624 18, 616 14"/></svg>
+
+<section id="after" aria-labelledby="after-title">
+  <div class="wrap">
+    <div class="sec-head rise">
+      <h2 id="after-title">After hours.</h2>
+      <p>What I build when nobody's asked me to. One is still taking shape. The other is the desktop I'm typing this on.</p>
+    </div>
+    <div class="after">
+      <article class="piece rise" aria-labelledby="p1">
+        <p class="status"><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>In development, private repository</p>
+        <h3 id="p1">Lingkod HR</h3>
+        <p>An HR information system for Philippine government agencies, focused on position management, personnel records, and recruitment.</p>
+        <ul class="stack" aria-label="Tech stack"><li>Next.js</li><li>React</li><li>NestJS</li><li>PostgreSQL</li><li>Prisma</li><li>Docker</li></ul>
+      </article>
+      <article class="piece rise" aria-labelledby="p2">
+        <p class="status"><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>Actively maintained fork</p>
+        <h3 id="p2">dots-hyprland</h3>
+        <p>The Hyprland desktop I work in every day. I forked it because I loved how it looked, then kept going where it didn't fit how I work.</p>
+        <div class="split">
+          <div><h4>From upstream</h4><p>The visual design. It's the reason I forked it, and it isn't mine.</p></div>
+          <div><h4>Mine</h4><p>Workspace and wallpaper state, launcher speed and correctness, and reliability across processes.</p></div>
+        </div>
+        <p class="credit">Upstream contribution: my per-workspace wallpaper feature was reworked and merged into <code>ml4w-lightcrimson-dotfiles</code>, crediting <code>@systemeror12</code> as its original author.</p>
+        <a class="more" href="#">Read about the fork</a>
+      </article>
+    </div>
+    <div class="tools rise">
+      <div><h3>Tools I use</h3><p class="lab">Not my projects. Just always open.</p></div>
+      <div class="tool"><h4>Odysseus</h4><p>A self-hosted AI workspace for exploring ideas close to my local environment.</p><a href="https://github.com/pewdiepie-archdaemon/odysseus" rel="noreferrer">Odysseus on GitHub</a></div>
+      <div class="tool"><h4>T3 Code</h4><p>A coding-agent workspace that keeps implementation and review next to the code.</p><a href="https://github.com/pingdotgg/t3code" rel="noreferrer">T3 Code on GitHub</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="method" aria-labelledby="method-title">
+  <div class="wrap">
+    <div class="sec-head rise">
+      <h2 id="method-title">How I start on a system I've never seen.</h2>
+      <p>Four notes, always in this order: find out what has to stay true when data crosses from one team, company, or system to the next.</p>
+    </div>
+    <ol class="phrase rise">
+      <li><span class="n">one</span><h3>Trace the operation</h3><p>Start with the people, records, approvals, and outcomes the system has to support.</p></li>
+      <li><span class="n">two</span><h3>Define the boundaries</h3><p>Make permissions, company rules, external ownership, and confidentiality explicit.</p></li>
+      <li><span class="n">three</span><h3>Design the failure path</h3><p>Treat retries, invalid state, missing context, and what the customer sees as real behavior.</p></li>
+      <li><span class="n">four</span><h3>Validate the result</h3><p>Check the finished flow against representative scenarios and what the operation expects.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <h2 id="contact-title" class="rise">If people depend on what you're building, I'd like to help.</h2>
+    <p class="rise">I'm looking for platform engineering roles in the Philippines, where integration judgment and getting the details right matter.</p>
+    <a class="mail rise" href="mailto:mendozajeromevrixen@gmail.com">mendozajeromevrixen@gmail.com</a>
+    <div class="links rise">
+      <a class="btn btn-line" href="https://github.com/systemeror12" rel="noreferrer">GitHub</a>
+      <a class="btn btn-line" href="https://www.linkedin.com/in/jerome-vrixen-mendoza-59b927293/" rel="noreferrer">LinkedIn</a>
+      <a class="btn btn-line" href="/jerome-mendoza-resume.pdf" download>Resume (PDF)</a>
+    </div>
+    <footer class="foot"><span>Jerome Mendoza</span><span>Made at 25:00, Manila</span></footer>
+  </div>
+</section>
+</main>
+
+<script>
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+const mk = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const manila = new Intl.DateTimeFormat('en-GB', {timeZone:'Asia/Manila', hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'});
+const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x => [x.type, +x.value || x.value]));
+
+/* Manila clock in 30-hour notation: 1 a.m. reads 25:00 */
+(() => {
+  const el = document.querySelector('#clock b'), box = document.getElementById('clock');
+  const plain = new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Manila', hour:'numeric', minute:'2-digit'});
+  const tick = () => {
+    const p = nowParts(); let h = +p.hour; if (h < 5) h += 24;
+    el.textContent = `${String(h).padStart(2,'0')}:${String(p.minute).padStart(2,'0')}`;
+    box.setAttribute('aria-label', `It's ${plain.format(new Date())} in Manila`);
+  };
+  tick(); setInterval(tick, 15000);
+})();
+
+/* The hero: a twenty-five hour dial, staves of records drifting to one warm point */
+(() => {
+  const svg = document.getElementById('scene'), hero = svg.parentElement, label = document.getElementById('heartLabel');
+  const words = ['biometric punch','overtime request','approved leave','payment webhook','access rule','salary step','pass slip'];
+  let W, H, heart, threads = [], glow, core, ring, hands = {}, t0 = performance.now(), pulse = 0, placed = [], R, C;
+
+  function dial(){
+    const mobile = W < 760;
+    R = mobile ? Math.min(W*0.36, 150) : Math.min(300, H*0.36, W*0.22);
+    C = {x: heart.x, y: heart.y};
+    const g = mk('g', {transform: `translate(${C.x} ${C.y})`}, svg);
+    const r1 = R*0.79, r2 = R*0.95, step = 2*Math.PI/25, up = -Math.PI/2;
+    const P = (r, a) => [r*Math.cos(a), r*Math.sin(a)];
+    const tones = ['#2b2436','#3a2d4d','#4a3a63','#33293f'];
+    for (let k = 0; k < 25; k++){
+      const a0 = (k - .5)*step + up, a1 = (k + .5)*step + up;
+      const [x0,y0] = P(r1,a0), [x1,y1] = P(r2,a0), [x2,y2] = P(r2,a1), [x3,y3] = P(r1,a1);
+      mk('path', {d: `M${x0},${y0} L${x1},${y1} A${r2},${r2} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x0},${y0} Z`,
+        fill: tones[k % 4], opacity: .78, stroke: '#9b8794', 'stroke-width': .8, class: k % 3 ? '' : 'glass', style: `animation-delay:${-k*.6}s`}, g);
+      // a facet line through each pane, like leaded glass
+      const am = a0 + (a1 - a0)*(.3 + (k*37 % 40)/100);
+      const [fx0,fy0] = P(r1, am), [fx1,fy1] = P(r2, a0 + (a1-a0)*.7);
+      mk('path', {d: `M${fx0},${fy0} L${fx1},${fy1}`, stroke: '#9b8794', 'stroke-width': .5, opacity: .6}, g);
+      // diamond marker on the outer ring
+      const [dx,dy] = P(R*1.0, a0);
+      mk('path', {d: 'M0 -5 L3 0 L0 5 L-3 0 Z', transform: `translate(${dx} ${dy}) rotate(${a0*180/Math.PI})`, fill: '#9b8794'}, g);
+      // hour numerals, with 25 at the point closest to the page
+      const hour = (k === 0) ? 25 : k;
+      const [tx,ty] = P(R*.87, k*step + up);
+      mk('text', {x: tx, y: ty, 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': 'Shippori Mincho, serif',
+        'font-size': (R*(hour === 25 ? .05 : .034)).toFixed(1), fill: hour === 25 ? '#f0b4dc' : '#cfc8de', opacity: hour === 25 ? 1 : .7}, g).textContent = hour;
+    }
+    [R*1.0, R*1.03, r1, R*.7].forEach((r, i) => mk('circle', {r, fill: 'none', stroke: '#9b8794', 'stroke-width': i === 3 ? .6 : 1, opacity: i === 3 ? .5 : .8}, g));
+    for (let k = 0; k < 125; k++){ const a = k*2*Math.PI/125, [x0,y0] = P(R*.7, a), [x1,y1] = P(R*(k % 5 ? .725 : .745), a); mk('path', {d: `M${x0},${y0} L${x1},${y1}`, stroke: '#9b8794', 'stroke-width': .7, opacity: .7}, g); }
+    // wrought-iron hands with heart curls; the hour hand always rests on 25
+    const hand = (len, w, heartAt, s) => {
+      const hg = mk('g', {}, g);
+      mk('path', {d: `M${-len*.12},${-w} L${len*.92},${-w*.6} L${len},0 L${len*.92},${w*.6} L${-len*.12},${w} Z`, fill: '#9b8794'}, hg);
+      mk('path', {d: 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z', transform: `translate(${len*heartAt} 0) rotate(-90) scale(${s})`, fill: '#06060b', stroke: '#b8a3ae', 'stroke-width': 1.6, 'vector-effect': 'non-scaling-stroke'}, hg);
+      mk('path', {d: `M${len*.92},0 l-${len*.06},-${w*3} m${len*.06},${w*3} l-${len*.06},${w*3}`, stroke: '#b8a3ae', 'stroke-width': 1, fill: 'none'}, hg);
+      return hg;
+    };
+    hands.h = hand(R*.52, 2.6, .66, R*.0058);
+    hands.m = hand(R*.68, 1.8, .74, R*.0046);
+    hands.s = mk('g', {}, g); mk('path', {d: `M${-R*.1},0 L${R*.76},0`, stroke: '#f0b4dc', 'stroke-width': .9, opacity: .8}, hands.s);
+    mk('circle', {r: 7, fill: '#9b8794'}, g); mk('circle', {r: 2.5, fill: '#06060b'}, g);
+    // lilac fragments falling off the dial's rim
+    const jig = [0, 3.5, -2, 4, 1, -3, 2.5, -1], out = [.02, .16, .06, .22, .1, .3, .14, .38];
+    for (let k = 0; k < (mobile ? 4 : 8); k++){
+      const a = ((mobile ? 150 : 96) + k*(mobile ? 13 : 8.5) + jig[k]*2)*Math.PI/180, [x,y] = P(R*(1.12 + out[k]), a);
+      const fg = mk('g', {transform: `translate(${x} ${y}) rotate(${-20 + k*37 % 70}) scale(${.7 + (k*7 % 5)/10})`}, g);
+      const inner = mk('g', {class: 'frag', style: `animation-delay:${-k*1.3}s`}, fg);
+      mk('rect', {x: -9, y: -9, width: 18, height: 18, fill: '#c9b2dc', opacity: .75}, inner);
+      mk('path', {d: 'M-3 4 a2.6 2 0 1 0 0.01 0 M-0.4 4 V-5 L4 -6', stroke: '#2b2436', 'stroke-width': 1.3, fill: 'none'}, inner);
+    }
+  }
+  // piano keys along a curve: white band, a hairline between keys, black keys in twos and threes
+  function keys(d, w){
+    const ref = mk('path', {d}, svg), L = ref.getTotalLength(), pts = [];
+    for (let i = 0; i <= 80; i++){ const a = ref.getPointAtLength(L*i/80), b = ref.getPointAtLength(Math.min(L, L*i/80 + 1)), c = ref.getPointAtLength(Math.max(0, L*i/80 - 1)), l = Math.hypot(b.x - c.x, b.y - c.y) || 1; pts.push([a.x, a.y, -(b.y - c.y)/l, (b.x - c.x)/l]); }
+    ref.remove();
+    const off = o => 'M' + pts.map(([x,y,nx,ny]) => `${(x + nx*o).toFixed(1)},${(y + ny*o).toFixed(1)}`).join(' L');
+    mk('path', {d: off(0), fill: 'none', stroke: '#d8d0e4', 'stroke-width': w, opacity: .42}, svg);
+    mk('path', {d: off(0), fill: 'none', stroke: '#06060b', 'stroke-width': w, 'stroke-dasharray': '1.2 8.8', opacity: .55}, svg);
+    mk('path', {d: off(-w*.2), fill: 'none', stroke: '#06060b', 'stroke-width': w*.6, 'stroke-dasharray': '6 4 6 14 6 4 6 4 6 14', 'stroke-dashoffset': 3, opacity: .9}, svg);
+    [-w/2, w/2].forEach(o => mk('path', {d: off(o), fill: 'none', stroke: '#9b8794', 'stroke-width': .8, opacity: .6}, svg));
+  }
+  function lily(x, y, s, rot){
+    const g = mk('g', {transform: `translate(${x} ${y}) rotate(${rot}) scale(${s})`, opacity: .85}, svg);
+    for (let i = 0; i < 6; i++) mk('path', {d: 'M0 0 C 14 -24, 14 -56, 0 -88 C -14 -56, -14 -24, 0 0 Z', transform: `rotate(${i*60 + (i % 2)*8})`, fill: '#25243a', stroke: '#6a6e88', 'stroke-width': .8}, g);
+    for (let i = 0; i < 40; i++){ const a = Math.random()*Math.PI*2, r = 10 + Math.random()*70; mk('circle', {cx: Math.cos(a)*r, cy: Math.sin(a)*r, r: Math.random()*1.1 + .3, fill: '#dfe0ff', opacity: Math.random()*.6 + .2}, g); }
+  }
+  function build(){
+    W = hero.clientWidth; H = hero.clientHeight; placed = [];
+    const mobile = W < 760;
+    heart = mobile ? {x: W*0.7, y: 196} : {x: W*0.79, y: H*0.52};
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML = `<defs>
+      <radialGradient id="g"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".25" stop-color="#bb6688" stop-opacity=".42"/><stop offset=".55" stop-color="#4a3a63" stop-opacity=".2"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
+      <linearGradient id="fade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${heart.x}" y2="0"><stop offset="0" stop-color="#cfc8de" stop-opacity=".06"/><stop offset=".6" stop-color="#cfc8de" stop-opacity=".34"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".7"/></linearGradient>
+    </defs>`;
+    for (let i = 0; i < Math.round(W*H/12000); i++) mk('circle', {cx: Math.random()*W, cy: Math.random()*H, r: Math.random()*.9 + .2, fill: '#e8e4ff', opacity: (Math.random()*.4 + .05).toFixed(2)}, svg);
+    lily(W*0.97, H*0.9, mobile ? .7 : 1.25, 12);
+    if (!mobile) lily(W*0.42, H*1.04, .9, -20);
+    dial();
+    // a ribbon of piano keys curling in from the top
+    const kp = mobile ? `M${W*0.5},-20 C ${W*0.62},${H*0.08} ${W*0.95},${H*0.02} ${W+20},${H*0.12}` : `M${W*0.62},-30 C ${W*0.7},${H*0.16} ${W*0.9},${H*0.06} ${W+30},${H*0.24}`;
+    keys(kp, mobile ? 12 : 16);
+    for (let i = 0; i < 16; i++){
+      const u = mk('use', {href: '#spark', x: -6, y: -6, width: 12, height: 12, class: 'sparkle', style: `animation-delay:${(-Math.random()*4).toFixed(2)}s`}, svg);
+      u.setAttribute('transform', `translate(${(Math.random()*W).toFixed(0)} ${(Math.random()*H).toFixed(0)}) scale(${(Math.random()*.8 + .5).toFixed(2)})`);
+    }
+    const starts = mobile
+      ? [[-20,H*0.05],[-20,H*0.32],[W*0.25,-20],[-20,H*0.55],[W*0.55,-20],[W+20,H*0.42],[W+20,H*0.02]]
+      : [[-20,H*0.14],[-20,H*0.8],[W*0.3,-20],[-20,H*0.42],[W*0.55,H+20],[W*0.95,-20],[W+20,H*0.85]];
+    threads = starts.map(([x,y], i) => {
+      const staff = i < 3;
+      const th = {x, y, staff, seed: i*1.7, speed: 9000 + (i*1931 % 5000), offset: (i*.37) % 1, labelAt: null};
+      if (staff){
+        th.lines = [0,1,2,3,4].map(() => mk('path', {fill: 'none', stroke: 'url(#fade)', 'stroke-width': .8}, svg));
+        th.notes = [0,1].map(() => { const ng = mk('g', {}, svg); mk('ellipse', {rx: 4.6, ry: 3.2, transform: 'rotate(-22)', fill: '#ece8f4'}, ng); mk('path', {d: 'M4 -1 V-17', stroke: '#ece8f4', 'stroke-width': 1.2}, ng); return ng; });
+      } else {
+        th.path = mk('path', {fill: 'none', stroke: x > heart.x ? 'rgba(207,200,222,.26)' : 'url(#fade)', 'stroke-width': .8}, svg);
+        th.dot = mk('circle', {r: 2.2, fill: '#ece8f4'}, svg);
+      }
+      th.txt = mk('text', {fill: '#9a8fab', 'font-size': mobile ? 11 : 13, 'font-family': 'Zen Kaku Gothic New, sans-serif', opacity: mobile ? .6 : .85}, svg);
+      th.txt.textContent = words[i % words.length];
+      return th;
+    });
+    glow = mk('circle', {fill: 'url(#g)', cx: heart.x, cy: heart.y}, svg);
+    ring = mk('circle', {fill: 'none', stroke: '#f0b4dc', cx: heart.x, cy: heart.y}, svg);
+    core = mk('circle', {fill: '#fff4fb', cx: heart.x, cy: heart.y}, svg);
+    label.style.left = (heart.x + (mobile ? -150 : 22)) + 'px';
+    label.style.top = (heart.y + (mobile ? 18 : 14)) + 'px';
+    setTimeout(() => label.classList.add('on'), reduce ? 0 : 900);
+    frame(performance.now(), true);
+  }
+  const bez = (p0, p1, p2, p3, t) => { const u = 1 - t; return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3; };
+  const dbez = (p0, p1, p2, p3, t) => { const u = 1 - t; return 3*u*u*(p1 - p0) + 6*u*t*(p2 - p1) + 3*t*t*(p3 - p2); };
+  function placeLabel(th, at){
+    if (W < 760 && th.seed % 3.4 > 1.6){ th.txt.style.display = 'none'; return null; }
+    const hr = hero.getBoundingClientRect();
+    const blocks = [...hero.querySelectorAll('.who, h1, .lede, .actions, .heart-label')].map(el => { const r = el.getBoundingClientRect(); return {l: r.left - hr.left - 12, t: r.top - hr.top - 10, r: r.right - hr.left + 12, b: r.bottom - hr.top + 10}; });
+    blocks.push({l: 0, t: 0, r: W, b: 76}, {l: heart.x - 70, t: heart.y - 50, r: heart.x + 70, b: heart.y + 50}, ...placed);
+    const w = th.txt.getComputedTextLength() + 8;
+    for (const a of [0.2, 0.28, 0.36, 0.44, 0.52, 0.6, 0.68, 0.76]){
+      const pt = at(a), box = {l: pt.x + 8, t: pt.y - 26, r: pt.x + 8 + w, b: pt.y - 6};
+      if (box.l < 8 || box.r > W - 8 || box.t < 0 || box.b > H) continue;
+      if (blocks.some(k => box.l < k.r && box.r > k.l && box.t < k.b && box.b > k.t)) continue;
+      const near = Math.hypot(Math.max(box.l - C.x, 0, C.x - box.r), Math.max(box.t - C.y, 0, C.y - box.b));
+      const far = Math.max(...[[box.l,box.t],[box.r,box.t],[box.l,box.b],[box.r,box.b]].map(([x,y]) => Math.hypot(x - C.x, y - C.y)));
+      if (near < R*1.08 && (W < 760 || far > R*.64)) continue;
+      placed.push({l: box.l - 6, t: box.t - 6, r: box.r + 6, b: box.b + 6}); th.txt.style.display = ''; return a;
+    }
+    th.txt.style.display = 'none'; return null;
+  }
+  function frame(now, once){
+    const t = (now - t0)/1000, sway = reduce ? 0 : 1, sp = W < 760 ? 3.6 : 4.6;
+    threads.forEach(th => {
+      const dx = heart.x - th.x, dy = heart.y - th.y;
+      const cx = [th.x, th.x + dx*.35 + Math.sin(t*.35 + th.seed)*22*sway, th.x + dx*.72 + Math.cos(t*.25 + th.seed)*18*sway, heart.x];
+      const cy = [th.y, th.y + dy*.1 + Math.cos(t*.3 + th.seed)*26*sway - 40, heart.y - dy*.08 + Math.sin(t*.4 + th.seed)*16*sway, heart.y];
+      const at = a => ({x: bez(...cx, a), y: bez(...cy, a)});
+      if (th.staff){
+        const N = 40, pts = [];
+        for (let i = 0; i <= N; i++){ const a = i/N, tx = dbez(...cx, a), ty = dbez(...cy, a), l = Math.hypot(tx, ty) || 1; pts.push([bez(...cx, a), bez(...cy, a), -ty/l, tx/l, Math.pow(1 - a, .8)]); }
+        th.lines.forEach((ln, j) => { const o = (j - 2)*sp; ln.setAttribute('d', 'M' + pts.map(([x,y,nx,ny,f]) => `${(x + nx*o*f).toFixed(1)},${(y + ny*o*f).toFixed(1)}`).join(' L')); });
+        th.notes.forEach((ng, k) => {
+          if (reduce){ ng.setAttribute('opacity', 0); return; }
+          const prev = ng._p ?? 0, p = ((now/th.speed) + th.offset + k*.5) % 1;
+          if (p < prev) pulse = 1; ng._p = p;
+          const e = p*p*(3 - 2*p), x = bez(...cx, e), y = bez(...cy, e), tx = dbez(...cx, e), ty = dbez(...cy, e), l = Math.hypot(tx, ty) || 1;
+          const o = ((k ? 1 : -1) * (k + 1) * .5)*sp*Math.pow(1 - e, .8);
+          ng.setAttribute('transform', `translate(${(x - ty/l*o).toFixed(1)} ${(y + tx/l*o).toFixed(1)}) scale(${(.6 + .4*(1 - e)).toFixed(2)})`);
+          ng.setAttribute('opacity', Math.min(1, p*6, (1 - p)*8).toFixed(2));
+        });
+      } else {
+        th.path.setAttribute('d', `M${cx[0]},${cy[0]} C${cx[1]},${cy[1]} ${cx[2]},${cy[2]} ${cx[3]},${cy[3]}`);
+        if (reduce) th.dot.setAttribute('opacity', 0);
+        else {
+          const prev = th.p ?? 0, p = ((now/th.speed) + th.offset) % 1;
+          if (p < prev) pulse = 1; th.p = p;
+          const e = p*p*(3 - 2*p);
+          th.dot.setAttribute('cx', bez(...cx, e)); th.dot.setAttribute('cy', bez(...cy, e));
+          th.dot.setAttribute('opacity', Math.min(1, p*6, (1 - p)*8).toFixed(2));
+        }
+      }
+      if (once) th.labelAt = placeLabel(th, at);
+      if (th.labelAt != null){ const lp = at(th.labelAt); th.txt.setAttribute('x', lp.x + 8); th.txt.setAttribute('y', lp.y - 12); }
+    });
+    // the dial keeps Manila minutes and seconds; the hour stays on 25
+    const p = nowParts(), ms = reduce ? 0 : (Date.now() % 1000)/1000;
+    const step = 360/25;
+    hands.h.setAttribute('transform', `rotate(${(-90 + p.minute/60*step).toFixed(2)})`);
+    hands.m.setAttribute('transform', `rotate(${(-90 + (p.minute + p.second/60)/60*360).toFixed(2)})`);
+    hands.s.setAttribute('transform', `rotate(${(-90 + (p.second + ms)/60*360).toFixed(2)})`);
+    const breathe = reduce ? 0 : (Math.sin(t*1.4) + 1)/2;
+    pulse *= .96;
+    glow.setAttribute('r', 130 + breathe*18 + pulse*30);
+    ring.setAttribute('r', 10 + (1 - pulse)*30);
+    ring.setAttribute('opacity', (pulse*.6).toFixed(2));
+    core.setAttribute('r', 3.2 + pulse*1.4);
+    if (!once && !reduce) requestAnimationFrame(frame);
+  }
+  build();
+  document.fonts.ready.then(build);
+  if (!reduce) requestAnimationFrame(frame); else setInterval(() => frame(performance.now(), false), 1000);
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 150); });
+})();
+
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('in'); if (e.target.classList.contains('case')) e.target.classList.add('lit'); io.unobserve(e.target); }
+  }), {threshold: .12});
+  document.querySelectorAll('.rise').forEach(el => io.observe(el));
+})();
+/* work: the rose window. Four panes, one per case; the hand and the light follow your reading */
+(() => {
+  const svg = document.getElementById('roseDial'); if (!svg) return;
+  const cases = [...document.querySelectorAll('.rc')], forEl = document.getElementById('rwFor');
+  const P = (r, a) => [r*Math.cos(a), r*Math.sin(a)];
+  const rad = d => d*Math.PI/180;
+  const sector = (r1, r2, a0, a1) => { const [x0,y0] = P(r1,a0), [x1,y1] = P(r2,a0), [x2,y2] = P(r2,a1), [x3,y3] = P(r1,a1), lg = a1 - a0 > Math.PI ? 1 : 0; return `M${x0},${y0} L${x1},${y1} A${r2},${r2} 0 ${lg} 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 ${lg} 0 ${x0},${y0} Z`; };
+  const T = ['#2b2436','#3a2d4d','#4a3a63','#33293f'];
+  mk('svg', {width: 0, height: 0, style: 'position:absolute', 'aria-hidden': 'true'}, document.body).innerHTML = `<defs>
+    <radialGradient id="rwGlow"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".28" stop-color="#bb6688" stop-opacity=".4"/><stop offset=".6" stop-color="#4a3a63" stop-opacity=".18"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rwPane" cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#f0b4dc" stop-opacity=".04"/><stop offset=".75" stop-color="#d98fbf" stop-opacity=".3"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".55"/></radialGradient>
+  </defs>`;
+  // the 25-hour ring, as in the hero
+  const ring = mk('g', {}, svg), step = 2*Math.PI/25;
+  for (let k = 0; k < 25; k++){
+    const a0 = (k - .5)*step - Math.PI/2, a1 = (k + .5)*step - Math.PI/2;
+    mk('path', {d: sector(222, 244, a0, a1), fill: T[k % 4], opacity: .8, stroke: '#9b8794', 'stroke-width': .7}, ring);
+    const [dx,dy] = P(250, a0); mk('path', {d: 'M0 -4 L2.4 0 L0 4 L-2.4 0 Z', transform: `translate(${dx} ${dy}) rotate(${a0*180/Math.PI})`, fill: '#9b8794'}, ring);
+  }
+  const [tx,ty] = P(233, -Math.PI/2);
+  mk('text', {x: tx, y: ty, 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': 'Shippori Mincho, serif', 'font-size': 14, fill: '#f0b4dc'}, ring).textContent = '25';
+  [200, 218, 248, 254].forEach(r => mk('circle', {r, fill: 'none', stroke: '#9b8794', 'stroke-width': .9, opacity: .8}, ring));
+  for (let k = 0; k < 100; k++){ const a = k*Math.PI/50, [x0,y0] = P(52, a), [x1,y1] = P(k % 5 ? 56 : 59, a); mk('path', {d: `M${x0},${y0} L${x1},${y1}`, stroke: '#9b8794', 'stroke-width': .7, opacity: .7}, ring); }
+  // four petals of leaded glass, one per case
+  const petals = cases.map((c, q) => {
+    const g = mk('g', {class: 'petal'}, svg);
+    const A0 = rad(q*90 - 90 + 2.5), A1 = rad((q + 1)*90 - 90 - 2.5), bands = [66, 108, 150, 192];
+    for (let b = 0; b < 3; b++) for (let s = 0; s < 3; s++){
+      const a0 = A0 + (A1 - A0)*s/3, a1 = A0 + (A1 - A0)*(s + 1)/3;
+      mk('path', {d: sector(bands[b], bands[b + 1], a0, a1), fill: T[(b + s + q) % 4], stroke: '#9b8794', 'stroke-width': 1}, g);
+      const [f0x,f0y] = P(bands[b], a0 + (a1 - a0)*.35), [f1x,f1y] = P(bands[b + 1], a0 + (a1 - a0)*.7);
+      mk('path', {d: `M${f0x},${f0y} L${f1x},${f1y}`, stroke: '#9b8794', 'stroke-width': .6, opacity: .7}, g);
+    }
+    mk('path', {d: sector(66, 192, A0, A1), fill: 'url(#rwPane)', class: 'lit'}, g);
+    const mid = (A0 + A1)/2, [nx,ny] = P(171, mid);
+    mk('text', {x: nx, y: ny, class: 'rn', 'text-anchor': 'middle', 'dominant-baseline': 'central'}, g).textContent = ['I','II','III','IV'][q];
+    // the records this case carries, written around the rim of its pane
+    const arc = mk('path', {id: `rwArc${q}`, d: (() => { const a0 = A0 + rad(4), a1 = A1 - rad(4), [x0,y0] = P(207, a0), [x1,y1] = P(207, a1); return `M${x0},${y0} A207,207 0 0 1 ${x1},${y1}`; })(), fill: 'none'}, g);
+    const t = mk('text', {class: 'rec', dy: 4}, g), tp = mk('textPath', {href: `#rwArc${q}`, startOffset: '50%', 'text-anchor': 'middle'}, t);
+    tp.textContent = c.dataset.records;
+    // threads from the rim into the centre
+    const threads = [0,1,2,3].map(i => {
+      const a = A0 + (A1 - A0)*(.14 + i*.24), [sx,sy] = P(192, a), bend = (i - 1.5)*.14, [cx,cy] = P(110, a + bend);
+      const path = mk('path', {d: `M${sx},${sy} Q${cx},${cy} 0,0`, fill: 'none', stroke: '#f0b4dc', 'stroke-width': .8, class: 'lit', opacity: .5}, g);
+      const dot = mk('circle', {r: 2.4, fill: '#ece8f4', class: 'lit'}, g);
+      return {path, dot, len: 0, off: i*.27};
+    });
+    return {g, threads};
+  });
+  // the hand, in wrought iron, with a heart
+  const hand = mk('g', {class: 'rw-hand'}, svg);
+  mk('path', {d: 'M-2.4 20 L-1.4 -112 L0 -124 L1.4 -112 L2.4 20 Z', fill: '#9b8794'}, hand);
+  mk('path', {d: 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z', transform: 'translate(0 -84) scale(1.25)', fill: '#2b2436', stroke: '#d4c2cc', 'stroke-width': 1.1}, hand);
+  mk('path', {d: 'M0 -112 l-6 9 M0 -112 l6 9', stroke: '#d4c2cc', 'stroke-width': 1.2, fill: 'none'}, hand);
+  const glow = mk('circle', {r: 60, fill: 'url(#rwGlow)'}, svg);
+  mk('circle', {r: 7, fill: '#9b8794'}, svg);
+  const core = mk('circle', {r: 3.4, fill: '#fff4fb'}, svg);
+  let active = -1, pulse = 0;
+  const set = i => {
+    if (i === active) return;
+    active = i;
+    petals.forEach((p, k) => p.g.classList.toggle('on', k === i));
+    cases.forEach((c, k) => c.classList.toggle('on', k === i));
+    hand.style.transform = `rotate(${i*90 + 45}deg)`;
+    forEl.classList.add('out');
+    setTimeout(() => { forEl.textContent = cases[i].dataset.for; forEl.classList.remove('out'); }, reduce ? 0 : 350);
+  };
+  set(0);
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) set(cases.indexOf(e.target)); }), {rootMargin: '-45% 0px -45% 0px'});
+  cases.forEach(c => io.observe(c));
+  // small static windows for narrow screens, one per case
+  cases.forEach((c, q) => {
+    const m = c.querySelector('.rc-mini');
+    for (let k = 0; k < 4; k++){
+      const a0 = rad(k*90 - 90 + 4), a1 = rad((k + 1)*90 - 90 - 4);
+      mk('path', {d: sector(30, 92, a0, a1), fill: k === q ? '#8a5f95' : T[k % 4], stroke: k === q ? '#f0b4dc' : '#9b8794', 'stroke-width': 1.4, opacity: k === q ? 1 : .55}, m);
+    }
+    [100, 26].forEach(r => mk('circle', {r, fill: 'none', stroke: '#9b8794', 'stroke-width': 1.4}, m));
+    mk('circle', {r: 26, fill: 'url(#rwGlow)'}, m);
+    mk('circle', {r: 4, fill: '#fff4fb'}, m);
+  });
+  if (reduce){ petals.forEach(p => p.threads.forEach(t => t.dot.setAttribute('opacity', 0))); return; }
+  let visible = false;
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(svg);
+  const tick = now => {
+    if (visible && active >= 0){
+      petals[active].threads.forEach(t => {
+        if (!t.len) t.len = t.path.getTotalLength();
+        const prev = t.p ?? 0, p = ((now/3200) + t.off) % 1; t.p = p;
+        if (p < prev) pulse = 1;
+        const e = p*p, pt = t.path.getPointAtLength(t.len*e);
+        t.dot.setAttribute('cx', pt.x); t.dot.setAttribute('cy', pt.y);
+        t.dot.setAttribute('opacity', Math.min(1, p*6, (1 - p)*10).toFixed(2));
+      });
+      pulse *= .95;
+      glow.setAttribute('r', 58 + pulse*18 + Math.sin(now/700)*4);
+      core.setAttribute('r', 3.4 + pulse*1.6);
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
