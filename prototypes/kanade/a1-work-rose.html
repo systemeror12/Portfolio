@@ -53,6 +53,7 @@ a{color:inherit}
 @keyframes float{to{transform:translate(4px,-8px) rotate(8deg)}}
 .glass{animation:shimmer 7s ease-in-out infinite}
 @keyframes shimmer{50%{opacity:.55}}
+.hero.paused .sparkle,.hero.paused .frag,.hero.paused .glass{animation-play-state:paused}
 .hero-copy{position:relative;width:var(--wrap);margin:0 auto;padding:120px 0 80px}
 .hero-copy::before{content:"";position:absolute;inset:40px -60px 0 -120px;z-index:-1;background:radial-gradient(60% 60% at 32% 50%, rgba(6,6,11,.88), transparent 75%)}
 .who{margin:0 0 28px;color:var(--mist);font-size:16px}
@@ -66,7 +67,7 @@ h1 em{font-style:normal;color:var(--glow)}
 .btn-solid:hover{background:#fff;box-shadow:0 0 30px rgba(240,180,220,.35)}
 .btn-line{border:1px solid rgba(236,232,244,.32);color:var(--silver)}
 .btn-line:hover{border-color:var(--glow);color:var(--glow)}
-.heart-label{position:absolute;font:400 15px/1.3 var(--serif);color:var(--glow);pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 1.2s}
+.heart-label{position:absolute;font:400 15px/1.3 var(--serif);color:var(--glow);pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 1.2s;text-shadow:0 0 4px var(--void),0 0 12px var(--void)}
 .heart-label.on{opacity:1}
 
 /* five-line staff with an iron heart: the section divider */
@@ -426,6 +427,49 @@ const mk = (n, a, p) => { const e = document.createElementNS(NS, n); for (const 
 const manila = new Intl.DateTimeFormat('en-GB', {timeZone:'Asia/Manila', hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'});
 const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x => [x.type, +x.value || x.value]));
 
+/* the iron hands, made like the dial itself: flat bronze came, panes of glass, hairline leading. each is drawn
+   100 units long along +x and scaled to its dial; turn sets the direction it points at rest. the hour hand carries
+   the heart knot, a run of piano keys and a blade of the 25 pane's rose glass. the minute hand is a slim spear with
+   scrolls, barbs and a point of the quarter panes' violet glass */
+const ironHand = (() => {
+  const came = {fill: '#9b8794'}, fine = {'vector-effect': 'non-scaling-stroke', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'};
+  const pane = (d, fill, u) => mk('path', {d, fill, stroke: '#9b8794', 'stroke-width': .9, ...fine}, u);
+  const wire = (d, u, stroke = '#b8a3ae', w = 1.2) => mk('path', {d, fill: 'none', stroke, 'stroke-width': w, ...fine}, u);
+  const piece = (parent, len, turn) => { const hg = mk('g', {}, parent); return [hg, mk('g', {transform: `rotate(${turn}) scale(${(len/100).toFixed(3)} ${(len/100*1.08).toFixed(3)})`}, hg)]; };
+  const heartD = 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z';
+  const hour = (parent, len, turn = 0) => {
+    const [hg, u] = piece(parent, len, turn);
+    mk('path', {d: 'M-15,0 L-6,-2.4 L31,-1.6 L31,1.6 L-6,2.4 Z', ...came}, u);
+    mk('circle', {cx: -9.5, r: 1.4, fill: '#06060b'}, u);
+    wire('M22,-1.7 C24,-8.5 31,-12 35.5,-10 C38,-8.8 37.4,-6 35,-6.4 M22,1.7 C24,8.5 31,12 35.5,10 C38,8.8 37.4,6 35,6.4', u, '#b8a3ae', 1);
+    wire(heartD, mk('g', {transform: 'translate(40 0) rotate(90) scale(.95)'}, u), '#b8a3ae', 1.3);
+    wire(heartD, mk('g', {transform: 'translate(41.6 0) rotate(90) scale(.52)'}, u), '#f0b4dc', 1);
+    // the keys, as on the ribbon: a pale band, a hairline between whites, blacks in twos and threes
+    mk('path', {d: 'M45,-3.2 L84,-2.6 L84,2.6 L45,3.2 Z', fill: '#d8d0e4', 'fill-opacity': .5, stroke: '#9b8794', 'stroke-width': .9, ...fine}, u);
+    for (let i = 1; i < 12; i++){
+      const x = 45 + i*3.25;
+      mk('path', {d: `M${x},-3.1 V3.1`, stroke: '#06060b', 'stroke-width': .5, opacity: .6, ...fine}, u);
+      if ([1,1,0,1,1,1,0][(i - 1) % 7]) mk('rect', {x: x - .85, y: -3, width: 1.7, height: 3.6, fill: '#06060b', opacity: .85}, u);
+    }
+    pane('M84,-2.6 C90,-5.8 96.5,-4.6 100,.6 C95,-1.4 90,-.4 84,2.6 Z', '#7a4870', u);
+    mk('path', {d: 'M85.5,1.6 L95,-3.4', stroke: '#9b8794', 'stroke-width': .5, opacity: .6, ...fine}, u);
+    mk('path', {d: heartD, transform: 'translate(89.5 -.4) rotate(90) scale(.15)', fill: '#f0b4dc'}, u);
+    return hg;
+  };
+  const minute = (parent, len, turn = 0) => {
+    const [hg, u] = piece(parent, len, turn);
+    mk('path', {d: 'M-13,0 L-5,-1.8 L64,-.9 L64,.9 L-5,1.8 Z', ...came}, u);
+    mk('circle', {cx: -8.5, r: 1.1, fill: '#06060b'}, u);
+    wire('M9,-1.4 C12,-7.5 21,-8.6 23.4,-4.6 C24.6,-2.2 22,-1.2 20.8,-3 M9,1.4 C12,7.5 21,8.6 23.4,4.6 C24.6,2.2 22,1.2 20.8,3', u, '#b8a3ae', 1);
+    mk('circle', {cx: 29, r: 1.5, ...came}, u);
+    wire('M62,-1 C59.5,-2 57.5,-3.6 56.4,-6.2 M62,1 C59.5,2 57.5,3.6 56.4,6.2', u, '#b8a3ae', 1);
+    pane('M62,0 L74,-3.4 L100,0 L74,3.4 Z', '#5b4680', u);
+    mk('path', {d: 'M64,0 H97 M74,-3.4 L80,0 L74,3.4', fill: 'none', stroke: '#9b8794', 'stroke-width': .5, opacity: .7, ...fine}, u);
+    return hg;
+  };
+  return {hour, minute};
+})();
+
 /* Manila clock in 30-hour notation: 1 a.m. reads 25:00 */
 (() => {
   const el = document.querySelector('#clock b'), box = document.getElementById('clock');
@@ -442,7 +486,7 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
 (() => {
   const svg = document.getElementById('scene'), hero = svg.parentElement, label = document.getElementById('heartLabel');
   const words = ['biometric punch','overtime request','approved leave','payment webhook','access rule','salary step','pass slip'];
-  let W, H, heart, threads = [], glow, core, ring, hands = {}, t0 = performance.now(), pulse = 0, placed = [], R, C;
+  let W, H, heart, threads = [], glow, core, ring, bloom, hands = {}, t0 = performance.now(), pulse = 0, placed = [], R, C;
 
   function dial(){
     const mobile = W < 760;
@@ -452,11 +496,16 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     const r1 = R*0.79, r2 = R*0.95, step = 2*Math.PI/25, up = -Math.PI/2;
     const P = (r, a) => [r*Math.cos(a), r*Math.sin(a)];
     const tones = ['#2b2436','#3a2d4d','#4a3a63','#33293f'];
+    // a glass lily, like the ones at the corners, blooms at the dial's heart and is lit by it
+    bloom = lily(g, 0, 0, R*.0048, 0, 5, {opacity: .85, bud: false, glitter: 24, stars: 2,
+      tint: {petal: 'rgba(74,58,99,.2)', petalIn: 'rgba(74,58,99,.3)', edge: '#9b8794', edgeOp: .55, vein: '#9b8794', dust: '#cfc8de', star: ''}});
     for (let k = 0; k < 25; k++){
       const a0 = (k - .5)*step + up, a1 = (k + .5)*step + up;
       const [x0,y0] = P(r1,a0), [x1,y1] = P(r2,a0), [x2,y2] = P(r2,a1), [x3,y3] = P(r1,a1);
+      // every fifth pane is a jewel, and 25 burns rose
+      const fill = k === 0 ? '#7a4870' : k % 5 ? tones[k % 4] : '#5b4680';
       mk('path', {d: `M${x0},${y0} L${x1},${y1} A${r2},${r2} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x0},${y0} Z`,
-        fill: tones[k % 4], opacity: .78, stroke: '#9b8794', 'stroke-width': .8, class: k % 3 ? '' : 'glass', style: `animation-delay:${-k*.6}s`}, g);
+        fill, opacity: .78, stroke: '#9b8794', 'stroke-width': .8, class: k % 3 ? '' : 'glass', style: `animation-delay:${-k*.6}s`}, g);
       // a facet line through each pane, like leaded glass
       const am = a0 + (a1 - a0)*(.3 + (k*37 % 40)/100);
       const [fx0,fy0] = P(r1, am), [fx1,fy1] = P(r2, a0 + (a1-a0)*.7);
@@ -472,22 +521,15 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     }
     [R*1.0, R*1.03, r1, R*.7].forEach((r, i) => mk('circle', {r, fill: 'none', stroke: '#9b8794', 'stroke-width': i === 3 ? .6 : 1, opacity: i === 3 ? .5 : .8}, g));
     for (let k = 0; k < 125; k++){ const a = k*2*Math.PI/125, [x0,y0] = P(R*.7, a), [x1,y1] = P(R*(k % 5 ? .725 : .745), a); mk('path', {d: `M${x0},${y0} L${x1},${y1}`, stroke: '#9b8794', 'stroke-width': .7, opacity: .7}, g); }
-    // wrought-iron hands with heart curls; the hour hand always rests on 25
-    const hand = (len, w, heartAt, s) => {
-      const hg = mk('g', {}, g);
-      mk('path', {d: `M${-len*.12},${-w} L${len*.92},${-w*.6} L${len},0 L${len*.92},${w*.6} L${-len*.12},${w} Z`, fill: '#9b8794'}, hg);
-      mk('path', {d: 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z', transform: `translate(${len*heartAt} 0) rotate(-90) scale(${s})`, fill: '#06060b', stroke: '#b8a3ae', 'stroke-width': 1.6, 'vector-effect': 'non-scaling-stroke'}, hg);
-      mk('path', {d: `M${len*.92},0 l-${len*.06},-${w*3} m${len*.06},${w*3} l-${len*.06},${w*3}`, stroke: '#b8a3ae', 'stroke-width': 1, fill: 'none'}, hg);
-      return hg;
-    };
-    hands.h = hand(R*.52, 2.6, .66, R*.0058);
-    hands.m = hand(R*.68, 1.8, .74, R*.0046);
-    hands.s = mk('g', {}, g); mk('path', {d: `M${-R*.1},0 L${R*.76},0`, stroke: '#f0b4dc', 'stroke-width': .9, opacity: .8}, hands.s);
-    mk('circle', {r: 7, fill: '#9b8794'}, g); mk('circle', {r: 2.5, fill: '#06060b'}, g);
+    // the hour hand always rests on 25, so its heart stays upright
+    hands.h = ironHand.hour(g, R*.56);
+    hands.m = ironHand.minute(g, R*.72);
+    hands.s = mk('g', reduce ? {display: 'none'} : {}, g); mk('path', {d: `M${-R*.1},0 L${R*.76},0`, stroke: '#f0b4dc', 'stroke-width': .9, opacity: .8}, hands.s);
+    mk('circle', {r: 7, fill: '#9b8794'}, g); mk('circle', {r: 10, fill: 'none', stroke: '#9b8794', 'stroke-width': .9, opacity: .8}, g); mk('circle', {r: 2.5, fill: '#06060b'}, g);
     // lilac fragments falling off the dial's rim
     const jig = [0, 3.5, -2, 4, 1, -3, 2.5, -1], out = [.02, .16, .06, .22, .1, .3, .14, .38];
     for (let k = 0; k < (mobile ? 4 : 8); k++){
-      const a = ((mobile ? 150 : 96) + k*(mobile ? 13 : 8.5) + jig[k]*2)*Math.PI/180, [x,y] = P(R*(1.12 + out[k]), a);
+      const a = ((mobile ? 136 : 96) + k*(mobile ? 13 : 8.5) + jig[k]*2)*Math.PI/180, [x,y] = P(R*(1.12 + out[k]), a);
       const fg = mk('g', {transform: `translate(${x} ${y}) rotate(${-20 + k*37 % 70}) scale(${.7 + (k*7 % 5)/10})`}, g);
       const inner = mk('g', {class: 'frag', style: `animation-delay:${-k*1.3}s`}, fg);
       mk('rect', {x: -9, y: -9, width: 18, height: 18, fill: '#c9b2dc', opacity: .75}, inner);
@@ -504,11 +546,30 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     mk('path', {d: off(0), fill: 'none', stroke: '#06060b', 'stroke-width': w, 'stroke-dasharray': '1.2 8.8', opacity: .55}, svg);
     mk('path', {d: off(-w*.2), fill: 'none', stroke: '#06060b', 'stroke-width': w*.6, 'stroke-dasharray': '6 4 6 14 6 4 6 4 6 14', 'stroke-dashoffset': 3, opacity: .9}, svg);
     [-w/2, w/2].forEach(o => mk('path', {d: off(o), fill: 'none', stroke: '#9b8794', 'stroke-width': .8, opacity: .6}, svg));
+    // record labels keep off the keys
+    pts.forEach(([x,y], i) => { if (i % 2 === 0) placed.push({l: x - w, t: y - w, r: x + w, b: y + w}); });
   }
-  function lily(x, y, s, rot){
-    const g = mk('g', {transform: `translate(${x} ${y}) rotate(${rot}) scale(${s})`, opacity: .85}, svg);
-    for (let i = 0; i < 6; i++) mk('path', {d: 'M0 0 C 14 -24, 14 -56, 0 -88 C -14 -56, -14 -24, 0 0 Z', transform: `rotate(${i*60 + (i % 2)*8})`, fill: '#25243a', stroke: '#6a6e88', 'stroke-width': .8}, g);
-    for (let i = 0; i < 40; i++){ const a = Math.random()*Math.PI*2, r = 10 + Math.random()*70; mk('circle', {cx: Math.cos(a)*r, cy: Math.sin(a)*r, r: Math.random()*1.1 + .3, fill: '#dfe0ff', opacity: Math.random()*.6 + .2}, g); }
+  // starry lilies of smoked glass: two rings of broad pointed petals, a vein down each, glitter gathered at the heart
+  // the corner lilies are blue smoked glass; the one in the dial keeps the dial's plum glass and bronze leading
+  const smoked = {petal: 'url(#petal)', petalIn: 'url(#petalIn)', edge: '#b9bedd', edgeOp: .75, vein: '#cdd1ee', dust: '#eef0ff', star: 'filter:saturate(0) brightness(1.6)'};
+  function lily(parent, x, y, s, rot, seed, {petals = 7, opacity = .9, bud = true, glitter = 46, stars = 3, tint = smoked} = {}){
+    let n = seed; const rnd = () => (n = n*16807 % 2147483647)/2147483647;
+    const g = mk('g', {transform: `translate(${x} ${y}) rotate(${rot}) scale(${s})`, opacity}, parent);
+    const petal = 'M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C9,-88 31,-64 28,-34 C26,-16 12,-5 0,0 Z', line = {fill: 'none', stroke: tint.vein, 'vector-effect': 'non-scaling-stroke'};
+    const ring = (count, size, fill, turn, veins) => { for (let i = 0; i < count; i++){
+      const pg = mk('g', {transform: `rotate(${(i*360/count + turn + (rnd() - .5)*12).toFixed(1)}) scale(${(size*(.86 + rnd()*.22)).toFixed(2)})`}, g);
+      mk('path', {d: petal, fill, stroke: tint.edge, 'stroke-width': 1, 'stroke-opacity': tint.edgeOp, 'vector-effect': 'non-scaling-stroke'}, pg);
+      // one half of each petal in shadow, folded along its vein
+      mk('path', {d: 'M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C2,-70 1,-40 0,0 Z', fill: '#12142a', opacity: .3}, pg);
+      mk('path', {d: 'M0,-5 C1,-40 2,-70 8,-94', ...line, 'stroke-width': .7, opacity: .4}, pg);
+      if (veins) mk('path', {d: 'M1,-28 C-6,-36 -12,-42 -17,-50 M2,-44 C8,-52 13,-58 16,-64', ...line, 'stroke-width': .5, opacity: .2}, pg);
+    } };
+    ring(petals, 1, tint.petal, 0, true);
+    ring(5, .56, tint.petalIn, 180/petals, false);
+    if (bud){ mk('circle', {r: 40, fill: 'url(#lilyGlow)'}, g); [-24, 0, 24].forEach(a => mk('path', {d: 'M0,0 C-7,-6 -6,-18 0,-26 C6,-18 7,-6 0,0 Z', transform: `rotate(${a})`, fill: '#8e94bd', stroke: '#d6d9f2', 'stroke-width': .8, 'stroke-opacity': .7, 'fill-opacity': .75, 'vector-effect': 'non-scaling-stroke'}, g)); }
+    for (let i = 0; i < glitter; i++){ const a = rnd()*Math.PI*2, r = 3 + 82*rnd()**1.7; mk('circle', {cx: (Math.cos(a)*r).toFixed(1), cy: (Math.sin(a)*r).toFixed(1), r: (rnd()*1.1 + .35).toFixed(2), fill: tint.dust, opacity: (rnd()*.6 + .25).toFixed(2)}, g); }
+    for (let i = 0; i < stars; i++){ const a = rnd()*Math.PI*2, r = 14 + 40*rnd(); mk('use', {href: '#spark', x: -5, y: -5, width: 10, height: 10, class: 'sparkle', style: `animation-delay:${(-rnd()*4).toFixed(2)}s;${tint.star}`}, mk('g', {transform: `translate(${(Math.cos(a)*r).toFixed(1)} ${(Math.sin(a)*r).toFixed(1)})`}, g)); }
+    return g;
   }
   function build(){
     W = hero.clientWidth; H = hero.clientHeight; placed = [];
@@ -517,18 +578,30 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.innerHTML = `<defs>
       <radialGradient id="g"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".25" stop-color="#bb6688" stop-opacity=".42"/><stop offset=".55" stop-color="#4a3a63" stop-opacity=".2"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
+      <radialGradient id="petal" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#8d93bd"/><stop offset=".32" stop-color="#535b7e"/><stop offset=".72" stop-color="#394060"/><stop offset="1" stop-color="#2a2f48"/></radialGradient>
+      <radialGradient id="petalIn" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#aeb2da"/><stop offset=".5" stop-color="#6a7296"/><stop offset="1" stop-color="#454c6c"/></radialGradient>
+      <radialGradient id="lilyGlow"><stop offset="0" stop-color="#f2f3ff" stop-opacity=".5"/><stop offset=".4" stop-color="#b9bde6" stop-opacity=".25"/><stop offset="1" stop-color="#b9bde6" stop-opacity="0"/></radialGradient>
       <linearGradient id="fade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${heart.x}" y2="0"><stop offset="0" stop-color="#cfc8de" stop-opacity=".06"/><stop offset=".6" stop-color="#cfc8de" stop-opacity=".34"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".7"/></linearGradient>
     </defs>`;
     for (let i = 0; i < Math.round(W*H/12000); i++) mk('circle', {cx: Math.random()*W, cy: Math.random()*H, r: Math.random()*.9 + .2, fill: '#e8e4ff', opacity: (Math.random()*.4 + .05).toFixed(2)}, svg);
-    lily(W*0.97, H*0.9, mobile ? .7 : 1.25, 12);
-    if (!mobile) lily(W*0.42, H*1.04, .9, -20);
+    if (mobile) lily(svg, W, H*.97, .66, 12, 7); else lily(svg, W*0.97, H*0.9, 1.25, 12, 7);
+    if (!mobile) lily(svg, W*0.42, H*1.04, .9, -20, 23);
     dial();
-    // a ribbon of piano keys curling in from the top
-    const kp = mobile ? `M${W*0.5},-20 C ${W*0.62},${H*0.08} ${W*0.95},${H*0.02} ${W+20},${H*0.12}` : `M${W*0.62},-30 C ${W*0.7},${H*0.16} ${W*0.9},${H*0.06} ${W+30},${H*0.24}`;
+    // a ribbon of piano keys curling in from the top, through the gap in the header and clear of its text:
+    // on desktop it slips under the nav and above the dial, on phones it curls away to the left
+    const hb = document.querySelector('.top').getBoundingClientRect().bottom, mark = document.querySelector('.mark').getBoundingClientRect().right;
+    const navEl = document.querySelector('.top nav'), right = (navEl.offsetWidth ? navEl : document.getElementById('clock')).getBoundingClientRect().left;
+    const yb = Math.max(hb + 14, (hb + C.y - R*1.06)/2), x0 = Math.max(mark + 40, right - 150);
+    const kp = mobile ? `M${mark + 32},-20 C ${mark + 27},40 ${mark - 23},75 ${mark - 93},95 S -10,130 -30,175`
+      : `M${x0},-30 C ${x0 + 30},${yb*.8} ${x0 + 90},${yb + 12} ${x0 + 220},${yb + 12} S ${W - 120},${Math.max(hb + 16, yb - 22)} ${W + 30},${yb + 36}`;
     keys(kp, mobile ? 12 : 16);
+    const copy = boxes('.who, h1, .lede, .actions', 10);
     for (let i = 0; i < 16; i++){
-      const u = mk('use', {href: '#spark', x: -6, y: -6, width: 12, height: 12, class: 'sparkle', style: `animation-delay:${(-Math.random()*4).toFixed(2)}s`}, svg);
-      u.setAttribute('transform', `translate(${(Math.random()*W).toFixed(0)} ${(Math.random()*H).toFixed(0)}) scale(${(Math.random()*.8 + .5).toFixed(2)})`);
+      let x, y, tries = 0;
+      do { x = Math.random()*W; y = Math.random()*H; } while (++tries < 30 && copy.some(k => x > k.l && x < k.r && y > k.t && y < k.b));
+      // the twinkle animation owns each sparkle's transform, so a wrapping group places it
+      const at = mk('g', {transform: `translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${(Math.random()*.8 + .5).toFixed(2)})`}, svg);
+      mk('use', {href: '#spark', x: -6, y: -6, width: 12, height: 12, class: 'sparkle', style: `animation-delay:${(-Math.random()*4).toFixed(2)}s`}, at);
     }
     const starts = mobile
       ? [[-20,H*0.05],[-20,H*0.32],[W*0.25,-20],[-20,H*0.55],[W*0.55,-20],[W+20,H*0.42],[W+20,H*0.02]]
@@ -550,26 +623,28 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     glow = mk('circle', {fill: 'url(#g)', cx: heart.x, cy: heart.y}, svg);
     ring = mk('circle', {fill: 'none', stroke: '#f0b4dc', cx: heart.x, cy: heart.y}, svg);
     core = mk('circle', {fill: '#fff4fb', cx: heart.x, cy: heart.y}, svg);
-    label.style.left = (heart.x + (mobile ? -150 : 22)) + 'px';
-    label.style.top = (heart.y + (mobile ? 18 : 14)) + 'px';
+    // on phones the words sit under the heart, inside the dial's face, clear of its rim and the fragments
+    label.style.left = (heart.x + (mobile ? 0 : 22)) + 'px';
+    label.style.top = (heart.y + (mobile ? R*.22 : 14)) + 'px';
+    label.style.transform = mobile ? 'translateX(-50%)' : '';
     setTimeout(() => label.classList.add('on'), reduce ? 0 : 900);
     frame(performance.now(), true);
   }
+  // the hero copy's boxes, in scene coordinates, for decoration to keep clear of
+  const boxes = (sel, pad) => { const hr = hero.getBoundingClientRect(); return [...hero.querySelectorAll(sel)].map(el => { const r = el.getBoundingClientRect(); return {l: r.left - hr.left - pad, t: r.top - hr.top - pad, r: r.right - hr.left + pad, b: r.bottom - hr.top + pad}; }); };
   const bez = (p0, p1, p2, p3, t) => { const u = 1 - t; return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3; };
   const dbez = (p0, p1, p2, p3, t) => { const u = 1 - t; return 3*u*u*(p1 - p0) + 6*u*t*(p2 - p1) + 3*t*t*(p3 - p2); };
   function placeLabel(th, at){
     if (W < 760 && th.seed % 3.4 > 1.6){ th.txt.style.display = 'none'; return null; }
-    const hr = hero.getBoundingClientRect();
-    const blocks = [...hero.querySelectorAll('.who, h1, .lede, .actions, .heart-label')].map(el => { const r = el.getBoundingClientRect(); return {l: r.left - hr.left - 12, t: r.top - hr.top - 10, r: r.right - hr.left + 12, b: r.bottom - hr.top + 10}; });
+    const blocks = boxes('.who, h1, .lede, .actions, .heart-label', 12);
     blocks.push({l: 0, t: 0, r: W, b: 76}, {l: heart.x - 70, t: heart.y - 50, r: heart.x + 70, b: heart.y + 50}, ...placed);
     const w = th.txt.getComputedTextLength() + 8;
     for (const a of [0.2, 0.28, 0.36, 0.44, 0.52, 0.6, 0.68, 0.76]){
       const pt = at(a), box = {l: pt.x + 8, t: pt.y - 26, r: pt.x + 8 + w, b: pt.y - 6};
       if (box.l < 8 || box.r > W - 8 || box.t < 0 || box.b > H) continue;
       if (blocks.some(k => box.l < k.r && box.r > k.l && box.t < k.b && box.b > k.t)) continue;
-      const near = Math.hypot(Math.max(box.l - C.x, 0, C.x - box.r), Math.max(box.t - C.y, 0, C.y - box.b));
-      const far = Math.max(...[[box.l,box.t],[box.r,box.t],[box.l,box.b],[box.r,box.b]].map(([x,y]) => Math.hypot(x - C.x, y - C.y)));
-      if (near < R*1.08 && (W < 760 || far > R*.64)) continue;
+      // labels stay outside the dial, leaving its face to the tracery and the hands
+      if (Math.hypot(Math.max(box.l - C.x, 0, C.x - box.r), Math.max(box.t - C.y, 0, C.y - box.b)) < R*1.08) continue;
       placed.push({l: box.l - 6, t: box.t - 6, r: box.r + 6, b: box.b + 6}); th.txt.style.display = ''; return a;
     }
     th.txt.style.display = 'none'; return null;
@@ -611,20 +686,31 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     // the dial keeps Manila minutes and seconds; the hour stays on 25
     const p = nowParts(), ms = reduce ? 0 : (Date.now() % 1000)/1000;
     const step = 360/25;
-    hands.h.setAttribute('transform', `rotate(${(-90 + p.minute/60*step).toFixed(2)})`);
-    hands.m.setAttribute('transform', `rotate(${(-90 + (p.minute + p.second/60)/60*360).toFixed(2)})`);
-    hands.s.setAttribute('transform', `rotate(${(-90 + (p.second + ms)/60*360).toFixed(2)})`);
+    const turn = (hg, deg) => hg.setAttribute('transform', `rotate(${deg.toFixed(2)})`);
+    turn(hands.h, -90 + p.minute/60*step);
+    turn(hands.m, -90 + (p.minute + p.second/60)/60*360);
+    turn(hands.s, -90 + (p.second + ms)/60*360);
     const breathe = reduce ? 0 : (Math.sin(t*1.4) + 1)/2;
     pulse *= .96;
     glow.setAttribute('r', 130 + breathe*18 + pulse*30);
     ring.setAttribute('r', 10 + (1 - pulse)*30);
     ring.setAttribute('opacity', (pulse*.6).toFixed(2));
     core.setAttribute('r', 3.2 + pulse*1.4);
-    if (!once && !reduce) requestAnimationFrame(frame);
+    // each record that arrives lights the lily a little
+    bloom.setAttribute('opacity', (.85 + pulse*.15).toFixed(2));
   }
   build();
   document.fonts.ready.then(build);
-  if (!reduce) requestAnimationFrame(frame); else setInterval(() => frame(performance.now(), false), 1000);
+  // run only while the hero is on screen; reduced motion keeps the time without a sweeping second hand
+  let raf = 0;
+  const loop = now => { frame(now, false); raf = requestAnimationFrame(loop); };
+  new IntersectionObserver(([e]) => {
+    hero.classList.toggle('paused', !e.isIntersecting);
+    if (reduce) return;
+    if (e.isIntersecting && !raf) raf = requestAnimationFrame(loop);
+    else if (!e.isIntersecting){ cancelAnimationFrame(raf); raf = 0; }
+  }).observe(hero);
+  if (reduce) setInterval(() => frame(performance.now(), false), 15000);
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 150); });
 })();
 
@@ -683,13 +769,11 @@ const nowParts = () => Object.fromEntries(manila.formatToParts(new Date()).map(x
     });
     return {g, threads};
   });
-  // the hand, in wrought iron, with a heart
+  // the hand: the hero's hour hand, with its heart knot, keys and rose blade, pointing up at rest
   const hand = mk('g', {class: 'rw-hand'}, svg);
-  mk('path', {d: 'M-2.4 20 L-1.4 -112 L0 -124 L1.4 -112 L2.4 20 Z', fill: '#9b8794'}, hand);
-  mk('path', {d: 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z', transform: 'translate(0 -84) scale(1.25)', fill: '#2b2436', stroke: '#d4c2cc', 'stroke-width': 1.1}, hand);
-  mk('path', {d: 'M0 -112 l-6 9 M0 -112 l6 9', stroke: '#d4c2cc', 'stroke-width': 1.2, fill: 'none'}, hand);
+  ironHand.hour(hand, 150, -90);
   const glow = mk('circle', {r: 60, fill: 'url(#rwGlow)'}, svg);
-  mk('circle', {r: 7, fill: '#9b8794'}, svg);
+  mk('circle', {r: 7, fill: '#9b8794'}, svg); mk('circle', {r: 10, fill: 'none', stroke: '#9b8794', 'stroke-width': .9, opacity: .8}, svg);
   const core = mk('circle', {r: 3.4, fill: '#fff4fb'}, svg);
   let active = -1, pulse = 0;
   const set = i => {
