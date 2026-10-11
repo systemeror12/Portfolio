@@ -103,52 +103,68 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 .more{display:inline-block;margin-top:22px;color:var(--peri);text-underline-offset:5px;text-decoration-thickness:1px}
 .more:hover{color:var(--silver)}
 
-/* personal */
+/* personal: each project is a window, crowned by a fanlight of leaded glass */
 .after{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:28px;align-items:start}
-.piece{position:relative;background:linear-gradient(180deg, rgba(43,36,54,.7), rgba(26,23,36,.55));border:1px solid var(--hair);border-radius:24px;padding:36px}
+.piece{position:relative}
+.arch{display:block;width:100%;height:110px;overflow:visible}
+.light{background:linear-gradient(180deg, rgba(43,36,54,.72), rgba(26,23,36,.55));border:1px solid rgba(155,135,148,.55);border-top:0;border-radius:0 0 4px 4px;padding:30px 36px 36px}
 .piece .status{margin:0 0 18px;font-size:15px;color:var(--mist)}
 .piece .status svg{width:13px;height:13px;margin-right:9px;vertical-align:-1px}
 .piece h3{font-size:34px}
 .piece p{color:#cbc4d9}
 .stack{margin:22px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;color:var(--silver)}
 .split{display:grid;grid-template-columns:1fr 1fr;margin-top:26px;border-top:1px solid var(--hair)}
-.split div{padding:20px 22px 4px 0}
+.split div{position:relative;padding:22px 22px 4px 0}
 .split div+div{padding-left:22px;border-left:1px solid var(--hair)}
+/* two lights of one window: upstream's glass is cool violet, mine is the rose */
+.split div::before{content:"";position:absolute;top:-2px;left:0;right:22px;height:3px;background:#5b4680;box-shadow:0 0 0 1px rgba(155,135,148,.5)}
+.split div+div::before{left:22px;right:0;background:#7a4870}
 .split h4{margin:0 0 6px;font:500 17px/1.3 var(--serif)}
 .split div+div h4{color:var(--glow)}
 .split p{margin:0;font-size:16px}
 .credit{margin:26px 0 0;padding-top:18px;border-top:1px solid var(--hair);font-size:15px;color:var(--mist) !important}
 .credit code{font:inherit;color:var(--silver)}
-.tools{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:28px;padding:30px 0 0;border-top:1px solid var(--hair)}
+.tools{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:56px;padding:34px 0 0;border-top:1px solid var(--hair)}
 .tools h3{font-size:24px}
 .tools p.lab{margin:0;color:var(--mist);font-size:15px}
+/* borrowed glass: each tool is a small roundel, not a window of my own */
+.tool{display:grid;grid-template-columns:56px minmax(0,1fr);gap:18px;align-items:start}
+.roundel{width:56px;height:56px;overflow:visible}
 .tool h4{margin:0;font:500 22px/1.3 var(--serif)}
 .tool p{margin:6px 0 10px;color:#bdb5cc;font-size:16px}
 .tool a{color:var(--peri);font-size:15px;text-underline-offset:5px}
 
-/* method: a four-note phrase on a staff */
-.phrase{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px;position:relative;
-  background:repeating-linear-gradient(180deg, rgba(155,135,148,.55) 0 1px, transparent 1px 9px) 0 6px/100% 37px no-repeat}
+/* method: a four-note phrase on a bronze staff; the notes are glass, and the last one, the result, is the rose */
+.phrase{list-style:none;margin:0;padding:0 18px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px;position:relative;
+  background:repeating-linear-gradient(180deg, rgba(155,135,148,.7) 0 1px, transparent 1px 9px) 0 6px/100% 37px no-repeat}
+/* a final double bar closes the phrase */
+.phrase::after{content:"";position:absolute;right:0;top:6px;width:4px;height:37px;border-left:1px solid var(--bronze);border-right:3px solid var(--bronze)}
 .phrase li{position:relative;padding-top:78px}
-.phrase li::before{content:"";position:absolute;left:14px;width:15px;height:11px;border-radius:50%;background:var(--lilac);transform:rotate(-22deg)}
-.phrase li::after{content:"";position:absolute;left:27px;width:1.5px;height:34px;background:var(--lilac)}
+.phrase li::before{content:"";position:absolute;left:14px;width:16px;height:11px;border-radius:50%;background:#5b4680;border:1px solid var(--bronze);transform:rotate(-22deg)}
+.phrase li::after{content:"";position:absolute;left:28px;width:1.5px;height:34px;background:var(--bronze)}
 .phrase li:nth-child(1)::before{top:37px}.phrase li:nth-child(1)::after{top:7px}
 .phrase li:nth-child(2)::before{top:28px}.phrase li:nth-child(2)::after{top:-2px}
 .phrase li:nth-child(3)::before{top:19px}.phrase li:nth-child(3)::after{top:-11px}
-.phrase li:nth-child(4)::before{top:10px;background:var(--glow);box-shadow:0 0 16px 3px rgba(240,180,220,.6)}
+.phrase li:nth-child(4)::before{top:10px;background:#7a4870;border-color:var(--glow);box-shadow:0 0 16px 3px rgba(240,180,220,.5)}
 .phrase li:nth-child(4)::after{top:-20px;background:var(--glow)}
 .phrase .n{font:400 15px/1 var(--serif);color:var(--mist)}
 .phrase h3{font-size:26px;margin:10px 0}
 .phrase p{margin:0;color:#bdb5cc;font-size:16px}
 
-/* contact */
+/* contact: the coda. a small window whose hands both rest on 25, and a staff that ends on a final bar */
 .contact{padding:150px 0 60px}
+.coda{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:64px;align-items:center}
+.coda-rose{grid-column:2;grid-row:1;width:100%;height:auto;overflow:visible}
+.coda-text{grid-column:1;grid-row:1}
 .contact h2{max-width:15em}
-.contact > .wrap > p{max-width:32em;color:#bdb5cc;margin:26px 0 0}
+.coda-text > p{max-width:32em;color:#bdb5cc;margin:26px 0 0}
+.fine{display:block;width:100%;height:44px;margin-top:110px;color:var(--bronze)}
+.fine path{fill:none;stroke:currentColor;stroke-width:1;vector-effect:non-scaling-stroke}
+.fine .thick{stroke-width:4}
 .mail{display:inline-block;margin-top:48px;font:400 clamp(24px, 3.4vw, 44px)/1.2 var(--serif);text-decoration:none;color:var(--silver);border-bottom:1px solid rgba(240,180,220,.5);padding-bottom:6px;transition:color .2s, border-color .2s;overflow-wrap:anywhere}
 .mail:hover{color:var(--glow);border-color:var(--glow)}
 .links{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
-.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:120px;padding:26px 0 40px;border-top:1px solid var(--hair);font-size:15px;color:var(--mist)}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:18px 0 40px;font-size:15px;color:var(--mist)}
 
 .js .rise{opacity:0;transform:translateY(18px);transition:opacity .9s ease, transform .9s ease}
 .js .rise.in{opacity:1;transform:none}
@@ -160,10 +176,21 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
   .case-head{position:static}
   .no{font-size:84px;margin-bottom:14px}
   .after{grid-template-columns:1fr}
-  .tools{grid-template-columns:1fr;gap:22px}
-  .phrase{grid-template-columns:1fr 1fr;row-gap:44px;background:none}
+  .tools{grid-template-columns:1fr;gap:26px}
+  /* on narrow screens the staff stands upright beside the notes */
+  .phrase{grid-template-columns:1fr;row-gap:40px;padding:0 0 0 64px;
+    background:repeating-linear-gradient(90deg, rgba(155,135,148,.7) 0 1px, transparent 1px 9px) 0 0/37px 100% no-repeat}
+  .phrase::after{display:none}
   .phrase li{padding-top:0}
-  .phrase li::before,.phrase li::after{display:none}
+  .phrase li::before{top:6px !important;transform:rotate(-68deg)}
+  .phrase li::after{display:none}
+  .phrase li:nth-child(1)::before{left:-37px}
+  .phrase li:nth-child(2)::before{left:-46px}
+  .phrase li:nth-child(3)::before{left:-55px}
+  .phrase li:nth-child(4)::before{left:-64px}
+  .coda{grid-template-columns:1fr;gap:28px}
+  .coda-rose{grid-column:1;width:180px}
+  .coda-text{grid-row:2}
 }
 @media (max-width: 560px){
   body{font-size:16px}
@@ -174,9 +201,13 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
   .problem{font-size:20px}
   .case dl div{grid-template-columns:1fr;gap:4px}
   .case .result svg{left:-20px;width:14px}
-  .piece{padding:26px 22px}
+  .arch{height:80px}
+  .light{padding:24px 22px 28px}
+  .tool{grid-template-columns:44px minmax(0,1fr);gap:16px}
+  .roundel{width:44px;height:44px}
   .split{grid-template-columns:1fr}
   .split div+div{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
+  .split div::before,.split div+div::before{left:0;right:0}
   .phrase{grid-template-columns:1fr}
   .clock span{display:none}
   .btn{flex:1;justify-content:center}
@@ -195,14 +226,14 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 .rw-for span{color:var(--mist);font-size:17px}
 .rw-for b{font-weight:400;color:var(--glow);transition:opacity .35s ease}
 .rw-for b.out{opacity:0}
-.petal{opacity:.42;transition:opacity .9s ease}
-.petal.on{opacity:1}
+.petal .pg{opacity:.42;transition:opacity .9s ease}
+.petal.on .pg{opacity:1}
 .petal .lit{opacity:0;transition:opacity .9s ease}
 .petal.on .lit{opacity:1}
 .petal .rn{font:400 26px var(--serif);fill:var(--lilac);opacity:.7;transition:fill .9s, opacity .9s}
 .petal.on .rn{fill:#fff4fb;opacity:1}
-.petal .rec{font:400 13px var(--sans);fill:var(--mist);letter-spacing:.02em}
-.petal.on .rec{fill:var(--lilac)}
+.petal .rec{font:500 14px var(--sans);fill:var(--mist);letter-spacing:.02em;paint-order:stroke;stroke:var(--void);stroke-width:3px;stroke-linejoin:round;transition:fill .9s}
+.petal.on .rec{fill:var(--silver)}
 .rw-hand{transition:transform 1.5s cubic-bezier(.5,0,.15,1)}
 .rc{min-height:82vh;padding:9vh 0;display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--hair)}
 .rc:first-child{border-top:0}
@@ -235,7 +266,7 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
   .rc-dl div{grid-template-columns:1fr;gap:4px}
 }
 @media (prefers-reduced-motion: reduce){
-  .rw-hand,.petal,.petal .lit,.rw-for b{transition:none}
+  .rw-hand,.petal .pg,.petal .lit,.petal .rec,.rw-for b{transition:none}
 }
 </style>
 </head>
@@ -363,13 +394,18 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
       <p>What I build when nobody's asked me to. One is still taking shape. The other is the desktop I'm typing this on.</p>
     </div>
     <div class="after">
-      <article class="piece rise" aria-labelledby="p1">
+      <article class="piece rise" data-glazing="partial" aria-labelledby="p1">
+        <svg class="arch" aria-hidden="true"></svg>
+        <div class="light">
         <p class="status"><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>In development, private repository</p>
         <h3 id="p1">Lingkod HR</h3>
         <p>An HR information system for Philippine government agencies, focused on position management, personnel records, and recruitment.</p>
         <ul class="stack" aria-label="Tech stack"><li>Next.js</li><li>React</li><li>NestJS</li><li>PostgreSQL</li><li>Prisma</li><li>Docker</li></ul>
+        </div>
       </article>
       <article class="piece rise" aria-labelledby="p2">
+        <svg class="arch" aria-hidden="true"></svg>
+        <div class="light">
         <p class="status"><svg viewBox="0 0 20 20" aria-hidden="true"><use href="#spark"/></svg>Actively maintained fork</p>
         <h3 id="p2">dots-hyprland</h3>
         <p>The Hyprland desktop I work in every day. I forked it because I loved how it looked, then kept going where it didn't fit how I work.</p>
@@ -379,12 +415,13 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
         </div>
         <p class="credit">Upstream contribution: my per-workspace wallpaper feature was reworked and merged into <code>ml4w-lightcrimson-dotfiles</code>, crediting <code>@systemeror12</code> as its original author.</p>
         <a class="more" href="#">Read about the fork</a>
+        </div>
       </article>
     </div>
     <div class="tools rise">
       <div><h3>Tools I use</h3><p class="lab">Not my projects. Just always open.</p></div>
-      <div class="tool"><h4>Odysseus</h4><p>A self-hosted AI workspace for exploring ideas close to my local environment.</p><a href="https://github.com/pewdiepie-archdaemon/odysseus" rel="noreferrer">Odysseus on GitHub</a></div>
-      <div class="tool"><h4>T3 Code</h4><p>A coding-agent workspace that keeps implementation and review next to the code.</p><a href="https://github.com/pingdotgg/t3code" rel="noreferrer">T3 Code on GitHub</a></div>
+      <div class="tool"><svg class="roundel" viewBox="-30 -30 60 60" data-panes="4" aria-hidden="true"></svg><div><h4>Odysseus</h4><p>A self-hosted AI workspace for exploring ideas close to my local environment.</p><a href="https://github.com/pewdiepie-archdaemon/odysseus" rel="noreferrer">Odysseus on GitHub</a></div></div>
+      <div class="tool"><svg class="roundel" viewBox="-30 -30 60 60" data-panes="6" aria-hidden="true"></svg><div><h4>T3 Code</h4><p>A coding-agent workspace that keeps implementation and review next to the code.</p><a href="https://github.com/pingdotgg/t3code" rel="noreferrer">T3 Code on GitHub</a></div></div>
     </div>
   </div>
 </section>
@@ -405,7 +442,9 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 </section>
 
 <section class="contact" id="contact" aria-labelledby="contact-title">
-  <div class="wrap">
+  <div class="wrap coda">
+    <svg class="coda-rose rise" id="codaRose" viewBox="-130 -130 260 260" aria-hidden="true"></svg>
+    <div class="coda-text">
     <h2 id="contact-title" class="rise">If people depend on what you're building, I'd like to help.</h2>
     <p class="rise">I'm looking for platform engineering roles in the Philippines, where integration judgment and getting the details right matter.</p>
     <a class="mail rise" href="mailto:mendozajeromevrixen@gmail.com">mendozajeromevrixen@gmail.com</a>
@@ -414,6 +453,10 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
       <a class="btn btn-line" href="https://www.linkedin.com/in/jerome-vrixen-mendoza-59b927293/" rel="noreferrer">LinkedIn</a>
       <a class="btn btn-line" href="/jerome-mendoza-resume.pdf" download>Resume (PDF)</a>
     </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <svg class="fine" viewBox="0 0 1200 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 H1198 M0 16 H1198 M0 22 H1198 M0 28 H1198 M0 34 H1198 M1190 10 V34"/><path class="thick" d="M1197 10 V34"/></svg>
     <footer class="foot"><span>Jerome Mendoza</span><span>Made at 25:00, Manila</span></footer>
   </div>
 </section>
@@ -745,20 +788,21 @@ const ironHand = (() => {
   for (let k = 0; k < 100; k++){ const a = k*Math.PI/50, [x0,y0] = P(52, a), [x1,y1] = P(k % 5 ? 56 : 59, a); mk('path', {d: `M${x0},${y0} L${x1},${y1}`, stroke: '#9b8794', 'stroke-width': .7, opacity: .7}, ring); }
   // four petals of leaded glass, one per case
   const petals = cases.map((c, q) => {
-    const g = mk('g', {class: 'petal'}, svg);
+    const g = mk('g', {class: 'petal'}, svg), pg = mk('g', {class: 'pg'}, g);
     const A0 = rad(q*90 - 90 + 2.5), A1 = rad((q + 1)*90 - 90 - 2.5), bands = [66, 108, 150, 192];
     for (let b = 0; b < 3; b++) for (let s = 0; s < 3; s++){
       const a0 = A0 + (A1 - A0)*s/3, a1 = A0 + (A1 - A0)*(s + 1)/3;
-      mk('path', {d: sector(bands[b], bands[b + 1], a0, a1), fill: T[(b + s + q) % 4], stroke: '#9b8794', 'stroke-width': 1}, g);
+      mk('path', {d: sector(bands[b], bands[b + 1], a0, a1), fill: T[(b + s + q) % 4], stroke: '#9b8794', 'stroke-width': 1}, pg);
       const [f0x,f0y] = P(bands[b], a0 + (a1 - a0)*.35), [f1x,f1y] = P(bands[b + 1], a0 + (a1 - a0)*.7);
-      mk('path', {d: `M${f0x},${f0y} L${f1x},${f1y}`, stroke: '#9b8794', 'stroke-width': .6, opacity: .7}, g);
+      mk('path', {d: `M${f0x},${f0y} L${f1x},${f1y}`, stroke: '#9b8794', 'stroke-width': .6, opacity: .7}, pg);
     }
-    mk('path', {d: sector(66, 192, A0, A1), fill: 'url(#rwPane)', class: 'lit'}, g);
+    mk('path', {d: sector(66, 192, A0, A1), fill: 'url(#rwPane)', class: 'lit'}, pg);
     const mid = (A0 + A1)/2, [nx,ny] = P(171, mid);
     mk('text', {x: nx, y: ny, class: 'rn', 'text-anchor': 'middle', 'dominant-baseline': 'central'}, g).textContent = ['I','II','III','IV'][q];
-    // the records this case carries, written around the rim of its pane
-    const arc = mk('path', {id: `rwArc${q}`, d: (() => { const a0 = A0 + rad(4), a1 = A1 - rad(4), [x0,y0] = P(207, a0), [x1,y1] = P(207, a1); return `M${x0},${y0} A207,207 0 0 1 ${x1},${y1}`; })(), fill: 'none'}, g);
-    const t = mk('text', {class: 'rec', dy: 4}, g), tp = mk('textPath', {href: `#rwArc${q}`, startOffset: '50%', 'text-anchor': 'middle'}, t);
+    // the records this case carries, written around the rim of its pane; the lower panes run the other way so they read upright
+    const low = q === 1 || q === 2, r = low ? 213 : 208;
+    const arc = mk('path', {id: `rwArc${q}`, d: (() => { const a0 = A0 + rad(1), a1 = A1 - rad(1), [x0,y0] = P(r, low ? a1 : a0), [x1,y1] = P(r, low ? a0 : a1); return `M${x0},${y0} A${r},${r} 0 0 ${low ? 0 : 1} ${x1},${y1}`; })(), fill: 'none'}, g);
+    const t = mk('text', {class: 'rec', dy: low ? 0 : 4}, g), tp = mk('textPath', {href: `#rwArc${q}`, startOffset: '50%', 'text-anchor': 'middle'}, t);
     tp.textContent = c.dataset.records;
     // threads from the rim into the centre
     const threads = [0,1,2,3].map(i => {
@@ -819,6 +863,67 @@ const ironHand = (() => {
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
+})();
+/* after hours: a fanlight of leaded glass crowns each project, hung from an iron heart at its hub.
+   Lingkod HR is still being glazed, so some of its panes are bare leading */
+(() => {
+  const T = ['#2b2436','#3a2d4d','#4a3a63','#33293f'], heartD = 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z';
+  const draw = (svg, q) => {
+    const w = svg.clientWidth, h = svg.clientHeight, partial = svg.parentElement.dataset.glazing === 'partial';
+    if (!w) return;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.innerHTML = '';
+    const arch = `M.5,${h} C.5,${h*.42} ${w*.28},${h*.04} ${w/2},.5 C${w*.72},${h*.04} ${w - .5},${h*.42} ${w - .5},${h}`;
+    mk('path', {d: arch + ' Z'}, mk('clipPath', {id: `arch${q}`}, svg));
+    const g = mk('g', {'clip-path': `url(#arch${q})`}, svg), cx = w/2, far = Math.hypot(w/2, h) + 10;
+    const r0 = h*.34, r1 = h*.68, N = w < 420 ? 7 : 11;
+    const P = (r, a) => [cx + r*Math.cos(a), h + r*Math.sin(a)];
+    const band = (ra, rb, a0, a1) => { const [x0,y0] = P(ra,a0), [x1,y1] = P(rb,a0), [x2,y2] = P(rb,a1), [x3,y3] = P(ra,a1); return `M${x0},${y0} L${x1},${y1} L${x2},${y2} L${x3},${y3} Z`; };
+    for (let i = 0; i < N; i++){
+      const a0 = Math.PI + i*Math.PI/N, a1 = a0 + Math.PI/N;
+      [[r0, r1], [r1, far]].forEach(([ra, rb], row) => {
+        const bare = partial && (i*5 + row*3 + 1) % 4 === 0, jewel = row && i === (N - 1)/2;
+        mk('path', {d: band(ra, rb, a0, a1), fill: bare ? 'rgba(6,6,11,.55)' : jewel ? '#5b4680' : T[(i + row*2) % 4],
+          opacity: bare ? 1 : .82, stroke: '#9b8794', 'stroke-width': 1, 'stroke-dasharray': bare ? '3 3' : 'none'}, g);
+      });
+    }
+    mk('path', {d: `M${cx - r0},${h} A${r0},${r0} 0 0 1 ${cx + r0},${h} Z`, fill: '#7a4870', opacity: .85, stroke: '#9b8794', 'stroke-width': 1}, g);
+    mk('path', {d: heartD, transform: `translate(${cx} ${h - r0*.5}) scale(${(r0/26).toFixed(2)})`, fill: 'none', stroke: '#f0b4dc', 'stroke-width': 1.2, 'vector-effect': 'non-scaling-stroke'}, g);
+    mk('path', {d: arch, fill: 'none', stroke: '#9b8794', 'stroke-width': 1.4}, svg);
+    mk('path', {d: `M0,${h - 1} H${w}`, stroke: '#9b8794', 'stroke-width': 2}, svg);
+  };
+  const arches = [...document.querySelectorAll('.arch')];
+  const ro = new ResizeObserver(es => es.forEach(e => draw(e.target, arches.indexOf(e.target))));
+  arches.forEach(a => ro.observe(a));
+
+  // the tools are roundels: small borrowed glass, leaded into a few panes around a bronze boss
+  document.querySelectorAll('.roundel').forEach(svg => {
+    const n = +svg.dataset.panes, P = (r, a) => [r*Math.cos(a), r*Math.sin(a)];
+    for (let k = 0; k < n; k++){
+      const a0 = k*2*Math.PI/n - Math.PI/2, a1 = (k + 1)*2*Math.PI/n - Math.PI/2, [x0,y0] = P(26, a0), [x1,y1] = P(26, a1);
+      mk('path', {d: `M0,0 L${x0},${y0} A26,26 0 0 1 ${x1},${y1} Z`, fill: k % 2 ? '#4a3a63' : '#5b4680', opacity: .85, stroke: '#9b8794', 'stroke-width': 1.2}, svg);
+    }
+    mk('circle', {r: 28, fill: 'none', stroke: '#9b8794', 'stroke-width': 1.4}, svg);
+    mk('circle', {r: 7, fill: '#2b2436', stroke: '#9b8794', 'stroke-width': 1.2}, svg);
+    mk('circle', {r: 2.2, fill: '#cfc8de'}, svg);
+  });
+
+  // the coda: a small 25-hour window, both hands resting on 25, as the footer says
+  const rose = document.getElementById('codaRose'), step = 2*Math.PI/25;
+  const P = (r, a) => [r*Math.cos(a), r*Math.sin(a)];
+  mk('circle', {r: 96, fill: 'url(#rwGlow)', opacity: .5}, rose);
+  for (let k = 0; k < 25; k++){
+    const a0 = (k - .5)*step - Math.PI/2, a1 = (k + .5)*step - Math.PI/2;
+    const [x0,y0] = P(96,a0), [x1,y1] = P(118,a0), [x2,y2] = P(118,a1), [x3,y3] = P(96,a1);
+    mk('path', {d: `M${x0},${y0} L${x1},${y1} A118,118 0 0 1 ${x2},${y2} L${x3},${y3} A96,96 0 0 0 ${x0},${y0} Z`,
+      fill: k === 0 ? '#7a4870' : k % 5 ? T[k % 4] : '#5b4680', opacity: .82, stroke: '#9b8794', 'stroke-width': .8}, rose);
+  }
+  [92, 120, 125].forEach(r => mk('circle', {r, fill: 'none', stroke: '#9b8794', 'stroke-width': .9, opacity: .8}, rose));
+  for (let k = 0; k < 125; k++){ const a = k*2*Math.PI/125, [x0,y0] = P(84, a), [x1,y1] = P(k % 5 ? 87 : 90, a); mk('path', {d: `M${x0},${y0} L${x1},${y1}`, stroke: '#9b8794', 'stroke-width': .7, opacity: .7}, rose); }
+  const [tx,ty] = P(107, -Math.PI/2);
+  mk('text', {x: tx, y: ty, 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': 'Shippori Mincho, serif', 'font-size': 12, fill: '#f0b4dc'}, rose).textContent = '25';
+  ironHand.minute(rose, 86, -90);
+  ironHand.hour(rose, 66, -90);
+  mk('circle', {r: 6, fill: '#9b8794'}, rose); mk('circle', {r: 9, fill: 'none', stroke: '#9b8794', 'stroke-width': .9, opacity: .8}, rose); mk('circle', {r: 2.2, fill: '#06060b'}, rose);
 })();
 </script>
 </body>
