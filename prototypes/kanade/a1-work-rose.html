@@ -103,30 +103,44 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 .more{display:inline-block;margin-top:22px;color:var(--peri);text-underline-offset:5px;text-decoration-thickness:1px}
 .more:hover{color:var(--silver)}
 
-/* personal. two designs to choose between, set by ?after=a|b or the prototype switch. A hangs the projects
-   from a wrought-iron rail on chains, each with a crystal charm, in moonlight. B writes them on sheets of music
-   that unwind out of an open music box. the layout and the copy are shared */
+/* personal: the projects hang on chains from a wrought-iron rail, in moonlight falling across the stairwell, each with
+   a crystal charm in front of its corner. the tools hang from a bar of their own */
 #after{overflow-x:clip}
-.after{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-areas:"p1 p2" "tools p2";column-gap:28px;row-gap:44px;align-items:start}
+#after::before{content:"";position:absolute;inset:-60px 0 -40px;pointer-events:none;
+  background:linear-gradient(118deg, transparent 16%, rgba(165,153,216,.085) 23%, rgba(165,153,216,.03) 29%, transparent 33%, transparent 50%, rgba(165,153,216,.1) 56%, transparent 63%, transparent 71%, rgba(165,153,216,.06) 75%, transparent 80%);
+  -webkit-mask-image:linear-gradient(transparent, #000 16%, #000 80%, transparent);mask-image:linear-gradient(transparent, #000 16%, #000 80%, transparent)}
+#after .wrap{position:relative}
+.after{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-areas:"p1 p2" "tools p2";column-gap:28px;row-gap:44px;align-items:start;padding-top:100px}
 .p1{grid-area:p1}.p2{grid-area:p2}.tools{grid-area:tools}
 .deco{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .deco-back{z-index:0}.deco-front{z-index:2}
+.piece,.tool{background:linear-gradient(180deg, #221c2b, #12101a);border:1px solid rgba(155,135,148,.45);border-top:0;border-radius:0 0 6px 6px}
 .piece{position:relative;z-index:1;padding:34px 36px 36px}
 .piece .status{margin:0 0 18px;font-size:15px;color:var(--mist)}
 .piece .status svg{width:13px;height:13px;margin-right:9px;vertical-align:-1px}
 .piece h3{font-size:34px}
 .piece p{color:#cbc4d9}
-.stack{margin:22px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;color:var(--silver)}
-.split{margin-top:26px}
+/* the stack, joined by small iron rings */
+.stack{margin:22px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px 0;font-size:15px;color:var(--silver)}
+.stack li{display:flex;align-items:center}
+.stack li+li::before{content:"";width:5px;height:5px;margin:0 9px;border:1.3px solid var(--bronze);border-radius:50%}
+/* upstream and mine: an iron ring for what came with the fork, a crystal for my own work */
+.split{display:grid;grid-template-columns:1fr 1fr;margin-top:26px;border-top:1px solid var(--hair)}
+.voice{padding:20px 22px 4px 0}
+.voice.mine{padding:20px 0 4px 22px;border-left:1px solid var(--hair)}
 .voice h4{margin:0 0 6px;font:500 17px/1.3 var(--serif)}
+.voice h4::before{content:"";display:inline-block;width:10px;height:14px;margin-right:10px;vertical-align:-1px;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 0V4.6' stroke='%239b8794' stroke-width='1.2'/%3E%3Ccircle cx='5' cy='8.6' r='3.6' fill='none' stroke='%239b8794' stroke-width='1.4'/%3E%3C/svg%3E")}
 .voice.mine h4{color:var(--glow)}
+.voice.mine h4::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 0V2.2' stroke='%239b8794' stroke-width='1.2'/%3E%3Cpath d='M5 2.2L9 6.6L5 14L1 6.6Z' fill='%23bb6688' stroke='%23f0b4dc' stroke-width='.8'/%3E%3Cpath d='M1 6.6H9M5 2.2V14' stroke='%23ffe6f4' stroke-width='.5' opacity='.7'/%3E%3C/svg%3E")}
 .voice p{margin:0;font-size:16px}
-.brace,.mbox{display:none}
 .credit{margin:26px 0 0;padding-top:18px;border-top:1px solid var(--hair);font-size:15px;color:var(--mist) !important}
 .credit code{font:inherit;color:var(--silver)}
 .tools{position:relative;z-index:1;container:tools / inline-size}
 .tools h3{font-size:24px}
 .tools p.lab{margin:4px 0 0;color:var(--mist);font-size:15px}
+.tool-list{display:grid;grid-template-columns:1fr 1fr;gap:56px 18px;margin-top:66px}
+@container tools (max-width: 440px){ .tool-list{grid-template-columns:1fr} }
+.tool{position:relative;padding:18px 20px 20px}
 .tool h4{margin:0;font:500 22px/1.3 var(--serif)}
 .tool p{margin:6px 0 10px;color:#bdb5cc;font-size:16px}
 .tool a{color:var(--peri);font-size:15px;text-underline-offset:5px}
@@ -134,84 +148,7 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 @keyframes sway{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
 .ember{animation:ember 4.5s ease-in-out infinite}
 @keyframes ember{50%{opacity:.4}}
-.drift{animation:float 11s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
-#after.paused .sway,#after.paused .ember,#after.paused .drift,#after.paused .sparkle{animation-play-state:paused}
-
-/* A: wrought iron and crystal, in moonlight falling across the stairwell */
-#after[data-v="a"]::before{content:"";position:absolute;inset:-60px 0 -40px;pointer-events:none;
-  background:linear-gradient(118deg, transparent 16%, rgba(165,153,216,.085) 23%, rgba(165,153,216,.03) 29%, transparent 33%, transparent 50%, rgba(165,153,216,.1) 56%, transparent 63%, transparent 71%, rgba(165,153,216,.06) 75%, transparent 80%);
-  -webkit-mask-image:linear-gradient(transparent, #000 16%, #000 80%, transparent);mask-image:linear-gradient(transparent, #000 16%, #000 80%, transparent)}
-#after[data-v="a"] .wrap{position:relative}
-[data-v="a"] .after{padding-top:100px}
-[data-v="a"] .piece,[data-v="a"] .tool{background:linear-gradient(180deg, #221c2b, #12101a);border:1px solid rgba(155,135,148,.45);border-top:0;border-radius:0 0 6px 6px}
-[data-v="a"] .split{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--hair)}
-[data-v="a"] .voice{padding:20px 22px 4px 0}
-[data-v="a"] .voice.mine{padding:20px 0 4px 22px;border-left:1px solid var(--hair)}
-[data-v="a"] .voice h4::before{content:"";display:inline-block;width:10px;height:14px;margin-right:10px;vertical-align:-1px;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 0V4.6' stroke='%239b8794' stroke-width='1.2'/%3E%3Ccircle cx='5' cy='8.6' r='3.6' fill='none' stroke='%239b8794' stroke-width='1.4'/%3E%3C/svg%3E")}
-[data-v="a"] .voice.mine h4::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath d='M5 0V2.2' stroke='%239b8794' stroke-width='1.2'/%3E%3Cpath d='M5 2.2L9 6.6L5 14L1 6.6Z' fill='%23bb6688' stroke='%23f0b4dc' stroke-width='.8'/%3E%3Cpath d='M1 6.6H9M5 2.2V14' stroke='%23ffe6f4' stroke-width='.5' opacity='.7'/%3E%3C/svg%3E")}
-[data-v="a"] .stack{gap:10px 0}
-[data-v="a"] .stack li{display:flex;align-items:center}
-[data-v="a"] .stack li+li::before{content:"";width:5px;height:5px;margin:0 9px;border:1.3px solid var(--bronze);border-radius:50%}
-[data-v="a"] .tool-list{display:grid;grid-template-columns:1fr 1fr;gap:56px 18px;margin-top:66px}
-[data-v="a"] .tool{position:relative;padding:18px 20px 20px}
-@container tools (max-width: 440px){ [data-v="a"] .tool-list{grid-template-columns:1fr} }
-
-/* B: sheets of music, played out of an open music box */
-[data-v="b"] .after{column-gap:60px;row-gap:56px;padding-top:28px}
-[data-v="b"] .piece{--ln:rgba(207,200,222,.075);padding:40px 40px 44px;filter:drop-shadow(0 22px 34px rgba(0,0,0,.5))}
-/* manuscript paper: staves ruled across a dark sheet, its corner folded down */
-[data-v="b"] .piece::before{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 0 100%);
-  background:repeating-linear-gradient(180deg, var(--ln) 0 1px, transparent 1px 7px, var(--ln) 7px 8px, transparent 8px 14px, var(--ln) 14px 15px, transparent 15px 21px, var(--ln) 21px 22px, transparent 22px 28px, var(--ln) 28px 29px, transparent 29px 74px) 32px 150px/calc(100% - 64px) calc(100% - 180px) no-repeat,
-    linear-gradient(168deg, #2b2436, #221d2c 55%, #1c1825);
-  box-shadow:inset 0 0 0 1px rgba(207,200,222,.12)}
-[data-v="b"] .piece::after{content:"";position:absolute;top:0;right:0;width:34px;height:34px;background:linear-gradient(225deg, transparent 50%, #4d405f 50%, #382e48)}
-[data-v="b"] .p1{rotate:-1.2deg}
-[data-v="b"] .p2{rotate:.8deg}
-/* a score's heading: centred title, a short double rule */
-[data-v="b"] .piece .status,[data-v="b"] .piece h3{text-align:center}
-[data-v="b"] .piece h3::after{content:"";display:block;width:56px;height:4px;margin:16px auto 0;border-top:1px solid var(--bronze);border-bottom:1px solid var(--bronze)}
-/* the stack is sung: one note per technology, its name written under it like a lyric */
-[data-v="b"] .stack{gap:14px 0;margin-top:30px}
-[data-v="b"] .stack li{position:relative;min-width:54px;padding:40px 9px 0;text-align:center;
-  background:repeating-linear-gradient(180deg, rgba(155,135,148,.65) 0 1px, transparent 1px 6px) 0 4px/100% 25px no-repeat}
-[data-v="b"] .stack li::before{content:"";position:absolute;left:50%;top:var(--y);width:10px;height:7px;margin-left:-5px;border-radius:50%;background:var(--lilac);transform:rotate(-20deg)}
-[data-v="b"] .stack li::after{content:"";position:absolute;left:50%;top:calc(var(--y) - 17px);width:1.2px;height:20px;margin-left:3.6px;background:var(--lilac)}
-[data-v="b"] .stack li:nth-child(1){--y:25px}[data-v="b"] .stack li:nth-child(2){--y:22px}[data-v="b"] .stack li:nth-child(3){--y:19px}
-[data-v="b"] .stack li:nth-child(4){--y:10px}[data-v="b"] .stack li:nth-child(5){--y:13px}[data-v="b"] .stack li:nth-child(6){--y:7px}
-[data-v="b"] .stack li:last-child{background:linear-gradient(var(--bronze), var(--bronze)) right 4px/3px 25px no-repeat, linear-gradient(var(--bronze), var(--bronze)) calc(100% - 6px) 4px/1px 25px no-repeat,
-  repeating-linear-gradient(180deg, rgba(155,135,148,.65) 0 1px, transparent 1px 6px) 0 4px/100% 25px no-repeat}
-/* upstream and mine are two voices of one system, joined by a brace: together, but never the same part */
-[data-v="b"] .split{position:relative;margin-top:30px;padding-left:28px}
-[data-v="b"] .brace{display:block;position:absolute;left:0;top:6px;width:18px;height:calc(100% - 12px);overflow:visible}
-[data-v="b"] .brace path{fill:none;stroke:var(--bronze);stroke-width:1.4;vector-effect:non-scaling-stroke}
-[data-v="b"] .voice{padding:6px 0 16px 18px;border-left:1px solid var(--bronze)}
-[data-v="b"] .voice h4{display:flex;align-items:center;gap:14px}
-[data-v="b"] .voice h4::after{content:"";flex:1;height:25px;
-  background:radial-gradient(closest-side, var(--mist) 85%, transparent) 30% 9px/10px 7px no-repeat, repeating-linear-gradient(180deg, rgba(155,135,148,.5) 0 1px, transparent 1px 6px) 0 0/100% 25px no-repeat}
-[data-v="b"] .voice.mine h4::after{background:radial-gradient(closest-side, var(--glow) 85%, transparent) 22% 15px/10px 7px no-repeat, radial-gradient(closest-side, var(--glow) 85%, transparent) 46% 6px/10px 7px no-repeat,
-  repeating-linear-gradient(180deg, rgba(155,135,148,.5) 0 1px, transparent 1px 6px) 0 0/100% 25px no-repeat}
-[data-v="b"] .credit{position:relative;border-top:0;padding-top:24px}
-[data-v="b"] .credit::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
-/* the tools sit by the music box: not my projects, just always open */
-[data-v="b"] .tools{display:grid;grid-template-columns:minmax(0,1fr) 176px;grid-template-areas:"head box" "list box";column-gap:22px;align-items:start;padding-top:4px}
-[data-v="b"] .tools-head{grid-area:head}
-[data-v="b"] .mbox{display:block;grid-area:box;width:176px;height:auto;overflow:visible;margin-top:22px}
-[data-v="b"] .tool-list{grid-area:list}
-[data-v="b"] .tool{position:relative;padding:18px 0 0 26px}
-[data-v="b"] .tool::before{content:"";position:absolute;left:2px;top:30px;width:10px;height:7px;border-radius:50%;background:var(--lilac);transform:rotate(-20deg)}
-[data-v="b"] .tool::after{content:"";position:absolute;left:10.5px;top:13px;width:1.2px;height:20px;background:var(--lilac)}
-[data-v="b"] .tool+.tool{margin-top:18px;border-top:1px solid var(--hair)}
-
-@media (min-width: 901px) and (max-width: 1180px){
-  [data-v="b"] .tools{grid-template-columns:minmax(0,1fr) 124px}
-  [data-v="b"] .mbox{width:124px}
-}
-
-/* prototype only: switch between the two After hours designs. remove once one is chosen */
-.proto{position:fixed;right:16px;bottom:16px;z-index:20;display:flex;align-items:center;gap:2px;padding:4px 4px 4px 14px;border:1px solid rgba(155,135,148,.5);border-radius:999px;background:rgba(13,12,20,.94);font-size:13px;color:var(--mist)}
-.proto span{margin-right:6px}
-.proto button{min-height:34px;padding:0 13px;border:0;border-radius:999px;background:none;color:var(--lilac);font:500 13px/1 var(--sans);cursor:pointer}
-.proto button[aria-pressed="true"]{background:var(--silver);color:var(--void)}
+#after.paused .sway,#after.paused .ember{animation-play-state:paused}
 
 /* method: a four-note phrase on a bronze staff; the notes are glass, and the last one, the result, is the rose */
 .phrase{list-style:none;margin:0;padding:0 18px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px;position:relative;
@@ -254,11 +191,7 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
   .case{grid-template-columns:1fr;gap:28px;padding:48px 0 56px}
   .case-head{position:static}
   .no{font-size:84px;margin-bottom:14px}
-  .after{grid-template-columns:1fr;grid-template-areas:"p1" "p2" "tools"}
-  [data-v="a"] .after{padding-top:84px}
-  [data-v="b"] .after{row-gap:48px}
-  [data-v="b"] .p1{rotate:-.6deg}
-  [data-v="b"] .p2{rotate:.5deg}
+  .after{grid-template-columns:1fr;grid-template-areas:"p1" "p2" "tools";padding-top:84px}
   /* on narrow screens the staff stands upright beside the notes */
   .phrase{grid-template-columns:1fr;row-gap:40px;padding:0 0 0 64px;
     background:repeating-linear-gradient(90deg, rgba(155,135,148,.7) 0 1px, transparent 1px 9px) 0 0/37px 100% no-repeat}
@@ -284,12 +217,8 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
   .case dl div{grid-template-columns:1fr;gap:4px}
   .case .result svg{left:-20px;width:14px}
   .piece{padding:28px 22px 30px}
-  [data-v="b"] .piece{padding:36px 22px 34px}
-  [data-v="a"] .split{grid-template-columns:1fr}
-  [data-v="a"] .voice.mine{padding:20px 0 4px;border-left:0;border-top:1px solid var(--hair)}
-  [data-v="b"] .tools{grid-template-columns:minmax(0,1fr) 112px;grid-template-areas:"head box" "list list"}
-  [data-v="b"] .mbox{width:112px;margin-top:0}
-  .proto span{display:none}
+  .split{grid-template-columns:1fr}
+  .voice.mine{padding:20px 0 4px;border-left:0;border-top:1px solid var(--hair)}
   .phrase{grid-template-columns:1fr}
   .clock span{display:none}
   .btn{flex:1;justify-content:center}
@@ -297,7 +226,7 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
   .js .rise{opacity:1;transform:none;transition:none}
-  .sparkle,.frag,.glass,.sway,.ember,.drift{animation:none}
+  .sparkle,.frag,.glass,.sway,.ember{animation:none}
   .no,.heart-label{transition:none}
 }
 /* work: a rose window held in place while the cases scroll past; each pane lights for its case */
@@ -469,7 +398,7 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 
 <svg class="staff-rule" viewBox="0 0 1200 44" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M0 10 H560 M0 16 H560 M0 22 H560 M0 28 H560 M0 34 H560 M640 10 H1200 M640 16 H1200 M640 22 H1200 M640 28 H1200 M640 34 H1200 M600 38 C 580 26, 576 12, 590 10 C 597 9, 600 15, 600 18 C 600 15, 603 9, 610 10 C 624 12, 620 26, 600 38 Z M560 22 C 570 22, 576 18, 584 14 M640 22 C 630 22, 624 18, 616 14"/></svg>
 
-<section id="after" data-v="a" aria-labelledby="after-title">
+<section id="after" aria-labelledby="after-title">
   <div class="wrap">
     <div class="sec-head rise">
       <h2 id="after-title">After hours.</h2>
@@ -488,7 +417,6 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
         <h3 id="p2">dots-hyprland</h3>
         <p>The Hyprland desktop I work in every day. I forked it because I loved how it looked, then kept going where it didn't fit how I work.</p>
         <div class="split">
-          <svg class="brace" viewBox="0 0 20 200" preserveAspectRatio="none" aria-hidden="true"><path d="M18,1 C8,2 11,30 10,70 C9.5,90 8,97 2,100 C8,103 9.5,110 10,130 C11,170 8,198 18,199"/></svg>
           <div class="voice up"><h4>From upstream</h4><p>The visual design. It's the reason I forked it, and it isn't mine.</p></div>
           <div class="voice mine"><h4>Mine</h4><p>Workspace and wallpaper state, launcher speed and correctness, and reliability across processes.</p></div>
         </div>
@@ -497,7 +425,6 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
       </article>
       <div class="tools">
         <div class="tools-head"><h3>Tools I use</h3><p class="lab">Not my projects. Just always open.</p></div>
-        <svg class="mbox" viewBox="0 0 200 170" aria-hidden="true"></svg>
         <div class="tool-list">
           <div class="tool"><h4>Odysseus</h4><p>A self-hosted AI workspace for exploring ideas close to my local environment.</p><a href="https://github.com/pewdiepie-archdaemon/odysseus" rel="noreferrer">Odysseus on GitHub</a></div>
           <div class="tool"><h4>T3 Code</h4><p>A coding-agent workspace that keeps implementation and review next to the code.</p><a href="https://github.com/pingdotgg/t3code" rel="noreferrer">T3 Code on GitHub</a></div>
@@ -544,12 +471,6 @@ h3{font:500 clamp(30px, 3vw, 42px)/1.12 var(--serif);margin:0}
 </section>
 </main>
 
-<!-- prototype only: compare the two After hours designs; remove once one is chosen -->
-<div class="proto" role="group" aria-label="After hours design">
-  <span>After hours</span>
-  <button type="button" data-v="a" aria-pressed="true">A · Iron</button>
-  <button type="button" data-v="b" aria-pressed="false">B · Music box</button>
-</div>
 
 <script>
 document.documentElement.classList.add('js');
@@ -973,16 +894,13 @@ const ironHand = (() => {
   ironHand.hour(rose, 66, -90);
   mk('circle', {r: 6, fill: '#9b8794'}, rose); mk('circle', {r: 9, fill: 'none', stroke: '#9b8794', 'stroke-width': .9, opacity: .8}, rose); mk('circle', {r: 2.2, fill: '#06060b'}, rose);
 })();
-/* after hours, in two designs to choose between.
-   A: the projects hang on chains from a wrought-iron rail, in moonlight, each with a crystal charm in front of its
-   corner: a bud for Lingkod HR, still taking shape, and an open lotus for the fork. a chain set with iron stars sags
-   behind them, and the tools hang from a bar of their own.
-   B: the projects are sheets of music. a staff unwinds out of an open music box beside the tools, which are always
-   open too, and carries its notes up between the pages */
+/* after hours: the projects hang on chains from a wrought-iron rail, in moonlight, each with a crystal charm in front
+   of its corner: a bud for Lingkod HR, still taking shape, and an open lotus for the fork. a chain set with iron stars
+   sags behind them, and the tools hang from a bar of their own */
 (() => {
-  const sec = document.getElementById('after'), grid = sec.querySelector('.after'), sw = document.querySelector('.proto');
-  const back = grid.querySelector('.deco-back'), front = grid.querySelector('.deco-front'), box = grid.querySelector('.mbox');
-  const iron = '#9b8794', ironFill = '#241e2e', heartD = 'M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z';
+  const sec = document.getElementById('after'), grid = sec.querySelector('.after');
+  const back = grid.querySelector('.deco-back'), front = grid.querySelector('.deco-front');
+  const iron = '#9b8794', ironFill = '#241e2e';
   const line = (w = 1.4) => ({fill: 'none', stroke: iron, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round'});
   const at = (x, y, a = 0) => `translate(${x.toFixed(1)} ${y.toFixed(1)})` + (a ? ` rotate(${a.toFixed(1)})` : '');
   // where an element sits inside the grid, which the drawings share
@@ -991,9 +909,8 @@ const ironHand = (() => {
     <linearGradient id="ahPetal" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffe0f1"/><stop offset=".4" stop-color="#f0b4dc"/><stop offset="1" stop-color="#bb6688"/></linearGradient>
     <radialGradient id="ahGlow"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".55"/><stop offset=".45" stop-color="#bb6688" stop-opacity=".18"/><stop offset="1" stop-color="#bb6688" stop-opacity="0"/></radialGradient>
   </defs>`;
-  let v = new URLSearchParams(location.search).get('after') === 'b' ? 'b' : 'a', inView = false, raf = 0, notes = [], pts = [];
 
-  // A's ironwork. a bar's end turns into a scroll: half-turns shrinking into a spiral, curling sx and down (sy 1) or up (-1)
+  // the ironwork. a bar's end turns into a scroll: half-turns shrinking into a spiral, curling sx and down (sy 1) or up (-1)
   const curl = (x, y, r, sx, sy) => { const s = sx === sy ? 1 : 0; let d = '', k = r, dir = sy; for (let i = 0; i < 4; i++){ y += dir*2*k; d += ` A${k.toFixed(2)},${k.toFixed(2)} 0 0 ${s} ${x.toFixed(1)},${y.toFixed(1)}`; dir = -dir; k *= .6; } return d; };
   const chain = (g, x, y0, y1) => { for (let y = y0, i = 0; y < y1 - 3; y += 6.5, i++){ const h = Math.min(9, y1 - y);
     if (i % 2) mk('path', {d: `M${x},${y} V${y + h}`, ...line(1.8)}, g); else mk('ellipse', {cx: x, cy: y + h/2, rx: 2.4, ry: h/2, ...line(1.1)}, g); } };
@@ -1016,7 +933,8 @@ const ironHand = (() => {
     mk('path', {d: `M${c.r - 22},${c.b - .5} H${c.r + 1}` + curl(c.r + 1, c.b - .5, r*.7, 1, -1), ...line(1.3)}, g);
   };
 
-  function drawA(){
+  function draw(){
+    back.innerHTML = defs; front.innerHTML = '';
     const W = grid.clientWidth, g = front, rail = 8;
     const panels = [grid.querySelector('.p1'), grid.querySelector('.p2')].map(rel), [p1, p2] = panels;
     // a chain set with iron stars, sagging behind the panels: it shows in the margins, the gutter and between the
@@ -1092,86 +1010,9 @@ const ironHand = (() => {
     plaques.forEach(c => hang(g, c, anchor(c, plaques, by + 3), 5));
   }
 
-  // B's music box, drawn once: the lid leaning back with a glass oval and a heart, the comb and pinned cylinder lit
-  // inside, bronze trim, ball feet, and a winding key whose bow is the hour hand's heart
-  (() => {
-    const L = (w = 1.2) => ({fill: 'none', stroke: iron, 'stroke-width': w, 'stroke-linejoin': 'round'});
-    mk('defs', {}, box).innerHTML = `
-      <linearGradient id="mbFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d3050"/><stop offset="1" stop-color="#271f33"/></linearGradient>
-      <linearGradient id="mbSide" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#271f33"/><stop offset="1" stop-color="#1b1724"/></linearGradient>
-      <linearGradient id="mbLid" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2d2440"/><stop offset="1" stop-color="#3b3050"/></linearGradient>
-      <radialGradient id="mbGlow" cx=".5" cy=".62" r=".6"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".8"/><stop offset=".5" stop-color="#bb6688" stop-opacity=".25"/><stop offset="1" stop-color="#bb6688" stop-opacity="0"/></radialGradient>`;
-    mk('ellipse', {cx: 104, cy: 72, rx: 96, ry: 70, fill: 'url(#mbGlow)', opacity: .5}, box);
-    mk('path', {d: 'M52,82 L178,82 L190,16 L64,16 Z', fill: 'url(#mbLid)', ...L()}, box);
-    mk('path', {d: 'M62,76 L170,76 L180,24 L72,24 Z', ...L(.8), opacity: .8}, box);
-    mk('ellipse', {cx: 121, cy: 50, rx: 26, ry: 16, transform: 'rotate(-5 121 50)', ...L(1), fill: '#4a3a63', 'fill-opacity': .75}, box);
-    mk('path', {d: heartD, transform: 'translate(121 51) scale(.62)', fill: 'none', stroke: '#f0b4dc', 'stroke-width': 1.2, 'vector-effect': 'non-scaling-stroke'}, box);
-    mk('path', {d: 'M64,16 L190,16 L192,11 L66,11 Z', ...L(.9), fill: '#2b2436'}, box);
-    mk('path', {d: 'M24,96 L150,96 L178,82 L52,82 Z', fill: '#130f1b', stroke: iron, 'stroke-width': 1.2, 'stroke-linejoin': 'round'}, box);
-    mk('path', {d: 'M24,96 L150,96 L178,82 L52,82 Z', fill: 'url(#mbGlow)'}, box);
-    mk('path', {d: 'M60,89 H124', stroke: iron, 'stroke-width': 5, 'stroke-linecap': 'round'}, box);
-    for (let x = 63; x < 122; x += 5) mk('circle', {cx: x, cy: 88.2 + (x % 2), r: .9, fill: '#ece8f4'}, box);
-    for (let x = 62; x < 124; x += 4) mk('path', {d: `M${x},92.4 L${x - 2},95.4`, stroke: '#cfc8de', 'stroke-width': .6, opacity: .6}, box);
-    mk('path', {d: 'M24,96 L150,96 L150,150 L24,150 Z', fill: 'url(#mbFront)', stroke: iron, 'stroke-width': 1.2, 'stroke-linejoin': 'round'}, box);
-    mk('path', {d: 'M150,96 L178,82 L178,136 L150,150 Z', fill: 'url(#mbSide)', stroke: iron, 'stroke-width': 1.2, 'stroke-linejoin': 'round'}, box);
-    mk('path', {d: 'M24,101 H150 L178,87', ...L(.6), opacity: .6}, box);
-    mk('rect', {x: 33, y: 107, width: 108, height: 35, rx: 2, ...L(.8), opacity: .7}, box);
-    mk('path', {d: heartD, transform: 'translate(87 122) scale(.52)', fill: iron}, box);
-    mk('path', {d: 'M87,121 V126', stroke: '#130f1b', 'stroke-width': 1.4, 'stroke-linecap': 'round'}, box);
-    [[30, 153], [144, 153], [173, 140]].forEach(([x, y]) => mk('ellipse', {cx: x, cy: y, rx: 4, ry: 2.6, fill: iron}, box));
-    mk('path', {d: 'M178,111 H189', stroke: iron, 'stroke-width': 2.2, 'stroke-linecap': 'round'}, box);
-    mk('path', {d: heartD, transform: 'translate(195 111) rotate(-90) scale(.55)', ...L(1.3)}, box);
-  })();
-
-  function drawB(){
-    const W = grid.clientWidth, H = grid.clientHeight, g = front;
-    const p1 = rel(grid.querySelector('.p1')), p2 = rel(grid.querySelector('.p2')), bx = rel(box), tt = rel(grid.querySelector('.tools')).t;
-    const k = bx.w/200, mx = bx.l + 104*k, my = bx.t + 88*k, two = p2.l > p1.r;
-    // loose sheets drifting in the margins
-    if (grid.getBoundingClientRect().left > 100) [[-104, p1.t + 70, -16], [W + 34, H - 250, 13]].forEach(([x, y, a], i) => {
-      const d = mk('g', {class: 'drift', style: `animation-delay:${-i*4}s`}, mk('g', {transform: at(x, y, a), opacity: .6}, back));
-      mk('path', {d: 'M0,0 H58 L70,12 V86 H0 Z', fill: '#2b2436', stroke: 'rgba(207,200,222,.3)', 'stroke-width': .8}, d);
-      for (const y0 of [18, 50]) for (let l = 0; l < 5; l++) mk('path', {d: `M7,${y0 + l*4} H63`, stroke: '#cfc8de', 'stroke-width': .5, opacity: .35}, d);
-      [[16, 22], [28, 18], [40, 56], [52, 52]].forEach(([nx, ny]) => mk('ellipse', {cx: nx, cy: ny, rx: 2.4, ry: 1.7, transform: `rotate(-20 ${nx} ${ny})`, fill: '#cfc8de', opacity: .6}, d));
-    });
-    // a staff unwinding out of the box: up between the pages and away over the fork, or, on one column, into the gap above
-    const d = two
-      ? (() => { const gx = (p1.r + p2.l)/2, top = p2.t; return `M${mx},${my} C${mx},${my - 64} ${gx},${my - 56} ${gx},${my - 136} L${gx},${top + 40} C${gx},${top - 34} ${gx + 50},${top - 54} ${gx + 210},${top - 56} S${W + 50},${top - 58} ${W + 170},${top - 110}`; })()
-      : `M${mx},${my} C${mx},${my - 56} ${mx - 24},${tt - 26} ${mx - 96},${tt - 26} S40,${tt - 24} -30,${tt - 8}`;
-    mk('defs', {}, g).innerHTML = `<linearGradient id="ahRibbon" gradientUnits="userSpaceOnUse" x1="${two ? W - 120 : mx}" y1="0" x2="${two ? W + 170 : -30}" y2="0"><stop offset="0" stop-color="#9b8794" stop-opacity=".9"/><stop offset="1" stop-color="#9b8794" stop-opacity="0"/></linearGradient>`;
-    const ref = mk('path', {d}, g), L = ref.getTotalLength(), N = Math.max(40, Math.round(L/7));
-    pts = [];
-    for (let i = 0; i <= N; i++){ const s = L*i/N, a = ref.getPointAtLength(s), b = ref.getPointAtLength(Math.min(L, s + 1)), c = ref.getPointAtLength(Math.max(0, s - 1)), l = Math.hypot(b.x - c.x, b.y - c.y) || 1;
-      // it leaves the box narrow and opens to a full staff
-      pts.push([a.x, a.y, -(b.y - c.y)/l, (b.x - c.x)/l, 4.2*(.2 + .8*Math.min(1, s/80))]); }
-    ref.remove();
-    for (let j = -2; j <= 2; j++) mk('path', {d: 'M' + pts.map(([x, y, nx, ny, w]) => `${(x + nx*j*w).toFixed(1)},${(y + ny*j*w).toFixed(1)}`).join(' L'), fill: 'none', stroke: 'url(#ahRibbon)', 'stroke-width': .9}, g);
-    notes = [-1, 1, 0, 2].map((j, i) => { const ng = mk('g', {opacity: 0}, g); mk('ellipse', {rx: 4, ry: 2.9, transform: 'rotate(-22)', fill: '#ece8f4'}, ng); mk('path', {d: 'M3.6 -1 V-14', stroke: '#ece8f4', 'stroke-width': 1.1}, ng); return {ng, j, off: i/4}; });
-    // a little light where the music leaves the box
-    [[-16, -18, .7], [18, -30, .5], [4, -46, .6]].forEach(([dx, dy, sc], i) => mk('use', {href: '#spark', x: -6, y: -6, width: 12, height: 12, class: 'sparkle', style: `animation-delay:${-i*1.3}s`}, mk('g', {transform: `${at(mx + dx, my + dy)} scale(${sc})`}, g)));
-    place(reduce ? null : performance.now());
-  }
-  // the notes ride the staff out of the box; with reduced motion they rest along it
-  const place = now => notes.forEach(n => {
-    const p = now == null ? .2 + n.off*.6 : ((now/9000) + n.off) % 1, [x, y, nx, ny, w] = pts[Math.min(pts.length - 1, Math.floor(p*(pts.length - 1)))];
-    n.ng.setAttribute('transform', at(x + nx*n.j*w, y + ny*n.j*w));
-    n.ng.setAttribute('opacity', now == null ? .9 : Math.min(1, p*10, (1 - p)*5).toFixed(2));
-  });
-  const loop = now => { place(now); raf = requestAnimationFrame(loop); };
-  const run = () => { const want = inView && v === 'b' && !reduce; if (want && !raf) raf = requestAnimationFrame(loop); else if (!want && raf){ cancelAnimationFrame(raf); raf = 0; } };
-  const draw = () => { back.innerHTML = defs; front.innerHTML = ''; notes = []; (v === 'a' ? drawA : drawB)(); run(); };
-
-  // the prototype switch, and ?after=a|b
-  const setV = nv => { v = nv; sec.dataset.v = v; sw.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v))); draw(); };
-  sw.addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b || b.dataset.v === v) return;
-    setV(b.dataset.v);
-    const u = new URL(location.href); u.searchParams.set('after', v); history.replaceState(null, '', u);
-    if (!inView) sec.scrollIntoView({behavior: reduce ? 'auto' : 'smooth'});
-  });
-  new IntersectionObserver(([e]) => { inView = e.isIntersecting; sec.classList.toggle('paused', !inView); run(); }).observe(sec);
+  // the charms sway only while the section is on screen
+  new IntersectionObserver(([e]) => sec.classList.toggle('paused', !e.isIntersecting)).observe(sec);
   let pend = 0; new ResizeObserver(() => { cancelAnimationFrame(pend); pend = requestAnimationFrame(draw); }).observe(grid);
-  setV(v);
   document.fonts.ready.then(draw);
 })();
 </script>
