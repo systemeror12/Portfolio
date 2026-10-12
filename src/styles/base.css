@@ -61,42 +61,45 @@ svg {
   stroke-width: 1.65;
 }
 .site-header {
-  height: 78px;
-  padding: 0 4vw;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--silver);
-  border-bottom: 1px solid var(--hair);
   position: relative;
   z-index: 10;
-}
-.identity {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 12px;
+  gap: 32px;
+  padding: 18px max(24px, calc((100vw - 1200px) / 2));
+  color: var(--silver);
+  background: linear-gradient(rgba(6, 6, 11, 0.92), rgba(6, 6, 11, 0));
 }
-.identity span {
-  width: 35px;
-  height: 35px;
-  display: grid;
-  place-items: center;
-  background: var(--silver);
-  color: var(--void);
-  font: 500 10px var(--sans);
+.identity {
+  margin-right: auto;
+  font: 500 18px/1 var(--serif);
+  white-space: nowrap;
 }
 .site-header nav {
   display: flex;
-  gap: 30px;
-  font-size: 12px;
-  font-weight: 600;
+  gap: 22px;
 }
 .site-header nav a {
-  transition: opacity 0.2s ease;
+  font-size: 14px;
+  color: var(--mist);
+  white-space: nowrap;
+  transition: color 0.2s ease;
 }
-.site-header nav a:hover {
-  opacity: 0.62;
+.site-header nav a:hover,
+.site-header nav a[aria-current="page"] {
+  color: var(--silver);
+}
+.clock {
+  margin: 0;
+  font-size: 15px;
+  color: var(--mist);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.clock b {
+  margin-left: 6px;
+  font: 500 17px/1 var(--serif);
+  color: var(--silver);
 }
 .menu-button {
   display: none;
@@ -110,19 +113,17 @@ svg {
   text-transform: uppercase;
   color: var(--peri);
 }
-@media (max-width: 700px) {
+@media (max-width: 1060px) {
   .site-header {
-    height: 66px;
-    padding: 0 20px;
-  }
-  .identity strong {
-    font-size: 11px;
+    gap: 16px;
+    padding: 14px 20px;
   }
   .menu-button {
     display: grid;
     place-items: center;
     width: 38px;
     height: 38px;
+    margin-right: -8px;
   }
   .menu-button svg {
     width: 20px;
@@ -130,16 +131,26 @@ svg {
   .site-header nav {
     display: none;
     position: absolute;
-    top: 66px;
+    top: 100%;
     left: 0;
     right: 0;
-    padding: 12px 20px 22px;
+    padding: 8px 20px 18px;
     background: var(--night);
     border-bottom: 1px solid var(--hair);
     flex-direction: column;
+    gap: 0;
   }
   .site-header nav.open {
     display: flex;
+  }
+  .site-header nav a {
+    padding: 10px 0;
+    font-size: 16px;
+  }
+}
+@media (max-width: 560px) {
+  .clock span {
+    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
