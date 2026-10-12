@@ -2,18 +2,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import {
   ArrowRight,
-  Check,
   Code,
   Download,
   ExternalLink,
-  Layers3,
-  LockKeyhole,
   Mail,
   Network,
 } from "lucide-react";
 // Load base.css before the page stylesheets so their rules override it.
 import "./styles/base.css";
 import "./styles/homepage.css";
+import "./styles/hero.css";
 import "./styles/work.css";
 import { workingMethod } from "./content";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
@@ -30,82 +28,8 @@ import {
   publicSectorCaseStudyPath,
 } from "./routes";
 import { Header } from "./site-header";
+import { Hero } from "./hero";
 import { WorkSection } from "./work-section";
-
-function Topology() {
-  return (
-    <figure className="topology" aria-labelledby="topology-title">
-      <figcaption className="topology-header">
-        <span id="topology-title">
-          <Network /> Reconstructed system map / HRIS
-        </span>
-        <span>Boundaries visible</span>
-      </figcaption>
-      <div className="topology-canvas">
-        <div className="topology-node company company-a">
-          <small>Legal company</small>
-          <strong>Company A</strong>
-          <span>rules · access</span>
-        </div>
-        <div className="topology-node company company-b">
-          <small>Legal company</small>
-          <strong>Company B</strong>
-          <span>rules · access</span>
-        </div>
-        <div className="topology-node core">
-          <Layers3 />
-          <small>Shared platform</small>
-          <strong>HR operations</strong>
-          <span>attendance · leave · payroll</span>
-        </div>
-        <div className="topology-node result">
-          <Check />
-          <small>Verified result</small>
-          <strong>Traceable payslips</strong>
-        </div>
-        <svg
-          viewBox="0 0 680 390"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path d="M135 88 C270 88 242 195 340 195" />
-          <path d="M135 302 C270 302 242 195 340 195" />
-          <path d="M440 195 C505 195 516 195 575 195" />
-        </svg>
-      </div>
-      <div className="topology-note">
-        <LockKeyhole /> Sanitized architecture · no client identity, data, or
-        scale shown
-      </div>
-    </figure>
-  );
-}
-
-function Hero() {
-  return (
-    <section className="hero">
-      <div className="hero-copy">
-        <span className="eyebrow">Platform Engineer / Philippines</span>
-        <h1>
-          Order for systems
-          <br />
-          that cannot stop.
-        </h1>
-        <p>
-          I adapt platforms, integrations, and workflows—making their rules,
-          state, and boundaries clear enough to trust.
-        </p>
-        <div className="hero-actions">
-          <InternalLink className="primary-action" to="/#work">
-            Explore system evidence <ArrowRight />
-          </InternalLink>
-          <InternalLink to="/#contact">Discuss a role</InternalLink>
-        </div>
-      </div>
-      <Topology />
-    </section>
-  );
-}
 
 function PersonalProjects() {
   return (

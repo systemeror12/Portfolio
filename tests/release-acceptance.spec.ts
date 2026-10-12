@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-  ["/", "Order for systems that cannot stop."],
+  ["/", "Every record ends with a person."],
   ["/work/multi-company-hris", "Multi-Company HRIS"],
   ["/work/ai-odoo-rnd", "AI R&D Case Study"],
   ["/work/payment-provider", "Payment Provider Module"],

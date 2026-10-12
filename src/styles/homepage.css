@@ -1,20 +1,8 @@
-.hero-actions a,
 .contact-links a {
   transition: opacity 0.2s ease;
 }
-.hero-actions a:hover,
 .contact-links a:hover {
   opacity: 0.62;
-}
-.hero {
-  min-height: 670px;
-  padding: 78px 5vw 88px;
-  display: grid;
-  grid-template-columns: minmax(360px, 0.78fr) minmax(570px, 1.22fr);
-  gap: 6vw;
-  align-items: center;
-  background: transparent;
-  color: var(--silver);
 }
 .approach-intro > span,
 .capabilities > div > span,
@@ -23,156 +11,6 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--peri);
-}
-.hero h1 {
-  font: 500 clamp(55px, 5.2vw, 80px)/1.02 var(--serif);
-  letter-spacing: -0.01em;
-  margin: 27px 0;
-}
-.hero-copy > p {
-  max-width: 520px;
-  font-size: 15px;
-  line-height: 1.75;
-  color: var(--text-soft);
-}
-.hero-actions {
-  display: flex;
-  gap: 28px;
-  align-items: center;
-  margin-top: 38px;
-}
-.hero-actions a {
-  padding: 13px 0;
-  border-bottom: 1px solid var(--hair);
-  font: 500 9px var(--sans);
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-.hero-actions .primary-action {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  color: var(--peri);
-  border-color: var(--peri);
-}
-.hero-actions svg {
-  width: 16px;
-}
-.topology {
-  margin: 0;
-  background: var(--night);
-  border: 1px solid var(--hair);
-  box-shadow: 18px 18px 0 var(--plum);
-}
-.topology-header,
-.topology-note {
-  height: 44px;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font: 400 8px var(--sans);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--mist);
-}
-.topology-header {
-  border-bottom: 1px solid var(--hair);
-}
-.topology-header span:first-child,
-.topology-note {
-  gap: 8px;
-}
-.topology-header span {
-  display: flex;
-  align-items: center;
-}
-.topology-header svg,
-.topology-note svg {
-  width: 13px;
-}
-.topology-canvas {
-  height: 390px;
-  position: relative;
-  overflow: hidden;
-  background-image:
-    linear-gradient(var(--hair) 1px, transparent 1px),
-    linear-gradient(90deg, var(--hair) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-.topology-canvas > svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.topology-canvas path {
-  fill: none;
-  stroke: var(--bronze);
-  stroke-width: 1.5;
-  stroke-dasharray: 6 5;
-}
-.topology-node {
-  position: absolute;
-  z-index: 1;
-  width: 158px;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  background: var(--night);
-  border: 1px solid var(--hair);
-}
-.topology-node small {
-  font: 400 7px var(--sans);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--mist);
-}
-.topology-node strong {
-  font: 600 13px var(--serif);
-  margin: 7px 0;
-}
-.topology-node span {
-  font: 400 8px var(--sans);
-  color: var(--mist);
-}
-.company-a {
-  left: 5%;
-  top: 11%;
-}
-.company-b {
-  left: 5%;
-  bottom: 11%;
-}
-.topology-node.core {
-  width: 200px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border-color: var(--peri);
-  box-shadow: 0 0 0 5px var(--hair);
-}
-.topology-node.core > svg {
-  width: 20px;
-  color: var(--peri);
-  margin-bottom: 8px;
-}
-.topology-node.result {
-  right: 4%;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--plum);
-  border-color: var(--bronze);
-}
-.topology-node.result > svg {
-  width: 17px;
-  color: var(--glow);
-  margin-bottom: 8px;
-}
-.topology-note {
-  border-top: 1px solid var(--hair);
-  justify-content: flex-start;
-  text-transform: none;
 }
 .personal-projects {
   padding: 105px 5vw;
@@ -457,16 +295,6 @@ footer {
   color: var(--mist);
 }
 @media (max-width: 1000px) {
-  .hero {
-    grid-template-columns: 1fr;
-    padding-top: 65px;
-  }
-  .hero-copy {
-    max-width: 680px;
-  }
-  .topology {
-    margin-top: 30px;
-  }
   .contact-copy {
     grid-template-columns: 140px 1fr;
   }
@@ -487,57 +315,6 @@ footer {
   }
 }
 @media (max-width: 700px) {
-  .hero {
-    padding: 62px 20px 72px;
-    display: block;
-    min-height: auto;
-  }
-  .hero h1 {
-    font-size: 50px;
-  }
-  .hero-copy > p {
-    font-size: 14px;
-  }
-  .hero-actions {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .topology {
-    margin-top: 65px;
-    box-shadow: 8px 8px 0 var(--plum);
-  }
-  .topology-header span:last-child {
-    display: none;
-  }
-  .topology-canvas {
-    height: 475px;
-  }
-  .topology-canvas > svg {
-    display: none;
-  }
-  .company-a {
-    left: 4%;
-    top: 5%;
-  }
-  .company-b {
-    left: auto;
-    right: 4%;
-    top: 5%;
-    bottom: auto;
-  }
-  .topology-node.core {
-    top: 52%;
-  }
-  .topology-node.result {
-    right: auto;
-    left: 50%;
-    top: auto;
-    bottom: 4%;
-    transform: translateX(-50%);
-  }
-  .topology-note {
-    font-size: 7px;
-  }
   .approach {
     padding: 90px 20px;
     grid-template-columns: 1fr;
