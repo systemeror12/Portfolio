@@ -1,0 +1,154 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+:root {
+  --night: #101a23;
+  --panel: #182732;
+  --grid: #284454;
+  --teal: #60b7b2;
+  --sand: #d8c58f;
+  --cloud: #dce8e8;
+  --paper: #edf3f2;
+  --ink: #172229;
+  --slate: #60747c;
+  --line: #b9c8cb;
+  --dark-line: #344b59;
+  font-family: Manrope, sans-serif;
+  color: var(--ink);
+  background: var(--night);
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+}
+svg {
+  stroke-width: 1.65;
+}
+.site-header {
+  height: 78px;
+  padding: 0 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--cloud);
+  border-bottom: 1px solid var(--dark-line);
+  position: relative;
+  z-index: 10;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.identity span {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  background: var(--cloud);
+  color: var(--night);
+  font: 500 10px "DM Mono";
+}
+.site-header nav {
+  display: flex;
+  gap: 30px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.site-header nav a {
+  transition: opacity 0.2s ease;
+}
+.site-header nav a:hover {
+  opacity: 0.62;
+}
+.menu-button {
+  display: none;
+  background: none;
+  border: 0;
+  color: var(--cloud);
+}
+.eyebrow {
+  font: 500 9px "DM Mono";
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+@media (max-width: 700px) {
+  .site-header {
+    height: 66px;
+    padding: 0 20px;
+  }
+  .identity strong {
+    font-size: 11px;
+  }
+  .menu-button {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+  }
+  .menu-button svg {
+    width: 20px;
+  }
+  .site-header nav {
+    display: none;
+    position: absolute;
+    top: 66px;
+    left: 0;
+    right: 0;
+    padding: 12px 20px 22px;
+    background: var(--night);
+    border-bottom: 1px solid var(--dark-line);
+    flex-direction: column;
+  }
+  .site-header nav.open {
+    display: flex;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+:focus-visible {
+  outline: 3px solid var(--sand);
+  outline-offset: 4px;
+}
+.case-link,
+.back-link,
+.case-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid currentColor;
+  color: #356a70;
+  font: 500 9px "DM Mono";
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.case-link svg,
+.back-link svg,
+.case-footer svg {
+  width: 15px;
+}

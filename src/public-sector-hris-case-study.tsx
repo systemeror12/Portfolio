@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, LockKeyhole } from "lucide-react";
 import { InternalLink } from "./navigation";
+import "./styles/case-study.css";
 
 const publicSectorCaseStudy = {
   eyebrow: "Public Sector HRIS Case Study / Sanitized Project Evidence",
