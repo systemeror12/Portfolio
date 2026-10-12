@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {
-  ArrowDownRight,
   ArrowRight,
   Code,
   Download,
@@ -13,7 +12,8 @@ import {
 import "./styles/base.css";
 import "./styles/homepage.css";
 import "./styles/hero.css";
-import { projectEvidence, workingMethod } from "./content";
+import "./styles/work.css";
+import { workingMethod } from "./content";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
@@ -29,80 +29,7 @@ import {
 } from "./routes";
 import { Header } from "./site-header";
 import { Hero } from "./hero";
-
-function Evidence() {
-  return (
-    <section className="evidence" id="evidence">
-      <div className="section-heading">
-        <div>
-          <span>Selected Project Evidence</span>
-          <h2>Systems in operating context.</h2>
-        </div>
-        <p>
-          Each case explains the operation, my responsibility, the architecture,
-          its boundaries, and a result I can defend in an interview.
-        </p>
-      </div>
-      <div className="evidence-list">
-        {projectEvidence.map((item, index) => (
-          <article key={item.key}>
-            <div className="case-id">
-              <span>SYS / 0{index + 1}</span>
-              <small>{item.type}</small>
-            </div>
-            <div className="case-main">
-              <h3>{item.title}</h3>
-              <span>Operational problem</span>
-              <p>{item.problem}</p>
-              <span>Contribution</span>
-              <p>{item.contribution}</p>
-              {item.key === "lead" && (
-                <InternalLink className="case-link" to={caseStudyPath}>
-                  Open the Lead Case Study <ArrowRight />
-                </InternalLink>
-              )}
-              {item.key === "research" && (
-                <InternalLink className="case-link" to={aiCaseStudyPath}>
-                  Open the AI R&amp;D Case Study <ArrowRight />
-                </InternalLink>
-              )}
-              {item.key === "integration" && (
-                <InternalLink
-                  className="case-link"
-                  to={paymentProviderCaseStudyPath}
-                >
-                  Open the Integration Case Study <ArrowRight />
-                </InternalLink>
-              )}
-              {item.key === "public-sector" && (
-                <InternalLink
-                  className="case-link"
-                  to={publicSectorCaseStudyPath}
-                >
-                  Open the Public Sector HRIS Case Study <ArrowRight />
-                </InternalLink>
-              )}
-            </div>
-            <div className="case-detail">
-              <span>Architecture</span>
-              <p>{item.architecture}</p>
-              <span>Boundary</span>
-              <p>{item.boundary}</p>
-              <span>Verified Result</span>
-              <p>{item.result}</p>
-              <ul>
-                {item.signals.map((signal) => (
-                  <li key={signal}>{signal}</li>
-                ))}
-              </ul>
-            </div>
-            <ArrowDownRight className="case-arrow" />
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
+import { WorkSection } from "./work-section";
 
 function PersonalProjects() {
   return (
@@ -321,7 +248,7 @@ function Home() {
       <Header />
       <main id="main" tabIndex={-1}>
         <Hero />
-        <Evidence />
+        <WorkSection />
         <PersonalProjects />
         <Approach />
         <Capabilities />

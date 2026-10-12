@@ -54,8 +54,8 @@ test("the hero carries the Nocturne copy, labelled by the page's only h1", async
 test("See the work goes to the work section", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link", { name: "See the work" }).click();
-  await expect(page).toHaveURL("/#evidence");
-  await expect(page.locator("#evidence")).toBeInViewport();
+  await expect(page).toHaveURL("/#work");
+  await expect(page.locator("#work")).toBeInViewport();
 });
 
 test("the actions take focus in order with a visible outline", async ({ page }) => {

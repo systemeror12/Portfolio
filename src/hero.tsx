@@ -14,7 +14,7 @@ export function Hero() {
         </h1>
         <p className="hero-lede">{hero.lede}</p>
         <div className="hero-actions">
-          <InternalLink className="hero-action hero-action-solid" to="/#evidence">
+          <InternalLink className="hero-action hero-action-solid" to="/#work">
             {hero.workAction}
           </InternalLink>
           <a className="hero-action hero-action-line" href={`mailto:${hero.email}`}>

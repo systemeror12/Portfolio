@@ -5,7 +5,9 @@ test("a Hiring Manager can open the Lead Case Study and return home", async ({
 }) => {
   await page.goto("/");
 
-  await page.getByRole("link", { name: /open the lead case study/i }).click();
+  await page
+    .getByRole("link", { name: "Read the full case study: Multi-Company HRIS" })
+    .click();
   await expect(page).toHaveURL("/work/multi-company-hris");
   await expect(
     page.getByRole("heading", { name: "Multi-Company HRIS" }),
@@ -71,7 +73,11 @@ test("the Lead Case Study presents its complete evidence narrative", async ({
 test("a Hiring Manager can inspect the AI R&D Case Study", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("link", { name: /open the ai r&d case study/i }).click();
+  await page
+    .getByRole("link", {
+      name: "Read the full case study: Access-Scoped Retrieval",
+    })
+    .click();
   await expect(page).toHaveURL("/work/ai-odoo-rnd");
   await expect(
     page.getByRole("heading", { name: "AI R&D Case Study" }),
@@ -105,7 +111,9 @@ test("a Hiring Manager can inspect the anonymized Integration Case Study", async
   await page.goto("/");
 
   await page
-    .getByRole("link", { name: /open the integration case study/i })
+    .getByRole("link", {
+      name: "Read the full case study: Payment Provider Module",
+    })
     .click();
   await expect(page).toHaveURL("/work/payment-provider");
   await expect(
