@@ -1,20 +1,31 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
-
 :root {
-  --night: #101a23;
-  --panel: #182732;
-  --grid: #284454;
-  --teal: #60b7b2;
-  --sand: #d8c58f;
-  --cloud: #dce8e8;
-  --paper: #edf3f2;
-  --ink: #172229;
-  --slate: #60747c;
-  --line: #b9c8cb;
-  --dark-line: #344b59;
-  font-family: Manrope, sans-serif;
-  color: var(--ink);
-  background: var(--night);
+  /* The Nocturne palette */
+  --void: #06060b;
+  --plum: #2b2436;
+  --stain: #4a3a63;
+  --bronze: #9b8794;
+  --mist: #9a8fab;
+  --peri: #a599d8;
+  --glow: #f0b4dc;
+  --silver: #ece8f4;
+  /* Extra tones the prototype draws with */
+  --night: #0d0c14;
+  --dusk: #1a1724;
+  --lilac: #cfc8de;
+  --rose: #bb6688;
+  --text: #d4cee0;
+  --text-soft: #cbc4d9;
+  --text-muted: #bdb5cc;
+  --iron: #221c2b;
+  --iron-deep: #12101a;
+  --note: #5b4680;
+  --note-rose: #7a4870;
+  --petal: #fff4fb;
+  --hair: rgba(207, 200, 222, 0.14);
+  --serif: "Shippori Mincho", "Hiragino Mincho ProN", serif;
+  --sans: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+  color: var(--silver);
+  background: var(--void);
   font-synthesis: none;
 }
 * {
@@ -25,6 +36,19 @@ html {
 }
 body {
   margin: 0;
+  font: 400 17px/1.75 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1100px 700px at 15% 0%, color-mix(in srgb, var(--stain) 22%, transparent), transparent 70%),
+    radial-gradient(900px 700px at 100% 60%, color-mix(in srgb, var(--plum) 35%, transparent), transparent 70%),
+    var(--void);
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--serif);
+  font-weight: 400;
 }
 a {
   color: inherit;
@@ -42,8 +66,8 @@ svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--cloud);
-  border-bottom: 1px solid var(--dark-line);
+  color: var(--silver);
+  border-bottom: 1px solid var(--hair);
   position: relative;
   z-index: 10;
 }
@@ -58,9 +82,9 @@ svg {
   height: 35px;
   display: grid;
   place-items: center;
-  background: var(--cloud);
-  color: var(--night);
-  font: 500 10px "DM Mono";
+  background: var(--silver);
+  color: var(--void);
+  font: 500 10px var(--sans);
 }
 .site-header nav {
   display: flex;
@@ -78,13 +102,13 @@ svg {
   display: none;
   background: none;
   border: 0;
-  color: var(--cloud);
+  color: var(--silver);
 }
 .eyebrow {
-  font: 500 9px "DM Mono";
+  font: 500 9px var(--sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--teal);
+  color: var(--peri);
 }
 @media (max-width: 700px) {
   .site-header {
@@ -111,7 +135,7 @@ svg {
     right: 0;
     padding: 12px 20px 22px;
     background: var(--night);
-    border-bottom: 1px solid var(--dark-line);
+    border-bottom: 1px solid var(--hair);
     flex-direction: column;
   }
   .site-header nav.open {
@@ -130,8 +154,26 @@ svg {
   }
 }
 :focus-visible {
-  outline: 3px solid var(--sand);
+  outline: 2px solid var(--glow);
   outline-offset: 4px;
+  border-radius: 3px;
+}
+main:focus {
+  outline: none;
+}
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 20;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: var(--silver);
+  color: var(--void);
+  font-weight: 500;
+}
+.skip-link:focus {
+  top: 12px;
 }
 .case-link,
 .back-link,
@@ -142,8 +184,8 @@ svg {
   margin-top: 18px;
   padding-bottom: 7px;
   border-bottom: 1px solid currentColor;
-  color: #356a70;
-  font: 500 9px "DM Mono";
+  color: var(--peri);
+  font: 500 9px var(--sans);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }

@@ -53,7 +53,7 @@ function Header({ currentPath }: { currentPath?: string }) {
   }, [open]);
 
   return (
-    <header className="site-header">
+    <header className="site-header" id="top">
       <InternalLink
         className="identity"
         to="/"
@@ -493,16 +493,18 @@ function Contact() {
 
 function Home() {
   return (
-    <main id="top">
+    <>
       <Header />
-      <Hero />
-      <Evidence />
-      <PersonalProjects />
-      <Approach />
-      <Capabilities />
-      <ToolsIUse />
-      <Contact />
-    </main>
+      <main id="main" tabIndex={-1}>
+        <Hero />
+        <Evidence />
+        <PersonalProjects />
+        <Approach />
+        <Capabilities />
+        <ToolsIUse />
+        <Contact />
+      </main>
+    </>
   );
 }
 
@@ -513,7 +515,7 @@ function App() {
     window.addEventListener("popstate", update);
     return () => window.removeEventListener("popstate", update);
   }, []);
-  return path === caseStudyPath ? (
+  const page = path === caseStudyPath ? (
     <>
       <Header currentPath={path} />
       <LeadCaseStudy />
@@ -540,6 +542,14 @@ function App() {
     </>
   ) : (
     <Home />
+  );
+  return (
+    <>
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      {page}
+    </>
   );
 }
 

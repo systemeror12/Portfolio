@@ -46,7 +46,7 @@ function ExternalEvidenceLink({
 export function DotsHyprlandCaseStudy() {
   return (
     <>
-      <main className="case-study personal-system-study">
+      <main id="main" tabIndex={-1} className="case-study personal-system-study">
         <section className="case-hero">
           <div>
             <span className="eyebrow">Featured Personal System / Open source fork</span>

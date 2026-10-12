@@ -123,7 +123,7 @@ function AccessScopedRetrievalFlow() {
 export function AiOdooRndCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
             <span className="eyebrow">{aiOdooRndCaseStudy.eyebrow}</span>
