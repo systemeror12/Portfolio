@@ -19,14 +19,16 @@ test("a Hiring Manager can open the Public Sector HRIS Case Study from the navig
   await expect(page).toHaveURL("/");
 });
 
-test("a Hiring Manager can reach the Public Sector HRIS Case Study from the Evidence card", async ({
+test("a Hiring Manager can reach the Public Sector HRIS Case Study from the Work section", async ({
   page,
 }) => {
   await page.goto("/");
 
-  await expect(page.locator(".evidence-list article")).toHaveCount(4);
+  await expect(page.locator("#work article")).toHaveCount(4);
   await page
-    .getByRole("link", { name: /open the public sector hris case study/i })
+    .getByRole("link", {
+      name: "Read the full case study: Government Water District HRIS",
+    })
     .click();
   await expect(page).toHaveURL("/work/public-sector-hris");
   await expect(
@@ -37,27 +39,28 @@ test("a Hiring Manager can reach the Public Sector HRIS Case Study from the Evid
   await expect(page).toHaveURL("/");
 });
 
-test("the Public Sector HRIS Evidence card carries its standing and signal chips without excluded claims", async ({
+test("the Public Sector HRIS case in the Work section carries its standing and key ideas without excluded claims", async ({
   page,
 }) => {
   await page.goto("/");
 
-  const card = page
-    .locator(".evidence-list article")
-    .filter({ hasText: "Government Water District HRIS" });
+  const card = page.getByRole("article", {
+    name: "Government Water District HRIS",
+  });
   await expect(card).toBeVisible();
   await expect(
-    card.getByText(/largest contributor on a five-person delivery team/i),
+    card.getByText(/largest contributor on a five-person team/i),
   ).toBeVisible();
-  for (const signal of [
+  const keyIdeas = card.getByText(/^Key ideas:/);
+  for (const idea of [
     "Authoritative Punch Record",
     "Attendance Correction",
     "Biometric Import",
     "Unified ISO Workflow",
-    "My Dashboard",
   ]) {
-    await expect(card.getByText(signal, { exact: true })).toBeVisible();
+    await expect(keyIdeas).toContainText(idea);
   }
+  await expect(keyIdeas).not.toContainText("My Dashboard");
 
   const cardText = await card.innerText();
   expect(cardText).not.toMatch(/in production|deployed to production|rollout/i);

@@ -1,97 +1,130 @@
-export type ProjectEvidence = {
-  key: string;
-  type: string;
+import {
+  aiCaseStudyPath,
+  caseStudyPath,
+  paymentProviderCaseStudyPath,
+  publicSectorCaseStudyPath,
+} from "./routes";
+
+export type WorkCase = {
+  id: string;
+  numeral: string;
+  kind: string;
   title: string;
+  for: string;
+  note?: string;
   problem: string;
-  contribution: string;
-  architecture: string;
-  boundary: string;
-  result: string;
-  signals: string[];
+  built: string;
+  fits: string;
+  holds: string;
+  changed: string;
+  keyIdeas: string[];
+  path: string;
 };
 
-export const projectEvidence: ProjectEvidence[] = [
+export const work = {
+  heading: "Four systems, and who they were for.",
+  intro:
+    "One window, four panes. As you read, each one lights for the people it was built for. Most of it was built with a team, so I've said which parts were mine. Client names stay private.",
+  labels: {
+    built: "What I built",
+    fits: "How it fits",
+    holds: "The line it holds",
+    changed: "What changed",
+    keyIdeas: "Key ideas",
+  },
+  readMore: "Read the full case study",
+};
+
+export const workCases: WorkCase[] = [
   {
-    key: "lead",
-    type: "Lead Case Study",
+    id: "multi-company-hris",
+    numeral: "I",
+    kind: "Lead case study",
     title: "Multi-Company HRIS",
+    for: "for HR and payroll teams at multiple legal companies, now sharing one platform",
     problem:
-      "Multiple legal companies needed one approved flow instead of disconnected manual HR and payroll work.",
-    contribution:
-      "Designed and implemented most core HR workflows—including Attendance, Recruitment, and Payroll—and the dashboard within a broader cross-functional delivery.",
-    architecture:
-      "One shared Odoo deployment connected approved attendance, overtime, and leave records to Custom Payroll and traceable payslip calculations.",
-    boundary:
-      "Company-specific permissions and Philippine Payroll Rules remained separated within the shared platform.",
-    result:
-      "Disconnected manual HR and payroll work was replaced by one approved attendance, overtime, and leave-to-payslip flow while preserving company-specific rules and access boundaries. Payroll Validation used representative scenarios, manual-calculation comparisons, edge-case tests, and client acceptance before rollout.",
-    signals: [
+      "Several legal companies were running HR and payroll by hand, in disconnected pieces. They needed one approved flow.",
+    built:
+      "Most of the core HR workflows, including Attendance, Recruitment, and Payroll, plus the dashboard, as part of a larger cross-functional delivery.",
+    fits: "One shared Odoo deployment feeds approved attendance, overtime, and leave into Custom Payroll, where every payslip calculation can be traced back.",
+    holds:
+      "Each company keeps its own permissions and Philippine Payroll Rules, even on the shared platform.",
+    changed:
+      "Manual HR and payroll work became one approved path from attendance to payslip, checked before rollout against representative scenarios, HR's manual calculations, edge cases, and client acceptance.",
+    keyIdeas: [
       "Philippine Payroll Rules",
       "Payroll Input",
       "Payroll Validation",
     ],
+    path: caseStudyPath,
   },
   {
-    key: "integration",
-    type: "Integration Case Study",
+    id: "payment-provider",
+    numeral: "II",
+    kind: "Integration case study",
     title: "Payment Provider Module",
+    for: "for customers at checkout, who should only ever be charged once",
     problem:
-      "The client-required Regional Payment Provider had no native Odoo integration for e-commerce or e-learning checkout.",
-    contribution:
-      "Built a complete Odoo extension modeled on native provider modules, including checkout behavior and transaction-state mapping.",
-    architecture:
-      "A Verified Payment Webhook matched the provider reference to an Odoo transaction before applying an Idempotent Payment Update.",
-    boundary:
-      "The provider signature or HMAC had to validate before any Payment Outcome was accepted; repeated webhooks could not duplicate fulfillment.",
-    result:
-      "Customers could use the required provider directly in Odoo checkout with authenticated, duplicate-safe transaction updates.",
-    signals: [
+      "The client's required regional payment provider had no Odoo integration, for either e-commerce or e-learning checkout.",
+    built:
+      "A complete Odoo extension modeled on the native provider modules, including checkout behavior and transaction-state mapping.",
+    fits: "A verified webhook matches the provider's reference to an Odoo transaction before applying an idempotent update.",
+    holds:
+      "No payment outcome is accepted until the signature checks out. A webhook that arrives twice can't fulfill an order twice.",
+    changed:
+      "Customers pay with the required provider directly in Odoo e-commerce and e-learning checkout, with authenticated, duplicate-safe transaction updates.",
+    keyIdeas: [
       "Verified Payment Webhook",
       "Idempotent Payment Update",
       "Payment Outcome",
     ],
+    path: paymentProviderCaseStudyPath,
   },
   {
-    key: "research",
-    type: "AI R&D Case Study",
+    id: "ai-odoo-rnd",
+    numeral: "III",
+    kind: "AI research and development",
     title: "Access-Scoped Retrieval",
+    for: "for employees asking questions, who should only see what they're allowed to",
+    note: "An internal prototype. It proved the idea works. It was never a production deployment.",
     problem:
-      "The company needed to test whether conversational Odoo workflows could answer from relevant business records without crossing access boundaries.",
-    contribution:
-      "Explored retrieval, conversational workflows, privacy boundaries, external AI integration, and failure handling in a working internal prototype.",
-    architecture:
-      "A RAG pipeline used OpenAI embedding vectors to retrieve relevant records and supply an Odoo-Grounded Answer.",
-    boundary:
-      "Odoo access rules applied before retrieval; when authorized supporting records were absent, the flow returned an Ungrounded Fallback.",
-    result:
-      "The prototype completed the agreed end-to-end chatbot scenarios, establishing R&D Success—not a production client deployment.",
-    signals: [
+      "Could a chatbot answer from real Odoo business records without crossing anyone's access boundaries? The company wanted to find out.",
+    built:
+      "A working internal prototype covering retrieval, conversational flows, privacy boundaries, external AI integration, and failure handling.",
+    fits: "A RAG pipeline uses OpenAI embedding vectors to find relevant records, then grounds the answer in them.",
+    holds:
+      "Odoo access rules apply before retrieval. If no authorized record supports an answer, it says so and points to HR instead of guessing.",
+    changed:
+      "The prototype completed every agreed end-to-end chatbot scenario: an R&D success, not a client launch.",
+    keyIdeas: [
       "Odoo-Grounded Answer",
       "Access-Scoped Retrieval",
       "Ungrounded Fallback",
     ],
+    path: aiCaseStudyPath,
   },
   {
-    key: "public-sector",
-    type: "Public Sector HRIS Case Study",
+    id: "public-sector-hris",
+    numeral: "IV",
+    kind: "Public sector case study",
     title: "Government Water District HRIS",
+    for: "for the staff whose leave, overtime, and pass slips all hang on one punch",
     problem:
-      "A Government Water District could not fully trust the device punches that its reports, overtime, leave, and pass slips depended on.",
-    contribution:
-      "Built the attendance engine, overtime requests, Biometric Import, Personnel Action Form, and Leave Monetization outright, and extended My Dashboard and recruitment. Largest contributor on a five-person delivery team over roughly three months.",
-    architecture:
-      "A single Attendance Day evaluation path resolves each day into the Authoritative Punch Record, fed by Biometric Import.",
-    boundary:
-      "Attendance Corrections are approval-gated and evidence-backed; voiding restores previous values, and corrections never recalculate overtime on their own.",
-    result:
-      "Delivered auditable attendance, overtime derived from validated punches, and self-service Personnel Action Form and Leave Monetization requests with approval routing.",
-    signals: [
+      "A government water district couldn't fully trust its device punches, and its reports, overtime, leave, and pass slips all depended on them.",
+    built:
+      "The attendance engine, overtime requests, Biometric Import, Personnel Action Form, and Leave Monetization, plus extensions to My Dashboard and recruitment. The largest contributor on a five-person team, over roughly three months.",
+    fits: "One evaluation path resolves each attendance day into a single Authoritative Punch Record, fed by Biometric Import, including overnight shifts.",
+    holds:
+      "Corrections need approval and evidence. Voiding one restores the previous values, and a correction never recalculates overtime on its own.",
+    changed:
+      "Auditable attendance, overtime derived from validated punches, and self-service Personnel Action Form and Leave Monetization requests with approval routing.",
+    keyIdeas: [
       "Authoritative Punch Record",
       "Attendance Correction",
       "Biometric Import",
       "Unified ISO Workflow",
-      "My Dashboard",
     ],
+    path: publicSectorCaseStudyPath,
   },
 ];
 
