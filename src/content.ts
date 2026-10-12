@@ -117,3 +117,14 @@ export const workingMethod = [
       "Compare the implemented flow with representative scenarios and the operation’s expected outcome.",
   },
 ];
+
+export const hero = {
+  name: "Jerome Mendoza",
+  role: "platform engineer in the Philippines",
+  title: "Every record ends with",
+  titleEmphasis: "a\u00a0person.",
+  lede: "A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets paid, or doesn't. I build the HR, payroll, and payment systems that make sure they do.",
+  workAction: "See the work",
+  emailAction: "Email me",
+  email: "mendozajeromevrixen@gmail.com",
+};
