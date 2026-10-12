@@ -129,7 +129,7 @@ function PayrollFlow() {
 export function LeadCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
             <span className="eyebrow">{leadCaseStudy.eyebrow}</span>

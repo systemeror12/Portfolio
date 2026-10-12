@@ -115,7 +115,7 @@ function AttendanceFlow() {
 export function PublicSectorHrisCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
             <span className="eyebrow">{publicSectorCaseStudy.eyebrow}</span>

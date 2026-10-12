@@ -121,7 +121,7 @@ function PaymentFlow() {
 export function PaymentProviderCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
             <span className="eyebrow">{paymentProviderCaseStudy.eyebrow}</span>
