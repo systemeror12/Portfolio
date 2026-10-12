@@ -10,9 +10,7 @@ import {
   Layers3,
   LockKeyhole,
   Mail,
-  Menu,
   Network,
-  X,
 } from "lucide-react";
 // Load base.css before the page stylesheets so their rules override it.
 import "./styles/base.css";
@@ -24,113 +22,14 @@ import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
 import { DotsHyprlandCaseStudy } from "./dots-hyprland-case-study";
 import { PublicSectorHrisCaseStudy } from "./public-sector-hris-case-study";
 import { InternalLink } from "./navigation";
-
-const caseStudyPath = "/work/multi-company-hris";
-const aiCaseStudyPath = "/work/ai-odoo-rnd";
-const paymentProviderCaseStudyPath = "/work/payment-provider";
-const publicSectorCaseStudyPath = "/work/public-sector-hris";
-const dotsHyprlandCaseStudyPath = "/systems/dots-hyprland";
-
-function Header({ currentPath }: { currentPath?: string }) {
-  const [open, setOpen] = React.useState(false);
-  const menuButtonRef = React.useRef<HTMLButtonElement>(null);
-
-  const closeMenu = (restoreFocus = false) => {
-    setOpen(false);
-    if (restoreFocus) {
-      requestAnimationFrame(() => menuButtonRef.current?.focus());
-    }
-  };
-  const closeMenuAfterNavigation = () => closeMenu();
-
-  React.useEffect(() => {
-    if (!open) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMenu(true);
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [open]);
-
-  return (
-    <header className="site-header" id="top">
-      <InternalLink
-        className="identity"
-        to="/"
-        aria-label="Jerome Mendoza, home"
-      >
-        <span>JM</span>
-        <strong>Jerome Mendoza</strong>
-      </InternalLink>
-      <nav className={open ? "open" : ""} aria-label="Primary navigation">
-        <InternalLink
-          to="/"
-          aria-current={!currentPath ? "page" : undefined}
-          onClick={closeMenuAfterNavigation}
-        >
-          Home
-        </InternalLink>
-        <InternalLink
-          to={caseStudyPath}
-          aria-current={currentPath === caseStudyPath ? "page" : undefined}
-          onClick={closeMenuAfterNavigation}
-        >
-          Case study
-        </InternalLink>
-        <InternalLink
-          to={aiCaseStudyPath}
-          aria-current={currentPath === aiCaseStudyPath ? "page" : undefined}
-          onClick={closeMenuAfterNavigation}
-        >
-          AI R&amp;D
-        </InternalLink>
-        <InternalLink
-          to={paymentProviderCaseStudyPath}
-          aria-current={
-            currentPath === paymentProviderCaseStudyPath ? "page" : undefined
-          }
-          onClick={closeMenuAfterNavigation}
-        >
-          Integration
-        </InternalLink>
-        <InternalLink
-          to={publicSectorCaseStudyPath}
-          aria-current={
-            currentPath === publicSectorCaseStudyPath ? "page" : undefined
-          }
-          onClick={closeMenuAfterNavigation}
-        >
-          Public sector
-        </InternalLink>
-        <InternalLink
-          to="/#personal-projects"
-          onClick={closeMenuAfterNavigation}
-        >
-          Personal projects
-        </InternalLink>
-        {!currentPath && (
-          <>
-            <InternalLink to="/#approach" onClick={closeMenuAfterNavigation}>
-              Approach
-            </InternalLink>
-            <InternalLink to="/#contact" onClick={closeMenuAfterNavigation}>
-              Contact
-            </InternalLink>
-          </>
-        )}
-      </nav>
-      <button
-        ref={menuButtonRef}
-        className="menu-button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-label={open ? "Close navigation" : "Open navigation"}
-      >
-        {open ? <X /> : <Menu />}
-      </button>
-    </header>
-  );
-}
+import {
+  aiCaseStudyPath,
+  caseStudyPath,
+  dotsHyprlandCaseStudyPath,
+  paymentProviderCaseStudyPath,
+  publicSectorCaseStudyPath,
+} from "./routes";
+import { Header } from "./site-header";
 
 function Topology() {
   return (
