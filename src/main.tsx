@@ -14,6 +14,9 @@ import {
   Network,
   X,
 } from "lucide-react";
+// Load base.css before the page stylesheets so their rules override it.
+import "./styles/base.css";
+import "./styles/homepage.css";
 import { projectEvidence, workingMethod } from "./content";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
@@ -21,7 +24,6 @@ import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
 import { DotsHyprlandCaseStudy } from "./dots-hyprland-case-study";
 import { PublicSectorHrisCaseStudy } from "./public-sector-hris-case-study";
 import { InternalLink } from "./navigation";
-import "./styles.css";
 
 const caseStudyPath = "/work/multi-company-hris";
 const aiCaseStudyPath = "/work/ai-odoo-rnd";

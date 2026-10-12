@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, ExternalLink, ShieldCheck } from "lucide-react";
 import { InternalLink } from "./navigation";
+import "./styles/case-study.css";
 
 const repositoryUrl = "https://github.com/systemeror12/dots-hyprland-xenrya";
 const upstreamContributionUrl =
