@@ -228,6 +228,8 @@ test("the Work section fits a 390px screen", async ({ page }) => {
     Array.from(section.querySelectorAll("*"))
       // The staff divider crops its own drawing, so measure the svg, not its path.
       .filter((element) => !element.closest("svg") || element.tagName === "svg")
+      // The lunette crops its window, so measure its frame, not the window.
+      .filter((element) => !element.closest(".rose-lunette"))
       .filter((element) => {
         const box = element.getBoundingClientRect();
         return box.width > 0 && (box.left < 0 || box.right > window.innerWidth);

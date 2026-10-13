@@ -240,26 +240,70 @@
   -webkit-text-stroke-color: var(--glow);
   text-shadow: 0 0 24px rgba(240, 180, 220, 0.4);
 }
-.work-case-rose {
+/* On phones the window becomes a lunette: its top, held at the foot of the
+   screen while the cases scroll, resting after the last one. */
+.work-lunette {
   display: none;
 }
 @media (max-width: 900px) {
   .work-window {
-    grid-template-columns: 1fr;
-    gap: 0;
+    display: block;
   }
   .work-rose {
     display: none;
   }
-  .work-case-rose {
+  .work-lunette {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
     display: block;
-    width: 96px;
-    height: 96px;
-    margin: 0 0 18px;
+    height: 102px;
+    margin: 24px -24px 0;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(155, 135, 148, 0.55);
+    pointer-events: none;
+  }
+  /* Keyboard focus never hides under the lunette. */
+  .work-case a {
+    scroll-margin-bottom: 122px;
+  }
+  .rose-lunette {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 524px;
+    transform: translateX(-50%);
+  }
+  .rose-lunette .rose-numeral {
+    display: none;
+  }
+  .rose-turn {
+    transition: transform 1.5s cubic-bezier(0.5, 0, 0.15, 1);
+  }
+  .work-lunette-for {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: 8px 0 calc(4px + env(safe-area-inset-bottom));
+    font: 400 17px/1.3 var(--serif);
+    text-align: center;
+    background: radial-gradient(220px 60px at 50% 100%, rgba(6, 6, 11, 0.94) 70%, rgba(6, 6, 11, 0));
+  }
+  .work-lunette-for span {
+    font-size: 14px;
+    color: var(--mist);
+  }
+  .work-lunette-for b {
+    font-weight: 400;
+    color: var(--glow);
+    animation: rose-for-in 0.6s ease;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .work-rose-for b {
+  .work-rose-for b,
+  .work-lunette-for b {
     animation: none;
   }
   .rose-glass,
@@ -267,6 +311,7 @@
   .rose-numeral,
   .rose-records,
   .rose-hand,
+  .rose-turn,
   .work-case-kind span {
     transition: none;
   }

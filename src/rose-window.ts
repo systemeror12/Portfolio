@@ -5,15 +5,18 @@ import { draw } from "./svg";
 // beside the cases as they scroll. The pane of the case being read lights, the
 // iron hour hand swings to it, and its records travel inward along threads.
 
-const reducedMotion = "(prefers-reduced-motion: reduce)";
+export const reducedMotion = "(prefers-reduced-motion: reduce)";
 const paneTones = ["#2b2436", "#3a2d4d", "#4a3a63", "#33293f"];
 const numerals = ["I", "II", "III", "IV"];
 const glow = (id: string) =>
   `<radialGradient id="${id}"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".28" stop-color="#bb6688" stop-opacity=".4"/><stop offset=".6" stop-color="#4a3a63" stop-opacity=".18"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>`;
-const defs = `<defs>
-  ${glow("rose-glow")}
-  <radialGradient id="rose-pane" cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#f0b4dc" stop-opacity=".04"/><stop offset=".75" stop-color="#d98fbf" stop-opacity=".3"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".55"/></radialGradient>
+// Each window on the page names its gradients and rim arcs with its own
+// prefix, so no window borrows another's.
+export const roseDefs = (prefix: string) => `<defs>
+  ${glow(`${prefix}-glow`)}
+  <radialGradient id="${prefix}-pane" cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".3" stop-color="#f0b4dc" stop-opacity=".04"/><stop offset=".75" stop-color="#d98fbf" stop-opacity=".3"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".55"/></radialGradient>
 </defs>`;
+const defs = roseDefs("rose");
 
 const at = (r: number, a: number) => [r * Math.cos(a), r * Math.sin(a)];
 const radians = (degrees: number) => (degrees * Math.PI) / 180;
@@ -58,12 +61,19 @@ function ring(parent: Element) {
   }
 }
 
-type Thread = { path: SVGPathElement; dot: SVGCircleElement; offset: number; length: number; progress: number };
+export type Thread = { path: SVGPathElement; dot: SVGCircleElement; offset: number; length: number; progress: number };
 
 // One pane of leaded glass for case q, with its numeral, its records written
 // around the rim, and four threads from the rim into the heart. Only the glass
-// dims when the pane is unlit; the rim text keeps its own colour.
-function pane(parent: Element, q: number, records: string) {
+// dims when the pane is unlit; the rim text keeps its own colour. A window
+// that turns (the phone's lunette) writes every rim clockwise, so the pane
+// turned to the top always reads upright.
+export function pane(
+  parent: Element,
+  q: number,
+  records: string,
+  { clockwise = false, prefix = "rose" }: { clockwise?: boolean; prefix?: string } = {},
+) {
   const group = draw("g", { class: "rose-pane" }, parent);
   const glass = draw("g", { class: "rose-glass" }, group);
   const a0 = radians(q * 90 - 90 + 2.5);
@@ -80,17 +90,17 @@ function pane(parent: Element, q: number, records: string) {
       draw("path", { d: `M${fx0},${fy0} L${fx1},${fy1}`, stroke: "#9b8794", "stroke-width": 0.6, opacity: 0.7 }, glass);
     }
   }
-  draw("path", { d: sector(66, 192, a0, a1), fill: "url(#rose-pane)", class: "rose-lit" }, glass);
+  draw("path", { d: sector(66, 192, a0, a1), fill: `url(#${prefix}-pane)`, class: "rose-lit" }, glass);
   const [nx, ny] = at(171, (a0 + a1) / 2);
   draw("text", { x: nx, y: ny, class: "rose-numeral", "text-anchor": "middle", "dominant-baseline": "central" }, group).textContent =
     numerals[q];
   // The lower panes (II and III) run counter-clockwise so every label reads
   // upright, and sit a little further out so the text clears the glass.
-  const low = q === 1 || q === 2;
+  const low = !clockwise && (q === 1 || q === 2);
   const r = low ? 213 : 208;
   const [x0, y0] = at(r, low ? a1 - radians(1) : a0 + radians(1));
   const [x1, y1] = at(r, low ? a0 + radians(1) : a1 - radians(1));
-  const id = `rose-rim-${q}`;
+  const id = `${prefix}-rim-${q}`;
   draw("path", { id, d: `M${x0},${y0} A${r},${r} 0 0 ${low ? 0 : 1} ${x1},${y1}`, fill: "none" }, group);
   const text = draw("text", { class: "rose-records", dy: low ? 0 : 4 }, group);
   draw("textPath", { href: `#${id}`, startOffset: "50%", "text-anchor": "middle" }, text).textContent = records;
@@ -187,31 +197,4 @@ export function drawRoseWindow(
     cancelAnimationFrame(frame);
     svg.replaceChildren();
   };
-}
-
-// The small still window shown above case q on narrow screens, its own pane
-// lit. Returns a cleanup function.
-export function drawCaseRose(svg: SVGSVGElement, q: number) {
-  svg.setAttribute("viewBox", "-110 -110 220 220");
-  const id = `rose-case-glow-${q}`;
-  svg.innerHTML = `<defs>${glow(id)}</defs>`;
-  for (let k = 0; k < 4; k++) {
-    const lit = k === q;
-    draw(
-      "path",
-      {
-        d: sector(30, 92, radians(k * 90 - 90 + 4), radians((k + 1) * 90 - 90 - 4)),
-        class: lit ? "rose-case-pane is-lit" : "rose-case-pane",
-        fill: lit ? "#8a5f95" : paneTones[k % 4],
-        stroke: lit ? "#f0b4dc" : "#9b8794",
-        "stroke-width": 1.4,
-        opacity: lit ? 1 : 0.55,
-      },
-      svg,
-    );
-  }
-  for (const r of [100, 26]) draw("circle", { r, fill: "none", stroke: "#9b8794", "stroke-width": 1.4 }, svg);
-  draw("circle", { r: 26, fill: `url(#${id})` }, svg);
-  draw("circle", { r: 4, fill: "#fff4fb" }, svg);
-  return () => svg.replaceChildren();
 }
