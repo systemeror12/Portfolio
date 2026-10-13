@@ -40,22 +40,22 @@ test("a Hiring Manager can use the approved contact actions and download a web-s
   page,
 }) => {
   await page.goto("/");
+  const contact = page.locator("section#contact");
+  const email = contact.getByRole("link", {
+    name: "mendozajeromevrixen@gmail.com",
+    exact: true,
+  });
+  const github = contact.getByRole("link", { name: "GitHub", exact: true });
+  const linkedIn = contact.getByRole("link", { name: "LinkedIn", exact: true });
 
-  await expect(
-    page.getByRole("link", { name: /email jerome/i }),
-  ).toHaveAttribute("href", "mailto:mendozajeromevrixen@gmail.com");
-  await expect(
-    page.getByRole("link", { name: /view github profile/i }),
-  ).toHaveAttribute("href", "https://github.com/systemeror12");
-  await expect(
-    page.getByRole("link", { name: /view linkedin profile/i }),
-  ).toHaveAttribute("href", linkedInUrl);
+  await expect(email).toHaveAttribute(
+    "href",
+    "mailto:mendozajeromevrixen@gmail.com",
+  );
+  await expect(github).toHaveAttribute("href", "https://github.com/systemeror12");
+  await expect(linkedIn).toHaveAttribute("href", linkedInUrl);
 
-  const externalActions = [
-    page.getByRole("link", { name: /email jerome/i }),
-    page.getByRole("link", { name: /view github profile/i }),
-    page.getByRole("link", { name: /view linkedin profile/i }),
-  ];
+  const externalActions = [email, github, linkedIn];
   for (const action of externalActions) {
     await action.focus();
     await expect(action).toBeFocused();
@@ -65,7 +65,7 @@ test("a Hiring Manager can use the approved contact actions and download a web-s
     await expect(action).toHaveAttribute("rel", "noreferrer");
   }
 
-  const resume = page.getByRole("link", { name: /download web-safe resume/i });
+  const resume = contact.getByRole("link", { name: "Resume (PDF)", exact: true });
   await resume.focus();
   await expect(resume).toBeFocused();
   await expect(resume).toHaveAttribute("href", "/jerome-mendoza-resume.pdf");

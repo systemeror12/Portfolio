@@ -241,3 +241,18 @@ export const afterHours = {
     ],
   },
 };
+
+export const contact = {
+  heading: "If people depend on what you're building, I'd like to help.",
+  body: "I'm looking for platform engineering roles in the Philippines, where integration judgment and getting the details right matter.",
+  email: hero.email,
+  links: [
+    { label: "GitHub", href: "https://github.com/systemeror12" },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/in/jerome-vrixen-mendoza-59b927293/",
+    },
+  ],
+  resume: { label: "Resume (PDF)", href: "/jerome-mendoza-resume.pdf" },
+  footer: { name: "Jerome Mendoza", line: "Made at 25:00, Manila" },
+};
