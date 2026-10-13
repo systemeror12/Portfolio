@@ -1,9 +1,9 @@
 import { ArrowLeft, ArrowRight, LockKeyhole } from "lucide-react";
+import { CaseFor, CaseIron, CaseKind } from "./case-study-iron";
 import { InternalLink } from "./navigation";
 import "./styles/case-study.css";
 
 const publicSectorCaseStudy = {
-  eyebrow: "Public Sector HRIS Case Study / Sanitized Project Evidence",
   title: "Government Water District HRIS",
   summary:
     "A public sector HRIS delivered for the Government Water District, led by attendance integrity and supported by self-service HR workflows for personnel movements and leave.",
@@ -118,12 +118,13 @@ export function PublicSectorHrisCaseStudy() {
       <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
-            <span className="eyebrow">{publicSectorCaseStudy.eyebrow}</span>
+            <CaseKind id="public-sector-hris" />
             <h1>
               Government Water District
               <br />
               HRIS
             </h1>
+            <CaseFor id="public-sector-hris" />
             <p>{publicSectorCaseStudy.summary}</p>
             <InternalLink className="back-link" to="/">
               <ArrowLeft /> Back to home
@@ -174,6 +175,7 @@ export function PublicSectorHrisCaseStudy() {
             ))}
           </ul>
         </section>
+        <CaseIron id="public-sector-hris" />
       </main>
       <footer className="case-footer">
         <InternalLink to="/">
