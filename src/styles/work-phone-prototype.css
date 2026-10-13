@@ -1,0 +1,219 @@
+/* PROTOTYPE for #47: the phone treatments of the rose window, switched with
+   ?rose=a|b|c. Wide screens keep the pinned window beside the cases. */
+.work-band,
+.work-lunette,
+.work-case-scrub,
+.phone-rose-switch {
+  display: none;
+}
+@media (max-width: 900px) {
+  .phone-rose-a .work-window,
+  .phone-rose-b .work-window {
+    display: block;
+  }
+  .phone-rose-a .work-case-rose,
+  .phone-rose-b .work-case-rose,
+  .phone-rose-c .work-case-rose {
+    display: none;
+  }
+
+  /* A: the held band. A small whole window pinned at the top of the screen,
+     with who the lit pane served and its records lighting in turn. */
+  .phone-rose-a .work-band {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    /* One height for every case, so the text under it never shifts. */
+    height: 90px;
+    margin: 0 -24px;
+    padding: 0 24px;
+    background: rgba(6, 6, 11, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(155, 135, 148, 0.45);
+    box-shadow: 0 4px 0 -3px rgba(155, 135, 148, 0.2);
+  }
+  /* Keyboard focus never hides under the band. */
+  .phone-rose-a .work-case a {
+    scroll-margin-top: 110px;
+  }
+  .rose-band {
+    flex: none;
+    width: 68px;
+    height: 68px;
+  }
+  .rose-band .rose-records,
+  .rose-band .rose-numeral {
+    display: none;
+  }
+  .work-band-text {
+    min-width: 0;
+    animation: rose-for-in 0.6s ease;
+  }
+  .work-band-for {
+    margin: 0;
+    overflow: hidden;
+    font: 400 17px/1.3 var(--serif);
+    color: var(--mist);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .work-band-for b {
+    font-weight: 400;
+    color: var(--glow);
+  }
+  .work-band-records {
+    max-height: 2.9em;
+    margin: 3px 0 0;
+    overflow: hidden;
+    font: 500 13px/1.45 var(--sans);
+    letter-spacing: 0.02em;
+    color: var(--mist);
+  }
+  @media (max-width: 380px) {
+    .phone-rose-a .work-band {
+      gap: 12px;
+    }
+    .rose-band {
+      width: 56px;
+      height: 56px;
+    }
+    .work-band-for {
+      font-size: 16px;
+    }
+  }
+  .work-band-records span {
+    animation: band-record 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.8s - 3.2s);
+  }
+  .work-band-records span + span::before {
+    content: "·";
+    margin: 0 0.45em;
+    color: var(--bronze);
+    text-shadow: none;
+  }
+  .work-band:has(.is-paused) .work-band-records span {
+    animation-play-state: paused;
+  }
+
+  /* B: the lunette. The top of the full window rises from the foot of the
+     screen while the cases scroll, and rests after the last one. */
+  .phone-rose-b .work-lunette {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: block;
+    height: 102px;
+    margin: 24px -24px 0;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(155, 135, 148, 0.55);
+    pointer-events: none;
+  }
+  .rose-lunette {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 524px;
+    transform: translateX(-50%);
+  }
+  .rose-lunette .rose-numeral {
+    display: none;
+  }
+  .rose-lunette .rose-turn {
+    transition: transform 1.5s cubic-bezier(0.5, 0, 0.15, 1);
+  }
+  .work-lunette-for {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: 0 0 calc(4px + env(safe-area-inset-bottom));
+    font: 400 17px/1.3 var(--serif);
+    text-align: center;
+    background: radial-gradient(150px 34px at 50% 100%, rgba(6, 6, 11, 0.9) 55%, rgba(6, 6, 11, 0));
+  }
+  .work-lunette-for span {
+    font-size: 14px;
+    color: var(--mist);
+  }
+  .work-lunette-for b {
+    font-weight: 400;
+    color: var(--glow);
+    animation: rose-for-in 0.6s ease;
+  }
+
+  /* C: the case roses. Each case opens on its own window; the hand follows
+     the scroll into its pane, and the case's "for …" line lights with it. */
+  .phone-rose-c .work-case-scrub {
+    display: block;
+    width: min(100%, 240px);
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto 26px;
+  }
+  .work-case-scrub .rose-records {
+    display: none;
+  }
+  .phone-rose-c .work-case-for {
+    transition: color 0.9s;
+  }
+  .phone-rose-c .work-case.is-lit .work-case-for {
+    color: var(--glow);
+  }
+
+  /* Prototype only: the switch between treatments. */
+  .phone-rose-switch {
+    position: fixed;
+    top: 50%;
+    right: 4px;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid rgba(155, 135, 148, 0.55);
+    border-radius: 999px;
+    background: rgba(13, 12, 20, 0.92);
+    transform: translateY(-50%);
+  }
+  .phone-rose-switch button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--mist);
+    font: 500 13px var(--sans);
+    cursor: pointer;
+  }
+  .phone-rose-switch button[aria-pressed="true"] {
+    background: var(--stain);
+    color: var(--silver);
+  }
+}
+@keyframes band-record {
+  0%,
+  45%,
+  100% {
+    color: var(--mist);
+  }
+  18% {
+    color: var(--silver);
+    text-shadow: 0 0 10px rgba(240, 180, 220, 0.7);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-band-text,
+  .work-band-records span,
+  .work-lunette-for b {
+    animation: none;
+  }
+  .rose-lunette .rose-turn,
+  .phone-rose-c .work-case-for {
+    transition: none;
+  }
+}
