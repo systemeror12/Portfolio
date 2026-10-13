@@ -198,6 +198,14 @@ test.describe("the homepage at release", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
+    // Text scrolls under sticky bars, such as the phone lunette, and is read
+    // once it clears them. A full-page capture would freeze a bar over it, so
+    // hold each bar where it sits in the flow, which moves nothing else.
+    await page.evaluate(() => {
+      for (const element of document.querySelectorAll<HTMLElement>("body *")) {
+        if (getComputedStyle(element).position === "sticky") element.style.position = "relative";
+      }
+    });
 
     // Where each line of text sits and what colour it paints.
     const texts = await page.evaluate(() =>
