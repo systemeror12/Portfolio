@@ -1,8 +1,31 @@
+/* moonlight falls across the stairwell; the iron may run past the edges, never the page */
 .after {
   position: relative;
   padding-bottom: 72px;
+  overflow-x: clip;
+}
+.after::before {
+  content: "";
+  position: absolute;
+  inset: -60px 0 -40px;
+  pointer-events: none;
+  background: linear-gradient(
+    118deg,
+    transparent 16%,
+    rgba(165, 153, 216, 0.085) 23%,
+    rgba(165, 153, 216, 0.03) 29%,
+    transparent 33%,
+    transparent 50%,
+    rgba(165, 153, 216, 0.1) 56%,
+    transparent 63%,
+    transparent 71%,
+    rgba(165, 153, 216, 0.06) 75%,
+    transparent 80%
+  );
+  mask-image: linear-gradient(transparent, #000 16%, #000 80%, transparent);
 }
 .after-inner {
+  position: relative;
   width: min(1200px, calc(100vw - 48px));
   margin: 0 auto;
 }
@@ -33,7 +56,54 @@
   column-gap: 28px;
   row-gap: 44px;
   align-items: start;
+  position: relative;
   padding-top: 100px;
+}
+/* the drawn iron: the sagging chain behind the panels, the rest in front */
+.after-iron {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.after-iron-back {
+  z-index: 0;
+}
+.after-iron-front {
+  z-index: 2;
+}
+.after-piece,
+.after-tools {
+  position: relative;
+  z-index: 1;
+}
+/* the charms sway and the bud glows only while on screen */
+.after-sway {
+  animation: after-sway 6.5s ease-in-out infinite alternate;
+  transform-box: view-box;
+}
+@keyframes after-sway {
+  from {
+    transform: rotate(-1.8deg);
+  }
+  to {
+    transform: rotate(1.8deg);
+  }
+}
+.after-ember {
+  animation: after-ember 4.5s ease-in-out infinite;
+}
+@keyframes after-ember {
+  50% {
+    opacity: 0.4;
+  }
+}
+.after-iron.is-paused .after-sway,
+.after-iron.is-paused .after-ember {
+  animation-play-state: paused;
 }
 .after-lingkod {
   grid-area: lingkod;
