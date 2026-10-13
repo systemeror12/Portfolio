@@ -247,6 +247,8 @@ test("on a wide screen the heading sits beside its intro and terms beside defini
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
+  // The section moves down once the web fonts swap in above it.
+  await page.evaluate(() => document.fonts.ready);
 
   const heading = (await work(page).locator("h2").boundingBox())!;
   const intro = (await work(page).locator(".work-heading p").boundingBox())!;
