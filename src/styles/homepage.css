@@ -4,53 +4,12 @@
 .contact-links a:hover {
   opacity: 0.62;
 }
-.approach-intro > span,
 .capabilities > div > span,
 .contact-copy > span {
   font: 500 9px var(--sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--peri);
-}
-.approach {
-  padding: 120px 5vw;
-  background: transparent;
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 10vw;
-}
-.approach-intro > p {
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text-muted);
-  max-width: 520px;
-}
-.approach ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--hair);
-}
-.approach li {
-  display: grid;
-  grid-template-columns: 55px 1fr;
-  gap: 25px;
-  padding: 25px 0;
-  border-bottom: 1px solid var(--hair);
-}
-.approach li > span {
-  font: 400 9px var(--sans);
-  color: var(--mist);
-}
-.approach h3 {
-  font: 500 19px var(--serif);
-  margin: 0 0 7px;
-}
-.approach li p {
-  font-size: 11px;
-  line-height: 1.7;
-  color: var(--text-muted);
-  margin: 0;
 }
 .capabilities {
   padding: 115px 5vw;
@@ -155,11 +114,6 @@ footer {
   }
 }
 @media (max-width: 700px) {
-  .approach {
-    padding: 90px 20px;
-    grid-template-columns: 1fr;
-    gap: 55px;
-  }
   .capabilities {
     padding: 85px 20px;
   }

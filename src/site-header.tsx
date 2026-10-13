@@ -135,8 +135,8 @@ export function Header({ currentPath }: { currentPath?: string }) {
         </InternalLink>
         {!currentPath && (
           <>
-            <InternalLink to="/#approach" onClick={closeMenuAfterNavigation}>
-              Approach
+            <InternalLink to="/#method" onClick={closeMenuAfterNavigation}>
+              Method
             </InternalLink>
             <InternalLink to="/#contact" onClick={closeMenuAfterNavigation}>
               Contact
