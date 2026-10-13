@@ -1,11 +1,13 @@
-import { method, methodSteps } from "./content";
+import { method, methodDepth, methodSteps } from "./content";
 import { useReveal } from "./reveal";
 
 // The four steps are an ordered list; the staff, the glass notes, and the
-// final double bar are drawn by its stylesheet.
+// final double bar are drawn by its stylesheet. A short passage on platform
+// depth follows the phrase.
 export function MethodSection() {
   const headingReveal = useReveal<HTMLDivElement>();
   const phraseReveal = useReveal<HTMLOListElement>();
+  const depthReveal = useReveal<HTMLDivElement>();
 
   return (
     <section className="method" id="method" aria-labelledby="method-title">
@@ -29,6 +31,13 @@ export function MethodSection() {
             </li>
           ))}
         </ol>
+        <div
+          ref={depthReveal.ref}
+          className={`method-depth ${depthReveal.className}`}
+        >
+          <p>{methodDepth.lead}</p>
+          <p>{methodDepth.detail}</p>
+        </div>
       </div>
     </section>
   );

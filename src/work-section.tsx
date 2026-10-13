@@ -2,7 +2,8 @@ import React from "react";
 import { work, workCases, type WorkCase } from "./content";
 import { InternalLink } from "./navigation";
 import { useReveal } from "./reveal";
-import { drawCaseRose, drawRoseWindow } from "./rose-window";
+import { drawLunette } from "./rose-lunette";
+import { drawRoseWindow } from "./rose-window";
 import { StaffDivider } from "./staff-divider";
 
 function Spark() {
@@ -39,11 +40,44 @@ function RoseWindow({ lit, onLight }: { lit: number; onLight: (index: number) =>
   );
 }
 
-// The small still window above each case on narrow screens.
-function CaseRose({ index }: { index: number }) {
+// On narrow screens, the top of the window held at the foot of the screen.
+// The glass turns the lit pane up under the hand; the sill names who it served.
+const lunetteHeight = 102;
+const narrowScreen = "(max-width: 900px)";
+function RoseLunette({ lit }: { lit: number }) {
   const scene = React.useRef<SVGSVGElement>(null);
-  React.useEffect(() => drawCaseRose(scene.current!, index), [index]);
-  return <svg ref={scene} className="work-case-rose" aria-hidden="true" />;
+  const drawn = React.useRef<ReturnType<typeof drawLunette>>(null);
+  React.useEffect(() => {
+    drawn.current = drawLunette(
+      scene.current!,
+      workCases.map((item) => item.records),
+      lunetteHeight,
+    );
+    return () => drawn.current!.cleanup();
+  }, []);
+  React.useEffect(() => drawn.current!.light(lit), [lit]);
+
+  // Focus inside a case never stays hidden under the lunette: it scrolls up
+  // past the lunette, by the scroll margin the styles give case links.
+  React.useEffect(() => {
+    const section = scene.current!.closest("section")!;
+    const narrow = window.matchMedia(narrowScreen);
+    const reveal = (event: FocusEvent) => {
+      const target = event.target as HTMLElement;
+      if (narrow.matches && target.closest(".work-case")) target.scrollIntoView({ block: "nearest" });
+    };
+    section.addEventListener("focusin", reveal);
+    return () => section.removeEventListener("focusin", reveal);
+  }, []);
+
+  return (
+    <div className="work-lunette" aria-hidden="true">
+      <svg ref={scene} className="rose-lunette" style={{ height: lunetteHeight }} />
+      <p className="work-lunette-for">
+        <span>{work.servedBy}</span> <b key={lit}>{workCases[lit].served}</b>
+      </p>
+    </div>
+  );
 }
 
 function WorkCaseArticle({ item, index, lit }: { item: WorkCase; index: number; lit: boolean }) {
@@ -56,7 +90,6 @@ function WorkCaseArticle({ item, index, lit }: { item: WorkCase; index: number; 
       className={`work-case ${reveal.className}${lit ? " is-lit" : ""}`}
       aria-labelledby={titleId}
     >
-      <CaseRose index={index} />
       <p className="work-case-kind">
         <span aria-hidden="true">{item.numeral}</span>
         {item.kind}
@@ -119,6 +152,7 @@ export function WorkSection() {
               <WorkCaseArticle key={item.id} item={item} index={index} lit={index === lit} />
             ))}
           </div>
+          <RoseLunette lit={lit} />
         </div>
       </div>
     </section>

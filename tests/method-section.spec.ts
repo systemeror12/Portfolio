@@ -230,10 +230,84 @@ test("with reduced motion the Method section is visible at once", async ({
   await page.goto("/");
 
   const reveals = method(page).locator(".reveal");
-  await expect(reveals).toHaveCount(2);
+  await expect(reveals).toHaveCount(3);
   await expect(method(page).locator(".reveal:not(.is-shown)")).toHaveCount(0);
   for (const element of await reveals.all()) {
     await expect(element).toHaveCSS("opacity", "1");
     await expect(element).toHaveCSS("transform", "none");
   }
+});
+
+const depth = {
+  lead: "Odoo is my deepest platform. The engineering practice is broader.",
+  detail:
+    "Inside Odoo, that means its ORM and OWL. Around it, Linux, Docker, Bash, and Git.",
+};
+
+test("after the four notes, a short passage carries the platform depth", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = method(page);
+
+  const passage = section.locator(".method-depth");
+  await expect(passage.getByText(depth.lead, { exact: true })).toBeVisible();
+  await expect(passage.getByText(depth.detail, { exact: true })).toBeVisible();
+
+  // It follows the list inside the same section, and adds no section of its own.
+  expect(
+    await passage.evaluate(
+      (element) => element.previousElementSibling?.tagName,
+    ),
+  ).toBe("OL");
+  await expect(passage.locator("section")).toHaveCount(0);
+});
+
+test("the Capabilities section is gone and its claims appear only in Method", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await expect(page.locator(".capabilities, .capability-grid")).toHaveCount(0);
+  await expect(page.getByText("Platform depth", { exact: true })).toHaveCount(0);
+  // Lingkod HR's stack also lists Docker; that is a project fact, not the claim.
+  for (const claim of [
+    /deepest platform/i,
+    /ORM and OWL/,
+    /Linux, Docker, Bash, and Git/,
+  ]) {
+    const elements = page.locator("main").getByText(claim);
+    await expect(elements).toHaveCount(1);
+    await expect(
+      elements.locator("xpath=ancestor::section[@id='method']"),
+    ).toHaveCount(1);
+  }
+});
+
+test("at 390px the passage stays inside the screen", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+
+  const passage = method(page).locator(".method-depth");
+  await passage.scrollIntoViewIfNeeded();
+  await expect(passage.getByText(depth.lead, { exact: true })).toBeVisible();
+
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(390);
+  const outside = await passage.evaluate((element) =>
+    [element, ...Array.from(element.querySelectorAll("*"))]
+      .filter((node) => {
+        const box = node.getBoundingClientRect();
+        return (
+          box.width > 0 &&
+          (box.left < 0 ||
+            box.right > window.innerWidth ||
+            node.scrollWidth > node.clientWidth)
+        );
+      })
+      .map((node) => node.textContent!.trim().slice(0, 40)),
+  );
+  expect(outside).toEqual([]);
 });
