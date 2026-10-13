@@ -1,3 +1,5 @@
+import React from "react";
+import { drawAfterHoursIron } from "./after-hours-iron";
 import { afterHours } from "./content";
 import { InternalLink } from "./navigation";
 import { useReveal } from "./reveal";
@@ -88,9 +90,21 @@ function ToolsIUse() {
   );
 }
 
+// Mounts the drawn iron behind and in front of the panels. The scene owns the
+// two svgs' contents.
+function useIron() {
+  const back = React.useRef<SVGSVGElement>(null);
+  const front = React.useRef<SVGSVGElement>(null);
+
+  React.useEffect(() => drawAfterHoursIron(back.current!, front.current!), []);
+
+  return { back, front };
+}
+
 export function AfterHoursSection() {
   const heading = useReveal<HTMLDivElement>();
   const pieces = useReveal<HTMLDivElement>();
+  const iron = useIron();
 
   return (
     <section className="after" id="after" aria-labelledby="after-title">
@@ -101,9 +115,11 @@ export function AfterHoursSection() {
           <p>{afterHours.intro}</p>
         </div>
         <div ref={pieces.ref} className={`after-pieces ${pieces.className}`}>
+          <svg ref={iron.back} className="after-iron after-iron-back" aria-hidden="true" />
           <LingkodHr />
           <DotsHyprland />
           <ToolsIUse />
+          <svg ref={iron.front} className="after-iron after-iron-front" aria-hidden="true" />
         </div>
       </div>
     </section>
