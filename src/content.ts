@@ -128,26 +128,36 @@ export const workCases: WorkCase[] = [
   },
 ];
 
-export const workingMethod = [
+export const method = {
+  heading: "How I start on a system I've never seen.",
+  intro:
+    "Four notes, always in this order: find out what has to stay true when data crosses from one team, company, or system to the next.",
+};
+
+export const methodSteps = [
   {
+    number: "one",
     title: "Trace the operation",
     description:
-      "Start with the people, records, approvals, and outcomes the system must support.",
+      "Start with the people, records, approvals, and outcomes the system has to support.",
   },
   {
+    number: "two",
     title: "Define the boundaries",
     description:
       "Make permissions, company rules, external ownership, and confidentiality explicit.",
   },
   {
+    number: "three",
     title: "Design the failure path",
     description:
-      "Treat retries, invalid state, missing context, and customer-facing outcomes as first-class behavior.",
+      "Treat retries, invalid state, missing context, and what the customer sees as real behavior.",
   },
   {
+    number: "four",
     title: "Validate the result",
     description:
-      "Compare the implemented flow with representative scenarios and the operation’s expected outcome.",
+      "Check the finished flow against representative scenarios and what the operation expects.",
   },
 ];
 

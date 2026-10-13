@@ -13,7 +13,7 @@ import "./styles/base.css";
 import "./styles/homepage.css";
 import "./styles/hero.css";
 import "./styles/work.css";
-import { workingMethod } from "./content";
+import "./styles/method.css";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
@@ -30,6 +30,7 @@ import {
 import { Header } from "./site-header";
 import { Hero } from "./hero";
 import { WorkSection } from "./work-section";
+import { MethodSection } from "./method-section";
 
 function PersonalProjects() {
   return (
@@ -81,32 +82,6 @@ function PersonalProjects() {
           </InternalLink>
         </div>
       </article>
-    </section>
-  );
-}
-function Approach() {
-  return (
-    <section className="approach" id="approach">
-      <div className="approach-intro">
-        <span>Working method</span>
-        <h2>Reliability starts before the code.</h2>
-        <p>
-          My platform work connects technical behavior to the operation it
-          serves. That means understanding what must remain true when data,
-          organizations, and external systems cross boundaries.
-        </p>
-      </div>
-      <ol>
-        {workingMethod.map((step, index) => (
-          <li key={step.title}>
-            <span>0{index + 1}</span>
-            <div>
-              <h3>{step.title}</h3>
-              <p>{step.description}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
     </section>
   );
 }
@@ -250,7 +225,7 @@ function Home() {
         <Hero />
         <WorkSection />
         <PersonalProjects />
-        <Approach />
+        <MethodSection />
         <Capabilities />
         <ToolsIUse />
         <Contact />
