@@ -1,11 +1,4 @@
-.contact-links a {
-  transition: opacity 0.2s ease;
-}
-.contact-links a:hover {
-  opacity: 0.62;
-}
-.capabilities > div > span,
-.contact-copy > span {
+.capabilities > div > span {
   font: 500 9px var(--sans);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -47,72 +40,6 @@
   line-height: 1.75;
   color: var(--text-muted);
 }
-footer {
-  padding: 115px 5vw 32px;
-  background: var(--night);
-  color: var(--silver);
-}
-.contact-copy {
-  display: grid;
-  grid-template-columns: 180px 1.2fr 0.8fr;
-  gap: 30px;
-}
-.contact-copy h2 {
-  margin: 0;
-  max-width: 760px;
-}
-.contact-copy p {
-  font-size: 13px;
-  line-height: 1.75;
-  color: var(--text-soft);
-  margin: 0;
-}
-.contact-links {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin: 70px 0 100px 180px;
-  border-top: 1px solid var(--hair);
-}
-.contact-links a {
-  display: grid;
-  grid-template-columns: 25px 1fr auto;
-  align-items: center;
-  gap: 15px;
-  padding: 22px 0;
-  border-bottom: 1px solid var(--hair);
-  font: 500 10px var(--sans);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-.contact-links a:nth-child(even) {
-  padding-left: 28px;
-  border-left: 1px solid var(--hair);
-}
-.contact-links svg {
-  width: 16px;
-  color: var(--peri);
-}
-.footer-line {
-  padding-top: 20px;
-  border-top: 1px solid var(--hair);
-  display: flex;
-  justify-content: space-between;
-  font: 400 8px var(--sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mist);
-}
-@media (max-width: 1000px) {
-  .contact-copy {
-    grid-template-columns: 140px 1fr;
-  }
-  .contact-copy p {
-    grid-column: 2;
-  }
-  .contact-links {
-    margin-left: 140px;
-  }
-}
 @media (max-width: 700px) {
   .capabilities {
     padding: 85px 20px;
@@ -130,30 +57,6 @@ footer {
     padding: 25px 0;
     border-right: 0;
     border-bottom: 1px solid var(--hair);
-  }
-  footer {
-    padding: 85px 20px 28px;
-  }
-  .contact-copy {
-    grid-template-columns: 1fr;
-  }
-  .contact-copy p {
-    grid-column: 1;
-  }
-  .contact-links {
-    grid-template-columns: 1fr;
-    margin: 55px 0 80px;
-  }
-  .contact-links a:nth-child(even) {
-    padding-left: 0;
-    border-left: 0;
-  }
-  .footer-line {
-    gap: 20px;
-    align-items: flex-end;
-  }
-  .footer-line span {
-    max-width: 180px;
   }
 }
 .staff-divider {
