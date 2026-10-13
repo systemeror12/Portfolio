@@ -162,3 +162,59 @@ export const hero = {
   email: "mendozajeromevrixen@gmail.com",
   heartLabel: "someone, paid right",
 };
+
+export const afterHours = {
+  heading: "After hours.",
+  intro:
+    "What I build when nobody's asked me to. One is still taking shape. The other is the desktop I'm typing this on.",
+  lingkod: {
+    status: "In development, private repository",
+    title: "Lingkod HR",
+    description:
+      "An HR information system for Philippine government agencies, focused on position management, personnel records, and recruitment.",
+    stackLabel: "Tech stack",
+    stack: ["Next.js", "React", "NestJS", "PostgreSQL", "Prisma", "Docker"],
+  },
+  dots: {
+    status: "Actively maintained fork",
+    title: "dots-hyprland",
+    description:
+      "The Hyprland desktop I work in every day. I forked it because I loved how it looked, then kept going where it didn't fit how I work.",
+    upstream: {
+      heading: "From upstream",
+      body: "The visual design. It's the reason I forked it, and it isn't mine.",
+    },
+    mine: {
+      heading: "Mine",
+      body: "Workspace and wallpaper state, launcher speed and correctness, and reliability across processes.",
+    },
+    // Every second piece is code: the repository, then the handle.
+    credit: [
+      "Upstream contribution: my per-workspace wallpaper feature was reworked and merged into ",
+      "ml4w-lightcrimson-dotfiles",
+      ", crediting ",
+      "@systemeror12",
+      " as its original author.",
+    ],
+    readMore: "Read about the fork",
+  },
+  tools: {
+    heading: "Tools I use",
+    label: "Tools I Use",
+    intro: "Not my projects. Just always open.",
+    items: [
+      {
+        name: "Odysseus",
+        description:
+          "A self-hosted AI workspace for exploring ideas close to my local environment.",
+        href: "https://github.com/pewdiepie-archdaemon/odysseus",
+      },
+      {
+        name: "T3 Code",
+        description:
+          "A coding-agent workspace that keeps implementation and review next to the code.",
+        href: "https://github.com/pingdotgg/t3code",
+      },
+    ],
+  },
+};

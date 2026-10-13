@@ -12,79 +12,6 @@
   text-transform: uppercase;
   color: var(--peri);
 }
-.personal-projects {
-  padding: 105px 5vw;
-  background: var(--night);
-}
-.personal-projects-heading {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 680px);
-  gap: 8vw;
-  padding-bottom: 34px;
-  border-bottom: 2px solid var(--stain);
-}
-.personal-projects-heading > span,
-.system-id,
-.personal-projects article small {
-  font: 500 8px var(--sans);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--mist);
-}
-.personal-projects-heading h2 {
-  margin: 0;
-  font: 500 clamp(34px, 4vw, 58px)/1 var(--serif);
-  letter-spacing: -0.01em;
-}
-.personal-projects article {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 680px);
-  gap: 8vw;
-  padding: 36px 0;
-}
-.personal-projects article small {
-  display: block;
-  margin-top: 12px;
-  color: var(--peri);
-}
-.personal-projects h3 {
-  margin: 0 0 14px;
-  font: 500 28px var(--serif);
-  letter-spacing: -0.01em;
-}
-.personal-projects article p {
-  max-width: 670px;
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--text-muted);
-}
-.personal-projects article + article {
-  border-top: 1px solid var(--hair);
-}
-.project-stack {
-  margin-top: 24px;
-}
-.project-stack > span {
-  font: 500 10px var(--sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--peri);
-}
-.project-stack ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-}
-.project-stack li {
-  padding: 8px 11px;
-  border: 1px solid var(--hair);
-  font: 500 12px var(--sans);
-  color: var(--silver);
-}
 .approach {
   padding: 120px 5vw;
   background: transparent;
@@ -161,84 +88,6 @@
   line-height: 1.75;
   color: var(--text-muted);
 }
-.tools {
-  padding: 105px 5vw 115px;
-  background: transparent;
-}
-.tools-heading {
-  display: grid;
-  grid-template-columns: 180px 1fr 0.8fr;
-  gap: 30px;
-  align-items: start;
-  padding-bottom: 42px;
-  border-bottom: 2px solid var(--stain);
-}
-.tools-heading > span {
-  font: 500 9px var(--sans);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mist);
-}
-.tools-heading h2 {
-  margin: 0;
-  font: 500 clamp(34px, 4vw, 58px)/1 var(--serif);
-  letter-spacing: -0.01em;
-}
-.tools-heading p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.75;
-}
-.tools-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-left: 180px;
-}
-.tools-list article {
-  min-height: 245px;
-  padding: 30px 30px 28px 0;
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid var(--hair);
-}
-.tools-list article + article {
-  padding-left: 30px;
-  border-left: 1px solid var(--hair);
-}
-.tools-list small {
-  color: var(--mist);
-  font: 500 8px var(--sans);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.tools-list h3 {
-  margin: 12px 0 0;
-  font: 500 27px var(--serif);
-  letter-spacing: -0.01em;
-}
-.tools-list p {
-  margin: 28px 0;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.75;
-}
-.tools-list a {
-  width: fit-content;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: auto;
-  padding-bottom: 6px;
-  border-bottom: 1px solid currentColor;
-  color: var(--peri);
-  font: 500 9px var(--sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.tools-list a svg {
-  width: 14px;
-}
 footer {
   padding: 115px 5vw 32px;
   background: var(--night);
@@ -304,15 +153,6 @@ footer {
   .contact-links {
     margin-left: 140px;
   }
-  .tools-heading {
-    grid-template-columns: 140px 1fr;
-  }
-  .tools-heading p {
-    grid-column: 2;
-  }
-  .tools-list {
-    margin-left: 140px;
-  }
 }
 @media (max-width: 700px) {
   .approach {
@@ -337,26 +177,6 @@ footer {
     border-right: 0;
     border-bottom: 1px solid var(--hair);
   }
-  .tools {
-    padding: 85px 20px;
-  }
-  .tools-heading {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  .tools-heading p {
-    grid-column: 1;
-  }
-  .tools-list {
-    grid-template-columns: 1fr;
-    margin: 0;
-  }
-  .tools-list article,
-  .tools-list article + article {
-    min-height: 0;
-    padding: 28px 0;
-    border-left: 0;
-  }
   footer {
     padding: 85px 20px 28px;
   }
@@ -380,14 +200,6 @@ footer {
   }
   .footer-line span {
     max-width: 180px;
-  }
-  .personal-projects {
-    padding: 75px 20px;
-  }
-  .personal-projects-heading,
-  .personal-projects article {
-    grid-template-columns: 1fr;
-    gap: 22px;
   }
 }
 .staff-divider {

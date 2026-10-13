@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Code,
   Download,
-  ExternalLink,
   Mail,
   Network,
 } from "lucide-react";
@@ -13,6 +12,7 @@ import "./styles/base.css";
 import "./styles/homepage.css";
 import "./styles/hero.css";
 import "./styles/work.css";
+import "./styles/after-hours.css";
 import { workingMethod } from "./content";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
@@ -30,60 +30,8 @@ import {
 import { Header } from "./site-header";
 import { Hero } from "./hero";
 import { WorkSection } from "./work-section";
+import { AfterHoursSection } from "./after-hours-section";
 
-function PersonalProjects() {
-  return (
-    <section
-      className="personal-projects"
-      id="personal-projects"
-      aria-labelledby="personal-projects-title"
-    >
-      <div className="personal-projects-heading">
-        <span>Independent work</span>
-        <h2 id="personal-projects-title">Personal Projects</h2>
-      </div>
-      <article aria-labelledby="lingkod-hr-title">
-        <div>
-          <span className="system-id">Personal project</span>
-          <small>In development · Private project</small>
-        </div>
-        <div>
-          <h3 id="lingkod-hr-title">Lingkod HR</h3>
-          <p>
-            A personal HR information system project for Philippine government
-            agencies, focused on position management, personnel records, and
-            recruitment workflows.
-          </p>
-          <div className="project-stack">
-            <span id="lingkod-stack-label">Tech stack</span>
-            <ul aria-labelledby="lingkod-stack-label">
-              {["Next.js", "React", "NestJS", "PostgreSQL", "Prisma", "Docker"].map(
-                (technology) => <li key={technology}>{technology}</li>,
-              )}
-            </ul>
-          </div>
-        </div>
-      </article>
-      <article aria-labelledby="dots-hyprland-title">
-        <div>
-          <span className="system-id">Personal system</span>
-          <small>Actively maintained fork</small>
-        </div>
-        <div>
-          <h3 id="dots-hyprland-title">dots-hyprland</h3>
-          <p>
-            A daily Hyprland desktop foundation whose upstream visual design I
-            admire, extended with my own workspace state, launcher behavior,
-            and cross-process reliability work.
-          </p>
-          <InternalLink className="case-link" to={dotsHyprlandCaseStudyPath}>
-            Inspect the Personal System <ArrowRight />
-          </InternalLink>
-        </div>
-      </article>
-    </section>
-  );
-}
 function Approach() {
   return (
     <section className="approach" id="approach">
@@ -148,59 +96,6 @@ function Capabilities() {
   );
 }
 
-function ToolsIUse() {
-  return (
-    <section className="tools" aria-label="Tools I Use">
-      <div className="tools-heading">
-        <span>Tools I Use</span>
-        <h2>Part of the working environment.</h2>
-        <p>
-          These upstream tools support the way I plan, investigate, and deliver
-          work. They are included here as workflow context.
-        </p>
-      </div>
-      <div className="tools-list">
-        <article>
-          <div>
-            <small>Local AI workspace</small>
-            <h3>Odysseus</h3>
-          </div>
-          <p>
-            A self-hosted workspace I use to explore ideas and keep AI-assisted
-            work close to my local development environment.
-          </p>
-          <a
-            href="https://github.com/pewdiepie-archdaemon/odysseus"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open Odysseus upstream project"
-          >
-            Upstream project <ExternalLink />
-          </a>
-        </article>
-        <article>
-          <div>
-            <small>Agent workspace</small>
-            <h3>T3 Code</h3>
-          </div>
-          <p>
-            A coding-agent workspace I use to keep implementation, review, and
-            delivery conversations connected to the codebase.
-          </p>
-          <a
-            href="https://github.com/pingdotgg/t3code"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open T3 Code upstream project"
-          >
-            Upstream project <ExternalLink />
-          </a>
-        </article>
-      </div>
-    </section>
-  );
-}
-
 function Contact() {
   return (
     <footer id="contact">
@@ -249,10 +144,9 @@ function Home() {
       <main id="main" tabIndex={-1}>
         <Hero />
         <WorkSection />
-        <PersonalProjects />
+        <AfterHoursSection />
         <Approach />
         <Capabilities />
-        <ToolsIUse />
         <Contact />
       </main>
     </>
