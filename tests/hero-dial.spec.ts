@@ -69,7 +69,7 @@ test("the corner lilies look the same on every load", async ({ page }) => {
   const lilies = async () => {
     await page.goto("/");
     return page
-      .locator(".hero-scene > g:not(.dial)")
+      .locator(".hero-scene > g:not(.dial, .hero-records)")
       .evaluateAll((groups) => groups.map((group) => group.outerHTML));
   };
   const first = await lilies();
