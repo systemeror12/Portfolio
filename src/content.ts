@@ -11,6 +11,10 @@ export type WorkCase = {
   kind: string;
   title: string;
   for: string;
+  // Who the system served, named under the rose window as its pane lights.
+  served: string;
+  // The records the case carries, written around the rim of its pane.
+  records: string;
   note?: string;
   problem: string;
   built: string;
@@ -33,6 +37,7 @@ export const work = {
     keyIdeas: "Key ideas",
   },
   readMore: "Read the full case study",
+  servedBy: "for",
 };
 
 export const workCases: WorkCase[] = [
@@ -42,6 +47,8 @@ export const workCases: WorkCase[] = [
     kind: "Lead case study",
     title: "Multi-Company HRIS",
     for: "for HR and payroll teams at multiple legal companies, now sharing one platform",
+    served: "HR and payroll teams",
+    records: "attendance · overtime · leave · payroll rules",
     problem:
       "Several legal companies were running HR and payroll by hand, in disconnected pieces. They needed one approved flow.",
     built:
@@ -64,6 +71,8 @@ export const workCases: WorkCase[] = [
     kind: "Integration case study",
     title: "Payment Provider Module",
     for: "for customers at checkout, who should only ever be charged once",
+    served: "customers at checkout",
+    records: "checkout · webhook · signature · one charge",
     problem:
       "The client's required regional payment provider had no Odoo integration, for either e-commerce or e-learning checkout.",
     built:
@@ -86,6 +95,8 @@ export const workCases: WorkCase[] = [
     kind: "AI research and development",
     title: "Access-Scoped Retrieval",
     for: "for employees asking questions, who should only see what they're allowed to",
+    served: "employees asking questions",
+    records: "question · access rules · records · answer",
     note: "An internal prototype. It proved the idea works. It was never a production deployment.",
     problem:
       "Could a chatbot answer from real Odoo business records without crossing anyone's access boundaries? The company wanted to find out.",
@@ -109,6 +120,8 @@ export const workCases: WorkCase[] = [
     kind: "Public sector case study",
     title: "Government Water District HRIS",
     for: "for the staff whose leave, overtime, and pass slips all hang on one punch",
+    served: "the water district's staff",
+    records: "punch · import · correction · one record",
     problem:
       "A government water district couldn't fully trust its device punches, and its reports, overtime, leave, and pass slips all depended on them.",
     built:
