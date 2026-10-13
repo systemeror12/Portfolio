@@ -256,3 +256,11 @@ export const contact = {
   resume: { label: "Resume (PDF)", href: "/jerome-mendoza-resume.pdf" },
   footer: { name: "Jerome Mendoza", line: "Made at 25:00, Manila" },
 };
+
+// The platform-depth claims no case study makes, carried over from the old
+// Capabilities section.
+export const methodDepth = {
+  lead: "Odoo is my deepest platform. The engineering practice is broader.",
+  detail:
+    "Inside Odoo, that means its ORM and OWL. Around it, Linux, Docker, Bash, and Git.",
+};
