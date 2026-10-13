@@ -27,44 +27,6 @@ import { AfterHoursSection } from "./after-hours-section";
 import { MethodSection } from "./method-section";
 import { ContactSection, SiteFooter } from "./contact-section";
 
-function Capabilities() {
-  return (
-    <section className="capabilities">
-      <div>
-        <span>Platform depth</span>
-        <h2>
-          Odoo is the deepest platform.
-          <br />
-          The engineering practice is broader.
-        </h2>
-      </div>
-      <div className="capability-grid">
-        <div>
-          <small>Platform adaptation</small>
-          <p>
-            Odoo modules, ORM, OWL, QWeb, multi-company workflows, and
-            operational reporting.
-          </p>
-        </div>
-        <div>
-          <small>Integration reliability</small>
-          <p>
-            REST APIs, Verified Payment Webhooks, transaction state, retries,
-            and failure handling.
-          </p>
-        </div>
-        <div>
-          <small>Delivery environment</small>
-          <p>
-            Python, JavaScript, PostgreSQL, Linux, Docker, Bash, Git, and
-            cross-functional implementation.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function Home() {
   return (
     <>
@@ -74,7 +36,6 @@ function Home() {
         <WorkSection />
         <AfterHoursSection />
         <MethodSection />
-        <Capabilities />
         <ContactSection />
       </main>
       <SiteFooter />
