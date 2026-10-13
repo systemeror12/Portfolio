@@ -72,6 +72,12 @@ test.describe("on a wide screen", () => {
     }
   });
 
+  test("the lunette stays hidden", async ({ page }) => {
+    await page.goto("/");
+    await readCase(page, 0);
+    await expect(page.locator("#work .work-lunette")).toBeHidden();
+  });
+
   test("the rim text is 14px, medium, haloed, never dimmed, upright, and fits its arc", async ({
     page,
   }) => {
@@ -182,30 +188,285 @@ test.describe("on a wide screen", () => {
 test.describe("on a phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("each case carries a small still rose with its own pane lit, and the big window stays hidden", async ({
+  const lunette = (page: Page) => page.locator("#work .work-lunette");
+  const lunetteRecords = (page: Page) =>
+    page
+      .locator(".rose-lunette .rose-record")
+      .evaluateAll((dots) => dots.map((dot) => `${dot.getAttribute("cx")},${dot.getAttribute("cy")}`));
+
+  test("the per-case still roses are gone, and the lunette holds the window instead", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(page.locator("#work .work-rose")).toBeHidden();
+    await expect(page.locator("#work .work-case-rose")).toHaveCount(0);
+    await readCase(page, 0);
+    await expect(lunette(page)).toBeVisible();
+    await expect(lunette(page)).toHaveAttribute("aria-hidden", "true");
+  });
+
+  test("reading each case lights its pane, turns it to the top, and names who it served", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const scene = lunette(page);
+    for (const [index, item] of cases.entries()) {
+      await readCase(page, index);
+      await expect(scene.locator(".rose-pane").nth(index)).toHaveClass(/is-lit/);
+      await expect(scene.locator(".rose-pane.is-lit")).toHaveCount(1);
+      await expect(scene.locator(".rose-turn")).toHaveAttribute(
+        "style",
+        `transform: rotate(${-(index * 90 + 45)}deg);`,
+      );
+      await expect(scene.locator(".work-lunette-for")).toHaveText(`for ${item.served}`);
+    }
+  });
+
+  test("it fills the foot of the screen while a case is read, and rests above the next section after the last", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    for (const index of cases.keys()) {
+      await readCase(page, index);
+      const box = (await lunette(page).boundingBox())!;
+      expect(box.x).toBe(0);
+      expect(box.width).toBe(390);
+      expect(box.height).toBe(102);
+      expect(box.y + box.height).toBeCloseTo(844, 0);
+    }
+
+    // Bring the end of the Work section to the middle of the screen.
+    await page.evaluate(() => {
+      const box = document.querySelector("#work")!.getBoundingClientRect();
+      window.scrollTo({ top: window.scrollY + box.bottom - innerHeight / 2, behavior: "instant" });
+    });
+    const rest = (await lunette(page).boundingBox())!;
+    const last = (await page.locator("#work .work-case").last().boundingBox())!;
+    const next = (await page.locator("#work + section").boundingBox())!;
+    expect(rest.y + rest.height).toBeLessThan(844 - 100);
+    expect(rest.y).toBeGreaterThanOrEqual(last.y + last.height);
+    expect(rest.y + rest.height).toBeLessThanOrEqual(next.y);
+  });
+
+  test("the lit pane's rim text is 14px, medium, haloed, upright, and fits its arc", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    for (const index of cases.keys()) {
+      await readCase(page, index);
+      const scene = (await lunette(page).boundingBox())!;
+      const measure = () =>
+        page.locator(".rose-lunette .rose-pane.is-lit .rose-records").evaluate((text) => {
+          const label = text as SVGTextElement;
+          const arc = document.querySelector<SVGPathElement>(
+            label.querySelector("textPath")!.getAttribute("href")!,
+          )!;
+          const style = getComputedStyle(label);
+          const ctm = label.getScreenCTM()!;
+          const last = label.getNumberOfChars() - 1;
+          const middle = Math.floor(last / 2);
+          const onScreen = (point: DOMPoint) => new DOMPoint(point.x, point.y).matrixTransform(ctm);
+          return {
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            stroke: style.stroke,
+            strokeWidth: style.strokeWidth,
+            paintOrder: style.paintOrder,
+            scale: Math.hypot(ctm.a, ctm.b),
+            // The tilt of the middle character on screen, in degrees.
+            tilt: (Math.atan2(ctm.b, ctm.a) * 180) / Math.PI + label.getRotationOfChar(middle),
+            start: onScreen(label.getStartPositionOfChar(0)).x,
+            end: onScreen(label.getEndPositionOfChar(last)).x,
+            top: onScreen(label.getStartPositionOfChar(middle)).y,
+            length: label.getComputedTextLength(),
+            arc: arc.getTotalLength(),
+          };
+        });
+      // Wait for the turn to settle.
+      await expect(lunette(page).locator(".rose-pane").nth(index)).toHaveClass(/is-lit/);
+      await page.locator(".rose-turn").evaluate((turn) =>
+        Promise.all(turn.getAnimations().map((animation) => animation.finished.catch(() => {}))),
+      );
+      const label = await measure();
+      // The tilt is read at the start of the middle character, a few degrees
+      // short of the arc's apex.
+      expect(Math.abs(label.tilt)).toBeLessThan(5);
+      expect(label.fontSize).toBe("14px");
+      expect(label.fontWeight).toBe("500");
+      expect(label.stroke).toBe("rgb(6, 6, 11)");
+      expect(label.strokeWidth).toBe("3px");
+      expect(label.paintOrder).toMatch(/^stroke/);
+      // Drawn at 1:1, so it renders at 14px.
+      expect(label.scale).toBeCloseTo(1, 3);
+      expect(label.end).toBeGreaterThan(label.start);
+      expect(label.length).toBeGreaterThan(0);
+      expect(label.length).toBeLessThanOrEqual(label.arc);
+      // It sits at the top of the lunette, centred.
+      expect((label.start + label.end) / 2).toBeCloseTo(195, -1);
+      expect(label.top).toBeGreaterThan(scene.y);
+      expect(label.start).toBeGreaterThanOrEqual(0);
+      expect(label.end).toBeLessThanOrEqual(390);
+    }
+  });
+
+  test("the hand is the shared iron hour hand, pointing up for every case", async ({ page }) => {
+    await page.goto("/");
+    const hand = lunette(page).locator(".lunette-hand > .iron-hand-hour");
+    await expect(hand).toHaveCount(1);
+    for (const index of cases.keys()) {
+      await readCase(page, index);
+      await expect(lunette(page).locator(".rose-pane").nth(index)).toHaveClass(/is-lit/);
+      // The hand's unit is drawn along +x; on screen it points straight up.
+      const angle = await hand.locator(":scope > g").evaluate((unit) => {
+        const ctm = (unit as SVGGElement).getScreenCTM()!;
+        return (Math.atan2(ctm.b, ctm.a) * 180) / Math.PI;
+      });
+      expect(angle).toBeCloseTo(-90, 3);
+    }
+  });
+
+  test("a focused case study link is never hidden under the lunette", async ({ page }) => {
+    await page.goto("/");
+    const links = page.locator("#work .work-case-link");
+    // Let the cases fade up first, so the links sit where they will stay.
+    for (const index of cases.keys()) await readCase(page, index);
+    await page.evaluate(() =>
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => ((animation.effect as KeyframeEffect).target as Element)?.closest(".work-case"))
+          .map((animation) => animation.finished.catch(() => {})),
+      ),
+    );
+    for (const index of cases.keys()) {
+      // The link sits under the lunette, and focus arrives from the previous
+      // focusable element by keyboard.
+      await links.nth(index).evaluate((link) => {
+        const box = link.getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + box.top - (innerHeight - 60), behavior: "instant" });
+        const focusable = Array.from(document.querySelectorAll<HTMLElement>("a[href], button"));
+        focusable[focusable.indexOf(link as HTMLElement) - 1].focus({ preventScroll: true });
+      });
+      await page.keyboard.press("Tab");
+      await expect(links.nth(index)).toBeFocused();
+      // The page may scroll smoothly; wait for the link to clear the lunette.
+      await expect
+        .poll(async () => {
+          const link = (await links.nth(index).boundingBox())!;
+          const scene = (await lunette(page).boundingBox())!;
+          return scene.y - (link.y + link.height);
+        })
+        .toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  test("the sill reads at 4.5:1 or better against the scrim over the lit pane", async ({ page }) => {
+    // Under reduced motion the records stay hidden, so only the glass and the
+    // scrim lie behind the sill.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    const sill = lunette(page).locator(".work-lunette-for");
+    for (const [index, item] of cases.entries()) {
+      await readCase(page, index);
+      await expect(sill).toHaveText(`for ${item.served}`);
+      for (const part of [sill.locator("span"), sill.locator("b")]) {
+        const color = await part.evaluate((element) => getComputedStyle(element).color);
+        const box = (await part.boundingBox())!;
+        await part.evaluate((element) => ((element as HTMLElement).style.color = "transparent"));
+        const shot = (await page.screenshot({ clip: box })).toString("base64");
+        await part.evaluate((element) => ((element as HTMLElement).style.color = ""));
+        const contrast = await page.evaluate(
+          async ({ shot, color }) => {
+            const luminance = (r: number, g: number, b: number) => {
+              const linear = (c: number) => {
+                const s = c / 255;
+                return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+              };
+              return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b);
+            };
+            const image = new Image();
+            image.src = `data:image/png;base64,${shot}`;
+            await image.decode();
+            const canvas = document.createElement("canvas");
+            canvas.width = image.width;
+            canvas.height = image.height;
+            const context = canvas.getContext("2d")!;
+            context.drawImage(image, 0, 0);
+            const pixels = context.getImageData(0, 0, image.width, image.height).data;
+            // The brightest pixel behind the text is the worst case.
+            let background = 0;
+            for (let i = 0; i < pixels.length; i += 4) {
+              background = Math.max(background, luminance(pixels[i], pixels[i + 1], pixels[i + 2]));
+            }
+            const [r, g, b] = color.match(/\d+/g)!.map(Number);
+            return (luminance(r, g, b) + 0.05) / (background + 0.05);
+          },
+          { shot, color },
+        );
+        expect(contrast).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  for (const width of [360, 390]) {
+    test(`nothing overflows at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/");
+      for (const [index, item] of cases.entries()) {
+        await readCase(page, index);
+        await expect(lunette(page).locator(".work-lunette-for")).toHaveText(`for ${item.served}`);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+        const box = (await lunette(page).boundingBox())!;
+        expect(box.x).toBe(0);
+        expect(box.width).toBe(width);
+        const sill = (await lunette(page).locator(".work-lunette-for b").boundingBox())!;
+        expect(sill.x).toBeGreaterThanOrEqual(0);
+        expect(sill.x + sill.width).toBeLessThanOrEqual(width);
+      }
+    });
+  }
+
+  test("the lunette animates only while it is on screen", async ({ page }) => {
+    await page.goto("/");
+    const scene = page.locator(".rose-lunette");
+    await expect(scene).toHaveClass(/is-paused/);
+    const still = await lunetteRecords(page);
+    await page.waitForTimeout(300);
+    expect(await lunetteRecords(page)).toEqual(still);
+
+    await readCase(page, 0);
+    await expect(scene).not.toHaveClass(/is-paused/);
+    const first = await lunetteRecords(page);
+    await expect.poll(() => lunetteRecords(page)).not.toEqual(first);
+
+    await page.locator("footer").scrollIntoViewIfNeeded();
+    await expect(scene).toHaveClass(/is-paused/);
+    const paused = await lunetteRecords(page);
+    await page.waitForTimeout(500);
+    expect(await lunetteRecords(page)).toEqual(paused);
+  });
+
+  test("with reduced motion no animation frames run, the records stay still, and the turn and the sill are instant", async ({
     page,
   }) => {
     await page.addInitScript(countFrames);
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    await expect(page.locator("#work .work-rose")).toBeHidden();
-
-    const articles = page.locator("#work .work-case");
-    for (const index of cases.keys()) {
+    const scene = lunette(page);
+    for (const [index, item] of cases.entries()) {
       await readCase(page, index);
-      const mini = articles.nth(index).locator(":scope > svg.work-case-rose");
-      await expect(mini).toBeVisible();
-      await expect(mini).toHaveAttribute("aria-hidden", "true");
-      const box = (await mini.boundingBox())!;
-      expect(box.width).toBeCloseTo(96, 0);
-      expect(box.x + box.width).toBeLessThanOrEqual(390);
-      await expect(mini.locator(".rose-case-pane")).toHaveCount(4);
-      await expect(mini.locator(".rose-case-pane").nth(index)).toHaveClass(/is-lit/);
-      await expect(mini.locator(".rose-case-pane.is-lit")).toHaveCount(1);
+      await expect(scene.locator(".rose-pane").nth(index)).toHaveClass(/is-lit/);
+      await expect(scene.locator(".work-lunette-for")).toHaveText(`for ${item.served}`);
     }
-    // The hidden window never starts its loop.
-    await expect(page.locator(".rose-window")).toHaveClass(/is-paused/);
-    const dots = await records(page);
-    await page.waitForTimeout(300);
-    expect(await records(page)).toEqual(dots);
+    await page.waitForTimeout(500);
+    expect(await frames(page)).toBe(0);
+
+    const dots = await page.locator(".rose-lunette .rose-record").evaluateAll((elements) =>
+      elements.map((dot) => ({ cx: dot.getAttribute("cx"), opacity: dot.getAttribute("opacity") })),
+    );
+    expect(dots).toHaveLength(16);
+    for (const dot of dots) expect(dot).toEqual({ cx: null, opacity: "0" });
+    await expect(scene.locator(".rose-turn")).toHaveCSS("transition-duration", "0s");
+    await expect(scene.locator(".work-lunette-for b")).toHaveCSS("animation-name", "none");
   });
 });
