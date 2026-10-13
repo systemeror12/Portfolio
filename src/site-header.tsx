@@ -128,10 +128,10 @@ export function Header({ currentPath }: { currentPath?: string }) {
           Public sector
         </InternalLink>
         <InternalLink
-          to="/#personal-projects"
+          to="/#after"
           onClick={closeMenuAfterNavigation}
         >
-          Personal projects
+          After hours
         </InternalLink>
         {!currentPath && (
           <>

@@ -24,11 +24,11 @@ test("a Hiring Manager can inspect the Featured Personal System", async ({
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "Personal Projects" }),
+    page.getByRole("heading", { name: "After hours." }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Lingkod HR" })).toBeVisible();
   await expect(
-    page.getByText("In development · Private project", { exact: true }),
+    page.getByText("In development, private repository", { exact: true }),
   ).toBeVisible();
   for (const technology of [
     "Next.js",
@@ -40,9 +40,7 @@ test("a Hiring Manager can inspect the Featured Personal System", async ({
   ]) {
     await expect(page.getByText(technology, { exact: true })).toBeVisible();
   }
-  await page
-    .getByRole("link", { name: /inspect the personal system/i })
-    .click();
+  await page.getByRole("link", { name: "Read about the fork" }).click();
 
   await expect(page).toHaveURL("/systems/dots-hyprland");
   await expect(
@@ -65,8 +63,8 @@ test("the Personal System route loads directly with evidence and safe attributio
     await page.getByRole("button", { name: "Open navigation" }).click();
   }
   await expect(
-    page.getByRole("link", { name: "Personal projects", exact: true }),
-  ).toHaveAttribute("href", "/#personal-projects");
+    page.getByRole("link", { name: "After hours", exact: true }),
+  ).toHaveAttribute("href", "/#after");
   await expect(page.getByText("Workspace wallpaper state", { exact: true })).toBeVisible();
   await expect(page.getByText("Launcher performance and correctness", { exact: true })).toBeVisible();
   await expect(page.getByText("Cross-process reliability", { exact: true })).toBeVisible();

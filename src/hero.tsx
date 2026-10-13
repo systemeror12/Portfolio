@@ -1,10 +1,31 @@
+import React from "react";
 import { hero } from "./content";
+import { drawHeroDial } from "./hero-dial";
 import { InternalLink } from "./navigation";
 
-// The hero's copy. The drawn scene (#37, #38) goes before .hero-copy, behind its shade.
+// Mounts the drawn scene before .hero-copy, behind its shade. The scene owns
+// the svg's contents and places the heart's label.
+function HeroScene() {
+  const scene = React.useRef<SVGSVGElement>(null);
+  const label = React.useRef<HTMLSpanElement>(null);
+
+  React.useEffect(() => drawHeroDial(scene.current!, label.current!), []);
+
+  return (
+    <>
+      <svg ref={scene} className="hero-scene" aria-hidden="true" />
+      <span ref={label} className="heart-label" aria-hidden="true">
+        {hero.heartLabel}
+      </span>
+    </>
+  );
+}
+
+// The hero's copy over its drawn scene.
 export function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
+      <HeroScene />
       <div className="hero-copy">
         <p className="hero-name">
           <strong>{hero.name}</strong>, {hero.role}
