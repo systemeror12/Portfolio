@@ -1,0 +1,182 @@
+:root {
+  /* The Nocturne palette */
+  --void: #06060b;
+  --plum: #2b2436;
+  --stain: #4a3a63;
+  --bronze: #9b8794;
+  --mist: #9a8fab;
+  --peri: #a599d8;
+  --glow: #f0b4dc;
+  --silver: #ece8f4;
+  /* Extra tones the prototype draws with */
+  --night: #0d0c14;
+  --dusk: #1a1724;
+  --lilac: #cfc8de;
+  --rose: #bb6688;
+  --text: #d4cee0;
+  --text-soft: #cbc4d9;
+  --text-muted: #bdb5cc;
+  --iron: #221c2b;
+  --iron-deep: #12101a;
+  --note: #5b4680;
+  --note-rose: #7a4870;
+  --petal: #fff4fb;
+  --hair: rgba(207, 200, 222, 0.14);
+  --serif: "Shippori Mincho", "Hiragino Mincho ProN", serif;
+  --sans: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+  color: var(--silver);
+  background: var(--void);
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  font: 400 17px/1.75 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1100px 700px at 15% 0%, color-mix(in srgb, var(--stain) 22%, transparent), transparent 70%),
+    radial-gradient(900px 700px at 100% 60%, color-mix(in srgb, var(--plum) 35%, transparent), transparent 70%),
+    var(--void);
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--serif);
+  font-weight: 400;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+}
+svg {
+  stroke-width: 1.65;
+}
+.site-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 18px max(24px, calc((100vw - 1200px) / 2));
+  color: var(--silver);
+  background: linear-gradient(rgba(6, 6, 11, 0.92), rgba(6, 6, 11, 0));
+}
+.identity {
+  margin-right: auto;
+  font: 500 18px/1 var(--serif);
+  white-space: nowrap;
+}
+.site-header nav {
+  display: flex;
+  gap: 22px;
+}
+.site-header nav a {
+  font-size: 14px;
+  color: var(--mist);
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.site-header nav a:hover,
+.site-header nav a[aria-current="page"] {
+  color: var(--silver);
+}
+.clock {
+  margin: 0;
+  font-size: 15px;
+  color: var(--mist);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.clock b {
+  margin-left: 6px;
+  font: 500 17px/1 var(--serif);
+  color: var(--silver);
+}
+.menu-button {
+  display: none;
+  background: none;
+  border: 0;
+  color: var(--silver);
+}
+@media (max-width: 1060px) {
+  .site-header {
+    gap: 16px;
+    padding: 14px 20px;
+  }
+  .menu-button {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-right: -8px;
+  }
+  .menu-button svg {
+    width: 20px;
+  }
+  .site-header nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 8px 20px 18px;
+    background: var(--night);
+    border-bottom: 1px solid var(--hair);
+    flex-direction: column;
+    gap: 0;
+  }
+  .site-header nav.open {
+    display: flex;
+  }
+  .site-header nav a {
+    padding: 10px 0;
+    font-size: 16px;
+  }
+}
+@media (max-width: 560px) {
+  .clock span {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+:focus-visible {
+  outline: 2px solid var(--glow);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+main:focus {
+  outline: none;
+}
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 20;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: var(--silver);
+  color: var(--void);
+  font-weight: 500;
+}
+.skip-link:focus {
+  top: 12px;
+}

@@ -1,8 +1,9 @@
 import { ArrowLeft, ArrowRight, LockKeyhole } from "lucide-react";
+import { CaseFor, CaseIron, CaseKind } from "./case-study-iron";
 import { InternalLink } from "./navigation";
+import "./styles/case-study.css";
 
 const paymentProviderCaseStudy = {
-  eyebrow: "Integration Case Study / Sanitized Project Evidence",
   title: "Payment Provider Module",
   summary:
     "A complete Odoo payment-provider extension that made a client-required Regional Payment Provider available in e-commerce and e-learning checkout, with verified and duplicate-safe transaction updates.",
@@ -120,11 +121,12 @@ function PaymentFlow() {
 export function PaymentProviderCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
-            <span className="eyebrow">{paymentProviderCaseStudy.eyebrow}</span>
+            <CaseKind id="payment-provider" />
             <h1>{paymentProviderCaseStudy.title}</h1>
+            <CaseFor id="payment-provider" />
             <p>{paymentProviderCaseStudy.summary}</p>
             <InternalLink className="back-link" to="/">
               <ArrowLeft /> Back to home
@@ -175,6 +177,7 @@ export function PaymentProviderCaseStudy() {
             ))}
           </ul>
         </section>
+        <CaseIron id="payment-provider" />
       </main>
       <footer className="case-footer">
         <InternalLink to="/">

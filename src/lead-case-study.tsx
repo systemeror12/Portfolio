@@ -1,8 +1,9 @@
 import { ArrowLeft, ArrowRight, LockKeyhole } from "lucide-react";
+import { CaseFor, CaseIron, CaseKind } from "./case-study-iron";
 import { InternalLink } from "./navigation";
+import "./styles/case-study.css";
 
 const leadCaseStudy = {
-  eyebrow: "Lead Case Study / Sanitized Project Evidence",
   title: "Multi-Company HRIS",
   summary:
     "One shared Odoo deployment serving multiple legal companies, with common platform capabilities and company-specific employees, payroll rules, permissions, and reporting.",
@@ -128,15 +129,16 @@ function PayrollFlow() {
 export function LeadCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
-            <span className="eyebrow">{leadCaseStudy.eyebrow}</span>
+            <CaseKind id="multi-company-hris" />
             <h1>
               Multi-Company
               <br />
               HRIS
             </h1>
+            <CaseFor id="multi-company-hris" />
             <p>{leadCaseStudy.summary}</p>
             <InternalLink className="back-link" to="/">
               <ArrowLeft /> Back to home
@@ -182,6 +184,7 @@ export function LeadCaseStudy() {
             ))}
           </ul>
         </section>
+        <CaseIron id="multi-company-hris" />
       </main>
       <footer className="case-footer">
         <InternalLink to="/">

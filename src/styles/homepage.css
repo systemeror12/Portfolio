@@ -1,0 +1,30 @@
+.staff-divider {
+  display: block;
+  width: min(1200px, calc(100vw - 48px));
+  height: 44px;
+  margin: 0 auto;
+  color: var(--bronze);
+}
+.staff-divider path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s ease;
+}
+.reveal.is-shown {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

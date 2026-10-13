@@ -1,0 +1,596 @@
+/* The full case studies hang on After hours' iron. A wrought-iron chain hangs
+   down the case from a scrolled hook above its kind line, through a crystal
+   where each section joins it and a glass flower at each step of the flow, to
+   the open crystal lotus beside who the system was for. The facts and the
+   flow hang as iron-glass plaques from brackets off the chain, and a chain of
+   iron stars sags in behind each. What the reader has passed lights, and
+   moonlight falls across the page. The labels sit in a rail left of the
+   chain, the reading column to its right. The iron is drawn by case-iron.ts;
+   the type and links are the homepage's. */
+body:has(main.case-study)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    118deg,
+    transparent 20%,
+    rgba(165, 153, 216, 0.05) 27%,
+    rgba(165, 153, 216, 0.02) 33%,
+    transparent 37%,
+    transparent 54%,
+    rgba(165, 153, 216, 0.06) 60%,
+    transparent 67%
+  );
+  mask-image: linear-gradient(#000 35%, transparent 95%);
+}
+.case-study {
+  --rail: 220px;
+  --gap: 80px;
+  position: relative;
+  z-index: 1;
+  width: min(1200px, calc(100vw - 48px));
+  margin: 0 auto;
+  color: var(--silver);
+}
+.case-study > section,
+.case-study > figure {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 760px);
+  column-gap: var(--gap);
+  align-items: start;
+  margin: 0;
+  padding: 64px 0;
+}
+.case-iron {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.case-iron-back {
+  z-index: 0;
+}
+.case-iron-front {
+  z-index: 2;
+}
+
+/* The hero: the kind line and the records in the rail, beside the title, who
+   it was for, the summary, and the facts. */
+.case-study > .case-hero {
+  row-gap: 0;
+  padding: 120px 0 64px;
+}
+.case-hero > div:first-child {
+  display: contents;
+}
+.case-hero > div:first-child > *,
+.case-hero-meta {
+  grid-column: 2;
+}
+.case-hero > div:first-child > .case-kind {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: right;
+  color: var(--mist);
+}
+/* The pane's numeral, lit as it is on the homepage while its case is read. */
+.case-kind span {
+  font: 400 40px/1 var(--serif);
+  color: rgba(74, 58, 99, 0.5);
+  -webkit-text-stroke: 1px var(--glow);
+  text-shadow: 0 0 24px rgba(240, 180, 220, 0.4);
+}
+.case-kind svg {
+  flex: none;
+  align-self: center;
+  width: 13px;
+  height: 13px;
+  fill: var(--glow);
+  filter: drop-shadow(0 0 6px rgba(240, 180, 220, 0.8));
+}
+.case-hero > div:first-child > .case-records {
+  grid-column: 1;
+  grid-row: 2 / span 4;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: right;
+}
+.case-records li {
+  font-size: 15px;
+  line-height: 2.1;
+  color: var(--text-soft);
+}
+.case-hero h1 {
+  grid-row: 1;
+  max-width: 11em;
+  margin: 0;
+  font: 400 clamp(48px, 6.6vw, 96px)/1.02 var(--serif);
+  letter-spacing: -0.015em;
+}
+.case-hero .case-for {
+  max-width: 24em;
+  margin: 22px 0 0;
+  font: 400 22px/1.5 var(--serif);
+  color: var(--mist);
+}
+.case-hero > div:first-child > p:not([class]) {
+  max-width: 34em;
+  margin: 28px 0 0;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--text-soft);
+}
+.case-hero .back-link {
+  justify-self: start;
+  margin-top: 34px;
+}
+
+/* The plaques: iron glass with no top edge, hung from their brackets. */
+.case-hero-meta,
+.case-study-flow .flow-lane,
+.personal-contributions ol {
+  margin-top: 84px;
+  background: linear-gradient(180deg, var(--iron), var(--iron-deep));
+  border: 1px solid rgba(155, 135, 148, 0.45);
+  border-top: 0;
+  border-radius: 0 0 6px 6px;
+}
+.case-hero-meta {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 0 22px;
+  padding: 4px 26px 6px;
+}
+.case-hero-meta span,
+.case-hero-meta strong,
+.case-hero-meta a {
+  padding: 16px 0;
+  border-top: 1px solid var(--hair);
+}
+.case-hero-meta > :nth-child(-n + 2) {
+  border-top: 0;
+}
+.case-hero-meta span {
+  font: 400 15px/1.6 var(--sans);
+  color: var(--mist);
+}
+.case-hero-meta strong {
+  font: 400 16px/1.6 var(--sans);
+  color: var(--text);
+}
+
+/* Links read as they do on the homepage: periwinkle, underlined, no icons. */
+.back-link,
+.case-footer a,
+.case-hero-meta a,
+.personal-contributions a,
+.upstream-contribution a {
+  display: inline-block;
+  font: 400 16px/1.6 var(--sans);
+  color: var(--peri);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+.case-hero-meta a {
+  display: block;
+}
+:is(.back-link, .case-footer a, .case-hero-meta a, .personal-contributions a, .upstream-contribution a) svg {
+  display: none;
+}
+:is(.back-link, .case-footer a, .case-hero-meta a, .personal-contributions a, .upstream-contribution a):hover {
+  color: var(--silver);
+}
+
+/* Labels: the homepage's 15px sentence case, in mist, against the chain. The
+   engineering decisions are the line the case holds, in periwinkle; the
+   outcome is what changed, in rose with its spark. */
+.section-label,
+.case-study-flow figcaption > span {
+  font: 400 15px/1.5 var(--sans);
+  text-align: right;
+  color: var(--mist);
+}
+.decisions .section-label {
+  color: var(--peri);
+}
+.outcome .section-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--glow);
+}
+.outcome .section-label::before {
+  content: "";
+  flex: none;
+  width: 13px;
+  height: 13px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-10 -10 20 20'%3E%3Cpath d='M0 -10 L1.6 -1.6 L10 0 L1.6 1.6 L0 10 L-1.6 1.6 L-10 0 L-1.6 -1.6 Z' fill='%23f0b4dc'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  filter: drop-shadow(0 0 6px rgba(240, 180, 220, 0.8));
+}
+
+/* The reading column. */
+:is(.case-section, .personal-contributions, .upstream-contribution) h2 {
+  margin: 0;
+  font: 400 clamp(30px, 3.4vw, 46px)/1.14 var(--serif);
+  letter-spacing: -0.01em;
+}
+:is(.case-section, .personal-contributions, .upstream-contribution) p,
+.case-section li {
+  max-width: 36em;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+.case-section p {
+  margin: 20px 0 0;
+}
+.case-section ul {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.case-section li {
+  position: relative;
+  padding-left: 30px;
+}
+.case-section li + li {
+  margin-top: 14px;
+}
+.case-section li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.72em;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--bronze);
+  transform: rotate(45deg);
+}
+
+/* The flow: its caption in the serif voice of a case's problem on the
+   homepage, then its steps inside the plaque, each level with a glass flower
+   on the chain, the last under rose. */
+.case-study-flow figcaption {
+  display: contents;
+}
+.case-study-flow figcaption p,
+.case-study-flow .flow-lane,
+.flow-note {
+  grid-column: 2;
+}
+.case-study-flow figcaption p {
+  max-width: 30em;
+  margin: 0;
+  font: 400 22px/1.55 var(--serif);
+  color: var(--text);
+}
+.case-study-flow .flow-lane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 0 28px 4px;
+}
+.flow-lane > svg {
+  display: none;
+}
+.flow-lane > div {
+  padding: 18px 0;
+  border-top: 1px solid var(--hair);
+}
+.flow-lane > div:first-of-type {
+  border-top: 0;
+}
+.flow-lane > div:last-of-type {
+  border-top-color: rgba(240, 180, 220, 0.45);
+}
+.company-boundaries {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.flow-lane small {
+  font: 400 14px/1.4 var(--sans);
+  color: var(--mist);
+}
+.flow-lane strong {
+  display: block;
+  margin: 8px 0;
+  font: 400 22px/1.2 var(--serif);
+  color: var(--silver);
+}
+.flow-lane p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.flow-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 36px 0 0;
+  font: 400 14px/1.5 var(--sans);
+  color: var(--mist);
+}
+.flow-note svg {
+  flex: none;
+  width: 14px;
+}
+
+/* The stack, joined by small iron rings, as in After hours. */
+.technologies ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.technologies li {
+  display: flex;
+  align-items: center;
+  font: 400 16px/1.6 var(--sans);
+  color: var(--silver);
+}
+.technologies li + li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin: 0 10px;
+  border: 1.3px solid var(--bronze);
+  border-radius: 50%;
+}
+
+/* The fork's own sections: its three themes hang as a plaque, and its
+   upstream credit carries a shield. */
+.personal-contributions-heading {
+  display: contents;
+}
+.personal-contributions :is(h2, ol) {
+  grid-column: 2;
+}
+.personal-contributions ol {
+  padding: 0 28px;
+  list-style: none;
+}
+.personal-contributions li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 22px;
+  padding: 28px 0;
+  border-top: 1px solid var(--hair);
+}
+.personal-contributions li:first-child {
+  border-top: 0;
+}
+.personal-contributions li > span {
+  font: 400 40px/1 var(--serif);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(155, 135, 148, 0.7);
+}
+.personal-contributions h3 {
+  margin: 0 0 8px;
+  font: 400 26px/1.2 var(--serif);
+}
+.personal-contributions p,
+.upstream-contribution p {
+  margin: 0 0 12px;
+}
+.upstream-contribution > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.upstream-contribution > div:first-child svg {
+  width: 16px;
+  color: var(--glow);
+}
+.upstream-contribution h2 {
+  margin-bottom: 20px;
+}
+
+/* The iron's crystals, flowers, and lotus: dark until read. */
+.case-iron-glow {
+  opacity: 0.9;
+  filter: drop-shadow(0 0 4px rgba(240, 180, 220, 0.9));
+}
+.case-crystal-lit,
+.case-glow {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.is-lit > .case-crystal-lit,
+.is-lit > .case-glow {
+  opacity: 1;
+}
+.case-flower-petal {
+  fill: var(--peri);
+  opacity: 0.7;
+  transition:
+    fill 0.6s,
+    opacity 0.6s;
+}
+.case-flower.is-lit .case-flower-petal {
+  fill: var(--glow);
+  opacity: 1;
+}
+.case-lotus {
+  opacity: 0.45;
+  transition: opacity 0.9s ease;
+}
+.case-lotus-glow {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.case-charm.is-lit :is(.case-lotus, .case-lotus-glow) {
+  opacity: 1;
+}
+.case-charm.is-lit .case-ember {
+  animation: after-ember 4.5s ease-in-out infinite;
+}
+.case-sway {
+  animation: after-sway 6.5s ease-in-out infinite alternate;
+  transform-box: view-box;
+}
+.case-iron.is-paused :is(.case-sway, .case-ember) {
+  animation-play-state: paused;
+}
+
+/* Where the chain ends: who the system was for, beside the lotus. */
+.case-end {
+  position: relative;
+  z-index: 1;
+  min-height: 130px;
+  padding: 30px 0 0 calc(var(--rail) + var(--gap));
+}
+.case-end p {
+  margin: 0;
+  font: 400 22px/30px var(--serif);
+}
+.case-end span {
+  font-size: 17px;
+  color: var(--mist);
+}
+.case-end b {
+  font-weight: 400;
+  color: var(--lilac);
+  transition: color 0.6s;
+}
+.case-end.is-passed b {
+  color: var(--glow);
+}
+
+/* The footer: the way home and the case's line, as on the homepage. */
+.case-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: min(1200px, calc(100vw - 48px));
+  margin: 56px auto 0;
+  padding: 22px 0 100px;
+  border-top: 1px solid var(--hair);
+  color: var(--silver);
+}
+.case-footer span {
+  font: 400 15px/1.6 var(--sans);
+  color: var(--mist);
+}
+
+/* On phones the chain runs down the left gutter, beside a single column. */
+@media (max-width: 900px) {
+  .case-study {
+    --gap: 56px;
+  }
+  .case-study > section,
+  .case-study > figure {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 34px;
+  }
+  .case-study > .case-hero {
+    padding: 72px 0 48px 34px;
+  }
+  .case-hero > div:first-child > *,
+  .case-hero-meta,
+  .case-study-flow figcaption p,
+  .case-study-flow .flow-lane,
+  .flow-note,
+  .personal-contributions :is(h2, ol) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .case-hero > div:first-child > .case-kind {
+    grid-column: 1;
+    grid-row: auto;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 12px;
+    margin: 0;
+    text-align: left;
+  }
+  .case-hero > div:first-child > .case-records {
+    grid-column: 1;
+    grid-row: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 14px;
+    margin: 0 0 8px;
+    text-align: left;
+  }
+  .case-hero h1 {
+    font-size: clamp(44px, 11vw, 72px);
+  }
+  .case-hero > div:first-child > p:not([class]) {
+    font-size: 17px;
+  }
+  .section-label,
+  .case-study-flow figcaption > span {
+    text-align: left;
+  }
+  .outcome .section-label,
+  .upstream-contribution > div:first-child {
+    justify-content: flex-start;
+  }
+  :is(.case-section, .upstream-contribution, .personal-contributions) h2,
+  .case-study-flow figcaption p {
+    margin-top: 10px;
+  }
+  .case-hero-meta,
+  .case-study-flow .flow-lane,
+  .personal-contributions ol {
+    margin-top: 76px;
+  }
+  .case-study-flow .flow-lane,
+  .personal-contributions ol {
+    padding: 0 20px 4px;
+  }
+  .company-boundaries {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .case-end {
+    padding-left: 34px;
+  }
+}
+@media (max-width: 700px) {
+  .case-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 560px) {
+  .case-hero-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .case-hero-meta strong,
+  .case-hero-meta a {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .case-hero-meta span {
+    padding-bottom: 4px;
+  }
+  .case-study-flow figcaption p {
+    font-size: 20px;
+  }
+}
