@@ -1,8 +1,10 @@
+import { drawHeroRecords } from "./hero-records";
 import { hourHand, minuteHand } from "./iron-hands";
 import { draw } from "./svg";
 
 // The hero's scene: a twenty-five hour dial of stained glass keeping Manila
-// time, a glass lily at its heart, and smoked-glass lilies in the corners.
+// time, a glass lily at its heart, smoked-glass lilies in the corners, and the
+// records flowing into its heart.
 
 const reducedMotion = "(prefers-reduced-motion: reduce)";
 const manilaTime = new Intl.DateTimeFormat("en-GB", {
@@ -128,7 +130,8 @@ function lily(
 }
 
 // The dial's panes, numerals, rings, and ticks, with the hands and the boss
-// on top. Returns the hands for the clock to turn.
+// on top. Returns the hands for the clock to turn, and the lily the records
+// light.
 function dial(parent: Element, radius: number, reduce: boolean) {
   const r1 = radius * 0.79;
   const r2 = radius * 0.95;
@@ -136,7 +139,7 @@ function dial(parent: Element, radius: number, reduce: boolean) {
   const up = -Math.PI / 2;
   const at = (r: number, a: number) => [r * Math.cos(a), r * Math.sin(a)];
   // A glass lily, like the ones at the corners, blooms at the dial's heart.
-  lily(parent, 0, 0, radius * 0.0048, 0, 5, { opacity: 0.85, bud: false, glitter: 24, tint: plum });
+  const bloom = lily(parent, 0, 0, radius * 0.0048, 0, 5, { opacity: 0.85, bud: false, glitter: 24, tint: plum });
   for (let k = 0; k < 25; k++) {
     const a0 = (k - 0.5) * step + up;
     const a1 = (k + 0.5) * step + up;
@@ -210,7 +213,7 @@ function dial(parent: Element, radius: number, reduce: boolean) {
   draw("circle", { class: "dial-boss", r: 7, fill: "#9b8794" }, parent);
   draw("circle", { r: 10, fill: "none", stroke: "#9b8794", "stroke-width": 0.9, opacity: 0.8 }, parent);
   draw("circle", { r: 2.5, fill: "#06060b" }, parent);
-  return { hour, minute, second };
+  return { hour, minute, second, bloom };
 }
 
 // Draws the scene into svg, sized to its parent, and places label beside the
@@ -223,6 +226,10 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
   let height = 0;
   let hands: ReturnType<typeof dial>;
   let glow: SVGCircleElement;
+  let ring: SVGCircleElement;
+  let core: SVGCircleElement;
+  let records: ReturnType<typeof drawHeroRecords>;
+  let pulse = 0;
 
   function build() {
     width = hero.clientWidth;
@@ -238,12 +245,15 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
       lily(svg, width * 0.42, height * 1.04, 0.9, -20, 23);
     }
     hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce);
+    records = drawHeroRecords(svg, { width, height, heart, radius, mobile, reduce });
     glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
-    draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y, r: 3.2 }, svg);
+    ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
+    core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
     // On phones the words sit under the heart, inside the dial's face.
     label.style.left = `${heart.x + (mobile ? 0 : 22)}px`;
     label.style.top = `${heart.y + (mobile ? radius * 0.22 : 14)}px`;
     label.style.transform = mobile ? "translateX(-50%)" : "";
+    records.place();
     tick(start);
   }
 
@@ -258,11 +268,21 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
     turn(hands.hour, -90 + (parts.minute / 60) * (360 / 25));
     turn(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
     turn(hands.second, -90 + ((parts.second + millis) / 60) * 360);
+    // Each record that reaches the heart pulses it and lights the lily a little.
+    if (records.advance(now)) pulse = 1;
     const breathe = reduce ? 0 : (Math.sin(((now - start) / 1000) * 1.4) + 1) / 2;
-    glow.setAttribute("r", String(130 + breathe * 18));
+    glow.setAttribute("r", String(130 + breathe * 18 + pulse * 30));
+    ring.setAttribute("r", String(10 + (1 - pulse) * 30));
+    ring.setAttribute("opacity", (pulse * 0.6).toFixed(2));
+    core.setAttribute("r", String(3.2 + pulse * 1.4));
+    hands.bloom.setAttribute("opacity", (0.85 + pulse * 0.15).toFixed(2));
+    pulse *= 0.96;
   }
 
   build();
+  // Keep the labels and sparkles off the copy once its fonts have settled.
+  let live = true;
+  document.fonts.ready.then(() => live && records.place());
 
   // Redraw once the hero settles at a new size.
   let pending = 0;
@@ -297,6 +317,7 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
   const timer = reduce ? window.setInterval(() => tick(performance.now()), 15_000) : 0;
 
   return () => {
+    live = false;
     resize.disconnect();
     visible.disconnect();
     cancelAnimationFrame(pending);
