@@ -14,8 +14,9 @@
       /* PROTOTYPE, settled: the hero with A3 "Crossing" from round 3. Round 2
          A's keyboard ribbons are laid like the white strings in the
          reference, drawn in space so near keys come wide and far ones narrow.
-         Two cross in an X just past the end of the heading, one stands in the
-         left margin, and one crosses it low under the buttons. Round 2 B's
+         Four run nearly straight: two cross in an X just past the end of the
+         heading, one runs low under the buttons, and one high over the copy.
+         Round 2 B's
          lily bed is redrawn as true lilies, under round 1 A's night sky. */
 
       /* From src/styles/base.css */
@@ -897,7 +898,7 @@
       }
 
       // Where the copy sits, in the hero's coordinates: its left edge, the
-      // heading's first line, the lede, and the buttons.
+      // name line, the heading's first line, the lede, and the buttons.
       function copyFrame(hero) {
         const origin = hero.getBoundingClientRect();
         const local = (r) => ({ l: r.left - origin.left, t: r.top - origin.top, r: r.right - origin.left, b: r.bottom - origin.top });
@@ -911,6 +912,7 @@
         const top = Math.min(...heading.map((k) => k.t));
         return {
           left: local(hero.querySelector(".hero-copy").getBoundingClientRect()).l,
+          name: bound(lines(hero.querySelector(".hero-name"))),
           head: bound(heading.filter((k) => k.t < top + 8)),
           lede: bound(lines(hero.querySelector(".hero-lede"))),
           actions: bound([...hero.querySelectorAll(".hero-actions a")].map((a) => local(a.getBoundingClientRect()))),
@@ -1003,12 +1005,6 @@
       const span = (a) => Math.hypot(a[0], a[1], a[2]);
       const unit = (a) => mul(a, 1 / (span(a) || 1));
       const mix3 = (a, b, u) => add(a, mul(sub(b, a), u));
-      // Turns a about the unit axis k by angle.
-      const turn3 = (a, k, angle) => {
-        const c = Math.cos(angle);
-        const s = Math.sin(angle);
-        return add(add(mul(a, c), mul(cross(k, a), s)), mul(k, dot(k, a) * (1 - c)));
-      };
 
       function camera(L) {
         const { x, y } = L.heart;
@@ -1052,10 +1048,8 @@
       // A keyboard ribbon in space, after the reference's strings: it runs
       // through `through` ([x, y, z]: where it crosses the picture, and how
       // deep), so near keys come long and wide and far ones short and narrow.
-      // twist(t) turns it about its length (t runs 0 to 1 along it). roll
-      // curls one end over round its width, like a lily's tepal, showing the
-      // plain back. Each key is spaced evenly in space, not on the screen.
-      function ribbon3d(cam, { through, width, twist = () => 0, roll = null }) {
+      // Each key is spaced evenly in space, not on the screen.
+      function ribbon3d(cam, { through, width }) {
         const dense = spline(through.map(cam.unproject));
         const length = [0];
         for (let i = 1; i < dense.length; i++) length.push(length[i - 1] + span(sub(dense[i], dense[i - 1])));
@@ -1069,32 +1063,13 @@
           return mix3(dense[j], dense[j + 1], Math.min(1, Math.max(0, (l - length[j]) / (length[j + 1] - length[j] || 1))));
         });
         // Frames: the width starts across the ribbon in the picture plane and
-        // is carried along without spinning, then turned by twist.
+        // is carried along without spinning, so the ribbon lies flat.
         const T = P.map((_, i) => unit(sub(P[Math.min(n, i + 1)], P[Math.max(0, i - 1)])));
         let across = unit(cross([0, 0, 1], T[0]));
-        let frames = P.map((p, i) => {
+        const frames = P.map((p, i) => {
           if (i) across = unit(sub(across, mul(T[i], dot(across, T[i]))));
-          return { p, t: T[i], b: turn3(across, T[i], twist(i / n)) };
+          return { p, t: T[i], b: across };
         });
-        // The roll: keys past the end, each bent further round the width,
-        // tighter towards the tip, as a tepal rolls back on itself.
-        if (roll) {
-          const curl = (end, onward) => {
-            const count = Math.round(roll.length / step);
-            const bends = Array.from({ length: count }, (_, k) => 0.5 + k / count);
-            const sum = bends.reduce((a, b) => a + b, 0);
-            let { p, t } = end;
-            t = mul(t, onward);
-            const out = [];
-            for (let k = 1; k <= count; k++) {
-              t = turn3(t, end.b, ((roll.turn * bends[k - 1]) / sum) * (roll.side ?? -1) * onward);
-              p = add(p, mul(t, step));
-              out.push({ p, t: mul(t, onward), b: end.b });
-            }
-            return out;
-          };
-          frames = roll.at === "start" ? [...curl(frames[0], -1).reverse(), ...frames] : [...frames, ...curl(frames.at(-1), 1)];
-        }
         const m = frames.length - 1;
         const edge = frames.map(({ p, b }) => [add(p, mul(b, width / 2)), sub(p, mul(b, width / 2))]);
         const flat = edge.map(([a, b]) => [cam.project(a), cam.project(b)]);
@@ -1442,34 +1417,43 @@
         };
       }
 
-      // Crossing: two ribbons fall from far above and cross in an X just
-      // past the end of the heading, by its last letters. One
-      // comes down the open sky toward us, the other skirts the dial. A near
-      // one stands in the left margin and a low one crosses it under the
-      // buttons, so the strings lean on the copy from the left while the dial
-      // holds the right. The bottom one still rolls over at its end like a
-      // tepal, and a far, fine one runs high over the copy.
+      // Crossing: four strings, laid nearly straight and flat. Two fall from
+      // far above and cross in an X just past the end of the heading, by its
+      // last letters. One comes down past the ends of the lede's lines toward
+      // us, bending gently to the bottom left; the other runs straight on and
+      // skirts the dial's left rim. A low one runs straight in from the left
+      // edge, under the buttons, and crosses the first on its way down. A
+      // high one rises from the left edge over the copy and crosses the X on
+      // its way to the top right corner, going further off as it goes.
       const crossing = stringScene(({ width: W, height: H, heart, radius: R, mobile, hero }) => {
         if (mobile) {
           return [
             { through: [[0.42 * W, -24, 760], [0.7 * W, 150, 380], [W + 30, 330, -40]], width: 15 },
-            { through: [[W + 24, 120, -20], [0.62 * W, 270, -60], [0.3 * W, 312, -110]], width: 15, twist: (t) => 1.05 * smooth(0.55, 1, t), roll: { at: "end", length: 96, turn: 1.6 * Math.PI, side: 1 } },
+            { through: [[W + 24, 230, -20], [-24, 330, -110]], width: 15 },
             { through: [[-20, 250, 420], [0.34 * W, -20, 560]], width: 11 },
           ];
         }
-        const { left: cl, head, lede, actions } = copyFrame(hero);
+        const { left: cl, name, head, lede, actions } = copyFrame(hero);
         const x = [head.r + 28, head.t + 0.45 * (head.b - head.t)];
+        const top = -0.03 * H;
+        // The point on the line from p, at height y, leaning dx per unit down.
+        const toward = ([px, py], y, dx) => [px + dx * (y - py), y];
+        const rim = [heart.x - 0.97 * R, heart.y + 0.28 * R];
+        const bend = [actions.r + 70, actions.b + 145];
+        const under = [cl + 0.4 * (actions.r - cl), actions.b + 45];
+        const fall = 0.53;
+        const over = [cl, name.t - Math.min(107, 0.45 * name.t)];
+        const corner = [1.01 * W, -0.01 * H];
+        const rise = (corner[1] - over[1]) / (corner[0] - over[0]);
         return [
           // The X: one from the open sky, coming toward us...
-          { through: [[0.655 * W, -0.03 * H, 900], [...x, 200], [lede.r + 24, lede.t + 10, 40], [lede.r - 40, lede.b + 50, -80], [0.38 * W, 0.867 * H, -200], [0.345 * W, 1.04 * H, -300]], width: 20 },
-          // ...and one that skirts the dial, turning over as it goes.
-          { through: [[0.46 * W, -0.03 * H, 700], [...x, 450], [heart.x - 1.01 * R, heart.y + 0.28 * R, 220], [heart.x - 0.68 * R, heart.y + 1.11 * R, 60], [heart.x - 0.45 * R, heart.y + 1.6 * R, -120]], width: 18, twist: (t) => Math.PI * smooth(0.62, 0.86, t) },
-          // The margin, near at its foot, with a half turn high up.
-          { through: [[-0.01 * W, -0.03 * H, 520], [0.42 * cl, head.b, 300], [0.74 * cl, actions.t, 60], [0.97 * cl, 1.03 * H, -260]], width: 20, twist: (t) => Math.PI * smooth(0.18, 0.42, t) },
-          // Low across the margin and under the buttons.
-          { through: [[-0.01 * W, lede.t + 10, -100], [0.7 * cl, (actions.t + actions.b) / 2, -160], [cl + 0.4 * (actions.r - cl), actions.b + 40, -200], [0.37 * W, 0.876 * H, -260], [0.54 * W, 1.0 * H, -300]], width: 22 },
-          { through: [[1.05 * W, 0.56 * H, -30], [0.84 * W, 0.8 * H, -80], [0.62 * W, 0.875 * H, -150], [0.53 * W, 0.88 * H, -170]], width: 22, twist: (t) => 1.05 * smooth(0.55, 1, t), roll: { at: "end", length: 150, turn: 1.6 * Math.PI, side: 1 } },
-          { through: [[-0.03 * W, 0.22 * H, 450], [0.33 * W, -0.06 * H, 600]], width: 13 },
+          { through: [[...toward(x, top, -0.3), 900], [...x, 200], [lede.r + 30, lede.t + 10, 40], [lede.r - 110, actions.b - 15, -80], [...bend, -200], [...toward(bend, Math.max(1.04 * H, bend[1] + 60), -1.1), -300]], width: 20 },
+          // ...and one that runs on straight through it and skirts the dial.
+          { through: [[...toward(x, top, (rim[0] - x[0]) / (rim[1] - x[1])), 700], [...x, 450], [...rim, 220], [heart.x - 0.42 * R, heart.y + 1.6 * R, -120]], width: 18 },
+          // Low and straight from the left edge, under the buttons.
+          { through: [[-0.01 * W, under[1] - fall * (under[0] + 0.01 * W), -100], [...under, -190], [under[0] + (1.04 * H - under[1]) / fall, 1.04 * H, -300]], width: 22 },
+          // High over the copy, straight to the top right corner.
+          { through: [[-0.01 * W, over[1] - rise * (over[0] + 0.01 * W), 150], [...over, 200], [...corner, 500]], width: 18 },
         ];
       });
 
