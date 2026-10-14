@@ -17,7 +17,10 @@
          Four run nearly straight: two cross in an X just past the end of the
          heading, one runs low under the buttons, and one high over the copy.
          Round 2 B's
-         lily bed is redrawn as true lilies, under round 1 A's night sky. */
+         lily bed is redrawn as true lilies, under round 1 A's night sky.
+         Round 7 fills a band the maintainer drew round the dial with a bed
+         of larger lilies, none crossing the clock, and leaves the dial
+         itself bare. */
 
       /* From src/styles/base.css */
       :root {
@@ -1247,35 +1250,180 @@
         return g;
       }
 
-      // Round 2 B's lily bed, redrawn as true lilies. Far: one behind the
-      // dial's upper rim. Near: the foot and the
-      // corner, with buds, and one in rose glass on the rim by 9 and 10.
-      function lilyBack(L, g) {
-        const { width: W, height: H, heart, radius: R, mobile } = L;
-        if (mobile) {
-          lily3d(g, W, 36, 86, { pitch: 30, yaw: -32, spin: 10, seed: 41, opacity: 0.5, twinkle: 0.15 });
-          lily3d(g, W * 0.02, heart.y + R * 0.64, 54, { pitch: -18, yaw: 40, spin: 30, seed: 53, opacity: 0.6 });
-          return;
+      // ------------------------------------------------------------------
+      // The lily bed (round 7). The maintainer drew it in red: from the
+      // right edge level with the top of the dial, round the dial clear of
+      // its rim, under it, and down to the bottom edge at about 0.36W. On a
+      // phone the copy fills the foot, so the bed is the corner beyond the
+      // dial. Nothing in it crosses the dial, and the dial itself is bare.
+      // ------------------------------------------------------------------
+
+      // Is the point inside the outline (ray casting)?
+      function inside(outline, x, y) {
+        let hit = false;
+        for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
+          const [xi, yi] = outline[i];
+          const [xj, yj] = outline[j];
+          if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
         }
-        lily3d(g, heart.x + R * 0.98, heart.y - R * 0.84, 165, { pitch: 26, yaw: -34, spin: 12, seed: 41, opacity: 0.5, twinkle: 0.15 });
+        return hit;
       }
+
+      function bedOutline(L) {
+        const { width: W, height: H, heart, radius: R, mobile } = L;
+        if (mobile) return [[0.55 * W, -60], [W + 60, -60], [W + 60, heart.y + 0.4 * R], [heart.x, heart.y]];
+        const arc = [];
+        for (let a = -58; a <= 124; a += 3) arc.push([heart.x + 1.12 * R * Math.cos(a * deg), heart.y + 1.12 * R * Math.sin(a * deg)]);
+        let y = arc.at(-1)[1];
+        const tail = [[0.595, 0.85], [0.51, 0.91], [0.41, 0.925]].map(([fx, fy]) => [fx * W, (y = Math.min(H - 4, Math.max(y + 6, fy * H)))]);
+        const top = heart.y - 1.15 * R;
+        return [[W + 60, top], [heart.x + 0.72 * R, top], ...arc, ...tail, [0.36 * W, H], [0.35 * W, H + 60], [W + 60, H + 60]];
+      }
+
+      // Where round 6's rose-glass lily sat on the rim, by 9 and 10. It is
+      // gone, but the bed still keeps clear of its place, as it was planted
+      // when the maintainer chose it.
+      function roundSixRim(L) {
+        const { heart, radius: R, mobile } = L;
+        const hour = mobile ? 10 : 9.6;
+        const r = R * (mobile ? 0.98 : 0.99);
+        const a = (hour * 14.4 - 90) * deg;
+        return { x: heart.x + r * Math.cos(a), y: heart.y + r * Math.sin(a), size: mobile ? 38 : 66 };
+      }
+
+      // Places lilies in the bed, largest first. None crosses the dial or
+      // sits on the copy, and none covers another by more than `overlap`
+      // allows. They come larger toward the bed's outer edge and smaller by
+      // the dial, reaching full size `ramp` radii out from the clear ring.
+      // reach is how far a lily spreads from its centre, as a share of its
+      // size. Returned far to near, top to bottom.
+      function plant(L, { count, min, max, reach = 0.9, overlap = 0.62, ramp = 1.1, seed, avoid = [] }) {
+        const { width: W, height: H, heart, radius: R } = L;
+        const outline = bedOutline(L);
+        const clear = 1.08 * R;
+        const text = textLines(L.hero, 24);
+        const random = seeded(seed);
+        const xs = outline.map(([x]) => x);
+        const ys = outline.map(([, y]) => y);
+        const [x0, x1] = [Math.max(-50, Math.min(...xs)), Math.min(W + 50, Math.max(...xs))];
+        const [y0, y1] = [Math.max(-50, Math.min(...ys)), Math.min(H + 50, Math.max(...ys))];
+        const placed = [roundSixRim(L), ...avoid];
+        const kept = placed.length;
+        for (const pass of [1, 0.8, 0.64, 0.5, 0.4]) {
+          for (let t = 0; t < 2000 && placed.length < count + kept; t++) {
+            const x = x0 + random() * (x1 - x0);
+            const y = y0 + random() * (y1 - y0);
+            const jitter = 0.85 + random() * 0.3;
+            if (!inside(outline, x, y)) continue;
+            const d = Math.hypot(x - heart.x, y - heart.y);
+            const room = smooth(clear, clear + ramp * R, d);
+            const size = Math.min((min + (max - min) * room) * pass * jitter, (d - clear) / reach);
+            const r = reach * size;
+            if (size < min * 0.7) continue;
+            if (text.some((k) => x + r > k.l && x - r < k.r && y + r > k.t && y - r < k.b)) continue;
+            if (placed.some((p) => Math.hypot(p.x - x, p.y - y) < (p.size + size) * reach * overlap)) continue;
+            placed.push({ x, y, size, dx: (x - heart.x) / R, dy: (y - heart.y) / R, seed: 1 + Math.floor(random() * 997) });
+          }
+        }
+        return placed.slice(kept).sort((a, b) => a.y - b.y);
+      }
+
+      // How near the dial's heart any of an element's outlines come, as a
+      // share of the dial's radius.
+      function nearest(L, element) {
+        let min = Infinity;
+        for (const path of element.querySelectorAll("path")) {
+          const m = path.getCTM();
+          const total = path.getTotalLength();
+          for (let i = 0; i <= 8; i++) {
+            const p = path.getPointAtLength((total * i) / 8).matrixTransform(m);
+            min = Math.min(min, Math.hypot(p.x - L.heart.x, p.y - L.heart.y));
+          }
+        }
+        return min / L.radius;
+      }
+
+      // Draws a lily or sprig, then measures it: if any of it would cross
+      // the dial's outer ring (1.03 radii, with room for its sway), it
+      // shrinks toward its root (ax, ay) until it clears, or is left out.
+      function bloom(L, parent, ax, ay, size, paint) {
+        const wrap = draw("g", {}, parent);
+        paint(wrap);
+        if (Math.hypot(ax - L.heart.x, ay - L.heart.y) > 1.1 * L.radius + 1.6 * size) return wrap;
+        for (let k = 1, tries = 0; nearest(L, wrap) < 1.06; tries++) {
+          if (tries === 10) return wrap.remove();
+          k *= 0.9;
+          wrap.setAttribute("transform", `translate(${ax.toFixed(1)} ${ay.toFixed(1)}) scale(${k.toFixed(3)}) translate(${(-ax).toFixed(1)} ${(-ay).toFixed(1)})`);
+        }
+        return wrap;
+      }
+
+      // Every lily turns a little toward the dial's heart, as to a light.
+      const towardHeart = ({ dx, dy }, random) => ({
+        pitch: Math.max(-25, Math.min(55, 18 + dy * 22 + (random() - 0.5) * 16)),
+        yaw: Math.max(-48, Math.min(48, -dx * 26 + (random() - 0.5) * 20)),
+        spin: random() * 60,
+      });
+
+      // The bed, in shares of the dial's radius. Far lilies are small and
+      // dim, behind the strings; near ones are large, among them, and may
+      // tuck under their neighbours; sprigs of buds stand between.
+      const bed = {
+        far: { count: 30, min: 0.15, max: 0.34, reach: 0.8, overlap: 0.42 },
+        near: { count: 20, min: 0.3, max: 0.74, reach: 0.82, overlap: 0.54, ramp: 0.75 },
+        sprigs: { count: 8, min: 0.42, max: 0.66, reach: 0.6, overlap: 0.45 },
+        // Rose glass, besides one in five of the near lilies: the near lily
+        // nearest each spot the maintainer pointed to, from the heart. The
+        // large one at the bed's left end, one at the right edge level with
+        // the 5, one below it by the 8, one under the 10, and the corner.
+        pinkAt: [
+          [-1.57, 1.6],
+          [1.39, -0.46],
+          [1.3, 0.8],
+          [0.62, 1.4],
+          [1.33, 1.58],
+        ],
+      };
+
+      // Behind the strings: the far lilies and, on phones, round 6's dim
+      // lily at the left.
+      function lilyBack(L, g) {
+        const { width: W, heart, radius: R, mobile } = L;
+        if (mobile) lily3d(g, W * 0.02, heart.y + R * 0.64, 54, { pitch: -18, yaw: 40, spin: 30, seed: 53, opacity: 0.6 });
+        const random = seeded(71);
+        const { far } = bed;
+        for (const p of plant(L, { ...far, count: mobile ? 3 : far.count, min: far.min * R, max: far.max * R, seed: 31 })) {
+          const turn = towardHeart(p, random);
+          const opacity = 0.42 + random() * 0.18;
+          bloom(L, g, p.x, p.y, p.size, (at) => lily3d(at, p.x, p.y, p.size, { ...turn, seed: p.seed, opacity, glitter: 10, twinkle: 0.2 }));
+        }
+      }
+
+      // Among the strings: the sprigs, the near lilies and, on phones,
+      // round 6's lily at the foot.
       function lilyFront(L, g) {
         const { width: W, height: H, heart, radius: R, mobile } = L;
-        const rim = (hour, r) => [heart.x + r * Math.cos((hour * 14.4 - 90) * deg), heart.y + r * Math.sin((hour * 14.4 - 90) * deg)];
-        if (mobile) {
-          lily3d(g, W, H * 0.97, 76, { pitch: 30, yaw: -26, seed: 7, sway: true, twinkle: 0.15 });
-          const [rx, ry] = rim(10, R * 0.98);
-          lily3d(g, rx, ry, 38, { tint: lilyRose, pitch: 22, yaw: -30, spin: 6, seed: 9, sway: true, glitter: 20 });
-          return;
+        const random = seeded(73);
+        const { near, sprigs: tall } = bed;
+        const lilies = plant(L, { ...near, count: mobile ? 3 : near.count, min: near.min * R, max: near.max * R, seed: 41 });
+        const sprigs = plant(L, { ...tall, count: mobile ? 1 : tall.count, min: tall.min * R, max: tall.max * R, seed: 37, avoid: lilies });
+        for (const p of sprigs) {
+          const buds = random() < 0.6 ? 2 : 1;
+          bloom(L, g, p.x, p.y + p.size * 0.5, p.size, (at) => lilySprig(at, p.x, p.y + p.size * 0.5, p.size, Math.max(-30, Math.min(30, p.dx * 14)), { buds }));
         }
-        lily3d(g, W * 0.44, H * 0.975, 98, { pitch: 48, yaw: 22, spin: 8, seed: 23, sway: true, twinkle: 0.15 });
-        lily3d(g, W * 0.535, H * 0.935, 58, { pitch: 30, yaw: -38, spin: 20, seed: 61, opacity: 0.85, sway: true });
-        lilySprig(g, W * 0.8, H * 1.0, 152, -22);
-        lily3d(g, W * 0.86, H * 0.985, 86, { pitch: 55, yaw: 28, seed: 67, opacity: 0.85, sway: true });
-        lily3d(g, W * 0.955, H * 0.875, 144, { pitch: 32, yaw: -24, spin: 14, seed: 7, sway: true, twinkle: 0.15 });
-        lilySprig(g, W * 0.995, H * 0.72, 112, -8, { buds: 1 });
-        const [rx, ry] = rim(9.6, R * 0.99);
-        lily3d(g, rx, ry, 66, { tint: lilyRose, pitch: 26, yaw: -34, spin: 6, seed: 9, sway: true, glitter: 30 });
+        const pink = new Set(lilies.filter((_, i) => i % 5 === 2));
+        for (const [dx, dy] of mobile ? [] : bed.pinkAt) {
+          const [x, y] = [heart.x + dx * R, heart.y + dy * R];
+          const away = (p) => Math.hypot(p.x - x, p.y - y);
+          const best = lilies.filter((p) => !pink.has(p)).sort((a, b) => away(a) - away(b))[0];
+          if (best && away(best) < 0.5 * R) pink.add(best);
+        }
+        for (const p of lilies) {
+          const turn = towardHeart(p, random);
+          const opacity = 0.86 + random() * 0.1;
+          bloom(L, g, p.x, p.y, p.size, (at) => lily3d(at, p.x, p.y, p.size, { ...turn, seed: p.seed, tint: pink.has(p) ? lilyRose : lilyGlass, opacity, sway: true, twinkle: 0.15, glitter: Math.round(12 + p.size / 4) }));
+        }
+        if (mobile) lily3d(g, W, H * 0.97, 76, { pitch: 30, yaw: -26, seed: 7, sway: true, twinkle: 0.15 });
       }
 
       // ------------------------------------------------------------------
