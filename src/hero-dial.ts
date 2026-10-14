@@ -1,10 +1,17 @@
+import { lilyDefs } from "./glass-lily";
+import type { HeroLayout } from "./hero-layout";
+import { drawBackLilies, drawFrontLilies } from "./hero-lilies";
 import { drawHeroRecords } from "./hero-records";
+import { drawGlints, drawStarDust, skyDefs } from "./hero-sky";
+import { drawStrings } from "./hero-strings";
 import { hourHand, minuteHand } from "./iron-hands";
+import { seeded } from "./space";
 import { draw } from "./svg";
 
 // The hero's scene: a twenty-five hour dial of stained glass keeping Manila
-// time, a glass lily at its heart, smoked-glass lilies in the corners, and the
-// records flowing into its heart.
+// time, a glass lily at its heart, and the records flowing into it, under a
+// night sky. Keyboard strings cross the scene in space, and a bed of glass
+// lilies fills a band round the dial.
 
 const reducedMotion = "(prefers-reduced-motion: reduce)";
 const manilaTime = new Intl.DateTimeFormat("en-GB", {
@@ -15,49 +22,19 @@ const manilaTime = new Intl.DateTimeFormat("en-GB", {
 const paneTones = ["#2b2436", "#3a2d4d", "#4a3a63", "#33293f"];
 const defs = `<defs>
   <radialGradient id="hero-glow"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".25" stop-color="#bb6688" stop-opacity=".42"/><stop offset=".55" stop-color="#4a3a63" stop-opacity=".2"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
-  <radialGradient id="hero-petal" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#8d93bd"/><stop offset=".32" stop-color="#535b7e"/><stop offset=".72" stop-color="#394060"/><stop offset="1" stop-color="#2a2f48"/></radialGradient>
-  <radialGradient id="hero-petal-in" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#aeb2da"/><stop offset=".5" stop-color="#6a7296"/><stop offset="1" stop-color="#454c6c"/></radialGradient>
-  <radialGradient id="hero-lily-glow"><stop offset="0" stop-color="#f2f3ff" stop-opacity=".5"/><stop offset=".4" stop-color="#b9bde6" stop-opacity=".25"/><stop offset="1" stop-color="#b9bde6" stop-opacity="0"/></radialGradient>
+  ${lilyDefs}${skyDefs}
 </defs>`;
 
-type LilyTint = { petal: string; petalIn: string; edge: string; edgeOpacity: number; vein: string; dust: string };
-
-// The corner lilies are blue smoked glass; the one in the dial keeps the
-// dial's plum glass and bronze leading.
-const smoked: LilyTint = {
-  petal: "url(#hero-petal)",
-  petalIn: "url(#hero-petal-in)",
-  edge: "#b9bedd",
-  edgeOpacity: 0.75,
-  vein: "#cdd1ee",
-  dust: "#eef0ff",
-};
-const plum: LilyTint = {
-  petal: "rgba(74,58,99,.2)",
-  petalIn: "rgba(74,58,99,.3)",
-  edge: "#9b8794",
-  edgeOpacity: 0.55,
-  vein: "#9b8794",
-  dust: "#cfc8de",
-};
 const petalPath = "M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C9,-88 31,-64 28,-34 C26,-16 12,-5 0,0 Z";
 const petalShade = "M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C2,-70 1,-40 0,0 Z";
 
-// A starry lily of glass: two rings of broad pointed petals, a vein down each,
-// glitter gathered at the heart. Its seed makes it the same on every load.
-function lily(
-  parent: Element,
-  x: number,
-  y: number,
-  scale: number,
-  rotation: number,
-  seed: number,
-  { opacity = 0.9, bud = true, glitter = 46, tint = smoked } = {},
-) {
-  let n = seed;
-  const random = () => (n = (n * 16807) % 2147483647) / 2147483647;
-  const group = draw("g", { transform: `translate(${x} ${y}) rotate(${rotation}) scale(${scale})`, opacity }, parent);
-  const line = { fill: "none", stroke: tint.vein, "vector-effect": "non-scaling-stroke" };
+// The lily at the dial's heart, in the dial's plum glass and bronze leading:
+// two rings of broad pointed petals, a vein down each, glitter gathered at
+// the heart. Its seed makes it the same on every load.
+function heartLily(parent: Element, scale: number) {
+  const random = seeded(5);
+  const group = draw("g", { transform: `scale(${scale})`, opacity: 0.85 }, parent);
+  const line = { fill: "none", stroke: "#9b8794", "vector-effect": "non-scaling-stroke" };
   const ring = (count: number, size: number, fill: string, turn: number, veins: boolean) => {
     for (let i = 0; i < count; i++) {
       const angle = i * (360 / count) + turn + (random() - 0.5) * 12;
@@ -71,9 +48,9 @@ function lily(
         {
           d: petalPath,
           fill,
-          stroke: tint.edge,
+          stroke: "#9b8794",
           "stroke-width": 1,
-          "stroke-opacity": tint.edgeOpacity,
+          "stroke-opacity": 0.55,
           "vector-effect": "non-scaling-stroke",
         },
         petal,
@@ -90,28 +67,9 @@ function lily(
       }
     }
   };
-  ring(7, 1, tint.petal, 0, true);
-  ring(5, 0.56, tint.petalIn, 180 / 7, false);
-  if (bud) {
-    draw("circle", { r: 40, fill: "url(#hero-lily-glow)" }, group);
-    for (const angle of [-24, 0, 24]) {
-      draw(
-        "path",
-        {
-          d: "M0,0 C-7,-6 -6,-18 0,-26 C6,-18 7,-6 0,0 Z",
-          transform: `rotate(${angle})`,
-          fill: "#8e94bd",
-          stroke: "#d6d9f2",
-          "stroke-width": 0.8,
-          "stroke-opacity": 0.7,
-          "fill-opacity": 0.75,
-          "vector-effect": "non-scaling-stroke",
-        },
-        group,
-      );
-    }
-  }
-  for (let i = 0; i < glitter; i++) {
+  ring(7, 1, "rgba(74,58,99,.2)", 0, true);
+  ring(5, 0.56, "rgba(74,58,99,.3)", 180 / 7, false);
+  for (let i = 0; i < 24; i++) {
     const angle = random() * Math.PI * 2;
     const r = 3 + 82 * random() ** 1.7;
     draw(
@@ -120,7 +78,7 @@ function lily(
         cx: (Math.cos(angle) * r).toFixed(1),
         cy: (Math.sin(angle) * r).toFixed(1),
         r: (random() * 1.1 + 0.35).toFixed(2),
-        fill: tint.dust,
+        fill: "#cfc8de",
         opacity: (random() * 0.6 + 0.25).toFixed(2),
       },
       group,
@@ -138,8 +96,7 @@ function dial(parent: Element, radius: number, reduce: boolean) {
   const step = (2 * Math.PI) / 25;
   const up = -Math.PI / 2;
   const at = (r: number, a: number) => [r * Math.cos(a), r * Math.sin(a)];
-  // A glass lily, like the ones at the corners, blooms at the dial's heart.
-  const bloom = lily(parent, 0, 0, radius * 0.0048, 0, 5, { opacity: 0.85, bud: false, glitter: 24, tint: plum });
+  const bloom = heartLily(parent, radius * 0.0048);
   for (let k = 0; k < 25; k++) {
     const a0 = (k - 0.5) * step + up;
     const a1 = (k + 0.5) * step + up;
@@ -216,9 +173,9 @@ function dial(parent: Element, radius: number, reduce: boolean) {
   return { hour, minute, second, bloom };
 }
 
-// Draws the scene into svg, sized to its parent, and places label beside the
-// heart. Returns a cleanup function.
-export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
+// Draws the scene into svg, and the stars into sky behind it, both sized to
+// their parent. Returns a cleanup function.
+export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
   const hero = svg.parentElement!;
   const reduce = window.matchMedia(reducedMotion).matches;
   const start = performance.now();
@@ -229,6 +186,7 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
   let ring: SVGCircleElement;
   let core: SVGCircleElement;
   let records: ReturnType<typeof drawHeroRecords>;
+  let play: (now: number, arrived: boolean) => void;
   let pulse = 0;
 
   function build() {
@@ -237,23 +195,28 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
     const mobile = width < 760;
     const heart = mobile ? { x: width * 0.7, y: 196 } : { x: width * 0.79, y: height * 0.52 };
     const radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
+    const layout: HeroLayout = { width, height, heart, radius, mobile, reduce, hero };
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     svg.innerHTML = defs;
-    if (mobile) lily(svg, width, height * 0.97, 0.66, 12, 7);
-    else {
-      lily(svg, width * 0.97, height * 0.9, 1.25, 12, 7);
-      lily(svg, width * 0.42, height * 1.04, 0.9, -20, 23);
-    }
+    const stars = drawStarDust(sky, layout);
+    // Far lilies and strings behind the dial, whose face is faintly smoked
+    // glass so what runs behind it reads as behind.
+    drawBackLilies(svg, layout);
+    const strings = drawStrings(layout);
+    strings.paint(svg, "back");
+    draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, svg);
     hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce);
-    records = drawHeroRecords(svg, { width, height, heart, radius, mobile, reduce });
+    records = drawHeroRecords(svg, layout);
     glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
     ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
     core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
-    // On phones the words sit under the heart, inside the dial's face.
-    label.style.left = `${heart.x + (mobile ? 0 : 22)}px`;
-    label.style.top = `${heart.y + (mobile ? radius * 0.22 : 14)}px`;
-    label.style.transform = mobile ? "translateX(-50%)" : "";
-    records.place();
+    // Nearer strings among the near lilies, and glints over all.
+    strings.paint(svg, "mid");
+    drawFrontLilies(svg, layout);
+    strings.paint(svg, "near");
+    const glints = strings.finish(svg);
+    play = glints.play;
+    for (const place of [stars, glints.place, drawGlints(svg, layout)]) place();
     tick(start);
   }
 
@@ -268,8 +231,11 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
     turn(hands.hour, -90 + (parts.minute / 60) * (360 / 25));
     turn(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
     turn(hands.second, -90 + ((parts.second + millis) / 60) * 360);
-    // Each record that reaches the heart pulses it and lights the lily a little.
-    if (records.advance(now)) pulse = 1;
+    // Each record that reaches the heart pulses it and lights the lily a
+    // little, and sets a run playing along the strings.
+    const arrived = records.advance(now);
+    if (arrived) pulse = 1;
+    if (!reduce) play(now, arrived);
     const breathe = reduce ? 0 : (Math.sin(((now - start) / 1000) * 1.4) + 1) / 2;
     glow.setAttribute("r", String(130 + breathe * 18 + pulse * 30));
     ring.setAttribute("r", String(10 + (1 - pulse) * 30));
@@ -280,9 +246,10 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
   }
 
   build();
-  // Keep the labels and sparkles off the copy once its fonts have settled.
+  // The strings and the bed are laid from the copy, so lay them again once
+  // its fonts have settled.
   let live = true;
-  document.fonts.ready.then(() => live && records.place());
+  document.fonts.ready.then(() => live && build());
 
   // Redraw once the hero settles at a new size.
   let pending = 0;
@@ -305,7 +272,7 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
     frame = requestAnimationFrame(loop);
   };
   const visible = new IntersectionObserver(([entry]) => {
-    svg.classList.toggle("is-paused", !entry.isIntersecting);
+    for (const layer of [svg, sky]) layer.classList.toggle("is-paused", !entry.isIntersecting);
     if (reduce) return;
     if (entry.isIntersecting && !frame) frame = requestAnimationFrame(loop);
     else if (!entry.isIntersecting) {
@@ -324,6 +291,6 @@ export function drawHeroDial(svg: SVGSVGElement, label: HTMLElement) {
     cancelAnimationFrame(frame);
     window.clearInterval(timer);
     svg.replaceChildren();
-    label.removeAttribute("style");
+    sky.replaceChildren();
   };
 }

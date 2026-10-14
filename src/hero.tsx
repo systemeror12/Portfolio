@@ -3,20 +3,18 @@ import { hero } from "./content";
 import { drawHeroDial } from "./hero-dial";
 import { InternalLink } from "./navigation";
 
-// Mounts the drawn scene before .hero-copy, behind its shade. The scene owns
-// the svg's contents and places the heart's label.
+// Mounts the drawn scene before .hero-copy, behind its shade, over a sky of
+// its own. The scene owns both svgs' contents.
 function HeroScene() {
+  const sky = React.useRef<SVGSVGElement>(null);
   const scene = React.useRef<SVGSVGElement>(null);
-  const label = React.useRef<HTMLSpanElement>(null);
 
-  React.useEffect(() => drawHeroDial(scene.current!, label.current!), []);
+  React.useEffect(() => drawHeroDial(scene.current!, sky.current!), []);
 
   return (
     <>
+      <svg ref={sky} className="hero-sky" aria-hidden="true" />
       <svg ref={scene} className="hero-scene" aria-hidden="true" />
-      <span ref={label} className="heart-label" aria-hidden="true">
-        {hero.heartLabel}
-      </span>
     </>
   );
 }
