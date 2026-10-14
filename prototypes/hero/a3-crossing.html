@@ -204,11 +204,6 @@
         transform-box: fill-box;
         transform-origin: center;
       }
-      .hero-scene .fragment {
-        animation: hero-drift 9s ease-in-out infinite alternate;
-        transform-box: fill-box;
-        transform-origin: center;
-      }
       @keyframes hero-shimmer {
         50% {
           opacity: 0.55;
@@ -223,25 +218,6 @@
         50% {
           opacity: 1;
           transform: scale(1);
-        }
-      }
-      @keyframes hero-drift {
-        to {
-          transform: translate(4px, -8px) rotate(8deg);
-        }
-      }
-      .heart-label {
-        position: absolute;
-        font: 400 15px/1.3 var(--serif);
-        color: var(--glow);
-        white-space: nowrap;
-        pointer-events: none;
-        text-shadow: 0 0 4px var(--void), 0 0 12px var(--void);
-        animation: heart-label-in 1.2s 0.9s both;
-      }
-      @keyframes heart-label-in {
-        from {
-          opacity: 0;
         }
       }
       .hero-copy {
@@ -394,7 +370,7 @@
           transform: rotate(3deg);
         }
       }
-      .hero-scene.is-paused :is(.glass, .sparkle, .fragment, .twinkle, .glint, .lily-sway) {
+      .hero-scene.is-paused :is(.glass, .sparkle, .twinkle, .glint, .lily-sway) {
         animation-play-state: paused;
       }
 
@@ -424,7 +400,6 @@
     <main id="main" tabindex="-1">
       <section class="hero" aria-labelledby="hero-title">
         <svg class="hero-scene" aria-hidden="true"></svg>
-        <span class="heart-label" aria-hidden="true">someone, paid right</span>
         <div class="hero-copy">
           <p class="hero-name"><strong>Jerome Mendoza</strong>, platform engineer in the Philippines</p>
           <h1 id="hero-title">Every record ends with <em>a&nbsp;person.</em></h1>
@@ -619,10 +594,8 @@
       // The records (src/hero-records.ts)
       // ------------------------------------------------------------------
 
-      const words = ["biometric punch", "overtime request", "approved leave", "payment webhook", "access rule", "salary step", "pass slip"];
       const sparkPath = "M0 -6 L1 -1 L6 0 L1 1 L0 6 L-1 1 L-6 0 L-1 -1 Z";
       const copy = ".hero-name, .hero-copy h1, .hero-lede, .hero-actions";
-      const overlaps = (a, b) => a.l < b.r && a.r > b.l && a.t < b.b && a.b > b.t;
       const bez = ([p0, p1, p2, p3], t) => {
         const u = 1 - t;
         return u * u * u * p0 + 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t * p3;
@@ -671,7 +644,7 @@
       }
 
       function drawHeroRecords(svg, layout) {
-        const { width: W, height: H, heart, radius: R, mobile, reduce, sparkles: sparkleCount = 16, blocks: extra = [], fragmentReach = 1.12, fragmentTurn = 0 } = layout;
+        const { width: W, height: H, heart, radius: R, mobile, reduce, sparkles: sparkleCount = 16 } = layout;
         const hero = svg.parentElement;
         const start = performance.now();
         const group = draw("g", { class: "hero-records" }, svg);
@@ -679,23 +652,6 @@
 
         draw("linearGradient", { id: "hero-fade", gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: heart.x, y2: 0 }, svg.querySelector("defs") ?? svg).innerHTML =
           '<stop offset="0" stop-color="#cfc8de" stop-opacity=".06"/><stop offset=".6" stop-color="#cfc8de" stop-opacity=".34"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".7"/>';
-
-        const fragments = [];
-        const jig = [0, 3.5, -2, 4, 1, -3, 2.5, -1];
-        const out = [0.02, 0.16, 0.06, 0.22, 0.1, 0.3, 0.14, 0.38];
-        for (let k = 0; k < (mobile ? 4 : 8); k++) {
-          const a = (((mobile ? 136 : 96) + fragmentTurn + k * (mobile ? 13 : 8.5) + jig[k] * 2) * Math.PI) / 180;
-          const x = heart.x + R * (fragmentReach + out[k]) * Math.cos(a);
-          const y = heart.y + R * (fragmentReach + out[k]) * Math.sin(a);
-          const scale = 0.7 + ((k * 7) % 5) / 10;
-          const place = draw("g", { transform: `translate(${x} ${y}) rotate(${-20 + ((k * 37) % 70)}) scale(${scale})` }, group);
-          const fragment = draw("g", { class: "fragment" }, place);
-          fragment.style.animationDelay = `${-k * 1.3}s`;
-          draw("rect", { x: -9, y: -9, width: 18, height: 18, fill: "#c9b2dc", opacity: 0.75 }, fragment);
-          draw("path", { d: "M-3 4 a2.6 2 0 1 0 0.01 0 M-0.4 4 V-5 L4 -6", stroke: "#2b2436", "stroke-width": 1.3, fill: "none" }, fragment);
-          const reach = 13 * scale + 8;
-          fragments.push({ l: x - reach, t: y - reach, r: x + reach, b: y + reach });
-        }
 
         const origin = hero.getBoundingClientRect();
         const header = document.querySelector(".site-header")?.getBoundingClientRect();
@@ -735,9 +691,7 @@
               })
             : [draw("circle", { class: "record-dot", r: 2.2, fill: "#ece8f4" }, group)];
           if (reduce) marks.forEach((m) => m.setAttribute("display", "none"));
-          const label = draw("text", { class: "record-label", fill: "#9a8fab", "font-size": mobile ? 11 : 13, "font-family": "Zen Kaku Gothic New, sans-serif" }, group);
-          label.textContent = words[i];
-          return { x, y, seed: i * 1.7, speed: 9000 + ((i * 1931) % 5000), offset: (i * 0.37) % 1, lines, marks, progress: [], label, labelAt: null };
+          return { x, y, seed: i * 1.7, speed: 9000 + ((i * 1931) % 5000), offset: (i * 0.37) % 1, lines, marks, progress: [] };
         });
         const spacing = mobile ? 3.6 : 4.6;
 
@@ -766,27 +720,6 @@
             at.setAttribute("transform", `translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${(spot() * 0.8 + 0.5).toFixed(2)})`);
             at.setAttribute("display", clear ? "inline" : "none");
           }
-          const blocks = [...boxes(hero, `${copy}, .hero .heart-label`, 12), ...keys.boxes, ...fragments, ...extra];
-          threads.forEach((th, i) => {
-            th.labelAt = null;
-            th.label.removeAttribute("display");
-            const rest = curve(th, 0, 0);
-            const w = th.label.getComputedTextLength() + 8;
-            for (const a of mobile && i % 2 ? [] : [0.2, 0.28, 0.36, 0.44, 0.52, 0.6, 0.68, 0.76]) {
-              const pt = along(rest, a);
-              const box = { l: pt.x + 8, t: pt.y - 26, r: pt.x + 8 + w, b: pt.y - 6 };
-              if (box.l < 8 || box.r > W - 8 || box.t < 0 || box.b > H) continue;
-              if (blocks.some((k) => overlaps(box, k))) continue;
-              const near = Math.hypot(Math.max(box.l - heart.x, 0, heart.x - box.r), Math.max(box.t - heart.y, 0, heart.y - box.b));
-              if (near < R * 1.08) continue;
-              blocks.push({ l: box.l - 6, t: box.t - 6, r: box.r + 6, b: box.b + 6 });
-              th.labelAt = a;
-              th.label.setAttribute("x", (pt.x + 8).toFixed(1));
-              th.label.setAttribute("y", (pt.y - 12).toFixed(1));
-              break;
-            }
-            if (th.labelAt === null) th.label.setAttribute("display", "none");
-          });
         }
 
         function advance(now) {
@@ -1315,7 +1248,7 @@
       }
 
       // Round 2 B's lily bed, redrawn as true lilies. Far: one behind the
-      // dial's upper rim, two at the left edge. Near: the foot and the
+      // dial's upper rim. Near: the foot and the
       // corner, with buds, and one in rose glass on the rim by 9 and 10.
       function lilyBack(L, g) {
         const { width: W, height: H, heart, radius: R, mobile } = L;
@@ -1325,11 +1258,6 @@
           return;
         }
         lily3d(g, heart.x + R * 0.98, heart.y - R * 0.84, 165, { pitch: 26, yaw: -34, spin: 12, seed: 41, opacity: 0.5, twinkle: 0.15 });
-        // The lily at the left edge steps aside where the copy comes near it.
-        const edge = draw("g", {}, g);
-        lily3d(edge, -W * 0.01, H * 0.62, 82, { pitch: -16, yaw: 44, spin: 30, seed: 83, opacity: 0.5 });
-        L.placers.push(() => hideOnCopy(L, [{ element: edge, x: -W * 0.01, y: H * 0.62, r: 72 }]));
-        lily3d(g, W * 0.03, H * 0.96, 104, { pitch: 42, yaw: 26, seed: 53, opacity: 0.55 });
       }
       function lilyFront(L, g) {
         const { width: W, height: H, heart, radius: R, mobile } = L;
@@ -1338,10 +1266,8 @@
           lily3d(g, W, H * 0.97, 76, { pitch: 30, yaw: -26, seed: 7, sway: true, twinkle: 0.15 });
           const [rx, ry] = rim(10, R * 0.98);
           lily3d(g, rx, ry, 38, { tint: lilyRose, pitch: 22, yaw: -30, spin: 6, seed: 9, sway: true, glitter: 20 });
-          L.blocks.push({ l: rx - 40, t: ry - 36, r: rx + 40, b: ry + 36 });
           return;
         }
-        lilySprig(g, W * 0.395, H * 1.0, 124, -16);
         lily3d(g, W * 0.44, H * 0.975, 98, { pitch: 48, yaw: 22, spin: 8, seed: 23, sway: true, twinkle: 0.15 });
         lily3d(g, W * 0.535, H * 0.935, 58, { pitch: 30, yaw: -38, spin: 20, seed: 61, opacity: 0.85, sway: true });
         lilySprig(g, W * 0.8, H * 1.0, 152, -22);
@@ -1350,7 +1276,6 @@
         lilySprig(g, W * 0.995, H * 0.72, 112, -8, { buds: 1 });
         const [rx, ry] = rim(9.6, R * 0.99);
         lily3d(g, rx, ry, 66, { tint: lilyRose, pitch: 26, yaw: -34, spin: 6, seed: 9, sway: true, glitter: 30 });
-        L.blocks.push({ l: rx - 66, t: ry - 60, r: rx + 66, b: ry + 60 }, { l: W * 0.78, t: H * 0.74, r: W, b: H }, { l: W * 0.36, t: H * 0.84, r: W * 0.58, b: H });
       }
 
       // ------------------------------------------------------------------
@@ -1385,7 +1310,6 @@
             paintRuns(draw("g", { class: "ribbons-mid" }, svg), L.layers.mid);
             lilyFront(L, draw("g", { class: "lilies-front" }, svg));
             paintRuns(draw("g", { class: "ribbons-near" }, svg), L.layers.near);
-            for (const ribbon of L.ribbons) L.blocks.push(...ribbon.boxes);
             L.runs = L.ribbons.map((ribbon) => ({ light: keyLights(ribbon.keys, { trail: 10 }), count: ribbon.keys.length }));
             const top = draw("g", { class: "r3-glints" }, svg);
             const spots = crossings(L.ribbons, L).map(([x, y], i) => glint(top, x, y, L.mobile ? 10 : 14, { delay: -i * 2.3 }));
@@ -1449,7 +1373,7 @@
       // The scene (src/hero-dial.ts), with the strings and lilies
       // ------------------------------------------------------------------
 
-      function drawHeroDial(svg, label, scene) {
+      function drawHeroDial(svg, scene) {
         const hero = svg.parentElement;
         const reduce = window.matchMedia(reducedMotion).matches;
         const start = performance.now();
@@ -1472,7 +1396,7 @@
           svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
           svg.innerHTML = `<defs>${baseDefs}${scene.defs ?? ""}</defs>`;
           hero.querySelectorAll(".hero-sky").forEach((sky) => sky.remove());
-          L = { width, height, heart, radius, mobile, reduce, hero, svg, blocks: [], placers: [] };
+          L = { width, height, heart, radius, mobile, reduce, hero, svg, placers: [] };
           scene.corners?.(L, svg);
           hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce, scene.heart);
           records = drawHeroRecords(svg, { ...L, sparkles: scene.sparkles ?? 16, ...scene.records?.(L), keys: scene.keys && ((group, route) => scene.keys(L, group, route)) });
@@ -1481,9 +1405,6 @@
           ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
           core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
           scene.front?.(L, svg);
-          label.style.left = `${heart.x + (mobile ? 0 : 22)}px`;
-          label.style.top = `${heart.y + (mobile ? radius * 0.22 : 14)}px`;
-          label.style.transform = mobile ? "translateX(-50%)" : "";
           place();
           tick(start);
         }
@@ -1570,7 +1491,7 @@
         menu.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
       });
 
-      drawHeroDial(document.querySelector(".hero-scene"), document.querySelector(".heart-label"), crossing);
+      drawHeroDial(document.querySelector(".hero-scene"), crossing);
     </script>
   </body>
 </html>
