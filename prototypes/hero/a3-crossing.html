@@ -250,6 +250,9 @@
         width: min(1200px, calc(100% - 48px));
         margin: 0 auto;
         padding: 64px 0 80px;
+        /* The strings run behind the copy unbroken; a halo the shape of
+           each letter keeps the words clear of them. */
+        text-shadow: 0 0 3px var(--void), 0 0 10px var(--void), 0 0 22px rgba(6, 6, 11, 0.8);
       }
       .hero-copy::before {
         content: "";
@@ -300,6 +303,7 @@
         transition: all 0.2s;
       }
       .hero-action-solid {
+        text-shadow: none;
         background: var(--silver);
         color: var(--void);
       }
@@ -919,21 +923,6 @@
         };
       }
 
-      // Keeps what moves from passing behind the copy's text: a mask with a
-      // soft-edged hole under every line, redrawn once the copy settles.
-      function copyMask(L) {
-        const mask = draw("mask", { id: "copy-clear", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: L.width, height: L.height }, L.svg.querySelector("defs"));
-        L.placers.push(() => {
-          mask.replaceChildren();
-          draw("rect", { width: L.width, height: L.height, fill: "#fff" }, mask);
-          for (const line of textLines(L.hero, 0)) {
-            for (const [pad, opacity] of [[16, 0.3], [9, 0.5], [3, 1]]) {
-              draw("rect", { x: (line.l - pad).toFixed(1), y: (line.t - pad).toFixed(1), width: (line.r - line.l + pad * 2).toFixed(1), height: (line.b - line.t + pad * 2).toFixed(1), rx: pad, "fill-opacity": opacity }, mask);
-            }
-          }
-        });
-      }
-
       // Hides the stars that would sit on the copy, once it has settled.
       function hideOnCopy(L, items) {
         const text = textLines(L.hero, 8);
@@ -1378,7 +1367,6 @@
       function stringScene(routes) {
         return {
           sparkles: 0,
-          clearCopy: true,
           defs: r3Defs,
           // The records' own ribbon gives way to the strings.
           keys: () => ({ boxes: [], points: [{ x: 0, y: 0 }], keys: [] }),
@@ -1388,15 +1376,15 @@
             lilyBack(L, draw("g", { class: "lilies-back" }, svg));
             L.ribbons = routes(L).map((route) => ribbon3d(L.camera, route));
             L.layers = layRibbons(L.ribbons);
-            paintRuns(draw("g", { class: "ribbons-back", mask: "url(#copy-clear)" }, svg), L.layers.back);
+            paintRuns(draw("g", { class: "ribbons-back" }, svg), L.layers.back);
             // The dial's face is faintly smoked glass, so what runs behind it
             // reads as behind.
             draw("circle", { cx: L.heart.x, cy: L.heart.y, r: L.radius * 1.03, fill: "#06060b", opacity: 0.42 }, svg);
           },
           front(L, svg) {
-            paintRuns(draw("g", { class: "ribbons-mid", mask: "url(#copy-clear)" }, svg), L.layers.mid);
+            paintRuns(draw("g", { class: "ribbons-mid" }, svg), L.layers.mid);
             lilyFront(L, draw("g", { class: "lilies-front" }, svg));
-            paintRuns(draw("g", { class: "ribbons-near", mask: "url(#copy-clear)" }, svg), L.layers.near);
+            paintRuns(draw("g", { class: "ribbons-near" }, svg), L.layers.near);
             for (const ribbon of L.ribbons) L.blocks.push(...ribbon.boxes);
             L.runs = L.ribbons.map((ribbon) => ({ light: keyLights(ribbon.keys, { trail: 10 }), count: ribbon.keys.length }));
             const top = draw("g", { class: "r3-glints" }, svg);
@@ -1485,11 +1473,9 @@
           svg.innerHTML = `<defs>${baseDefs}${scene.defs ?? ""}</defs>`;
           hero.querySelectorAll(".hero-sky").forEach((sky) => sky.remove());
           L = { width, height, heart, radius, mobile, reduce, hero, svg, blocks: [], placers: [] };
-          if (scene.clearCopy) copyMask(L);
           scene.corners?.(L, svg);
           hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce, scene.heart);
           records = drawHeroRecords(svg, { ...L, sparkles: scene.sparkles ?? 16, ...scene.records?.(L), keys: scene.keys && ((group, route) => scene.keys(L, group, route)) });
-          if (scene.clearCopy) svg.querySelector(".hero-records").setAttribute("mask", "url(#copy-clear)");
           L.records = records;
           glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
           ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
@@ -1527,7 +1513,7 @@
 
         build();
         let live = true;
-        document.fonts.ready.then(() => live && (scene.clearCopy ? build() : place()));
+        document.fonts.ready.then(() => live && build());
 
         let pending = 0;
         const resize = new ResizeObserver(() => {
