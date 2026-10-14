@@ -183,7 +183,6 @@ export const hero = {
   workAction: "See the work",
   emailAction: "Email me",
   email: "mendozajeromevrixen@gmail.com",
-  heartLabel: "someone, paid right",
 };
 
 export const afterHours = {
