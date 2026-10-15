@@ -144,6 +144,23 @@
   border-color: var(--glow);
   color: var(--glow);
 }
+/* On a tablet the copy comes first, at the top, with the dial below and
+   right of it, and the hero ends at the bottom of the screen. */
+@media (min-width: 760px) and (max-width: 1279.98px) {
+  .hero {
+    align-items: start;
+    min-height: max(600px, calc(100svh - var(--header-h, 66px)));
+  }
+  .hero-copy {
+    padding: clamp(40px, 6svh, 72px) 0 0;
+  }
+}
+/* In landscape the paragraph narrows to leave the dial room. */
+@media (min-width: 760px) and (max-width: 1279.98px) and (orientation: landscape) {
+  .hero-lede {
+    max-width: min(34em, 58vw);
+  }
+}
 @media (max-width: 560px) {
   .hero {
     align-items: end;

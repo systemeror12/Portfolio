@@ -1,5 +1,5 @@
 import { lilyDefs } from "./glass-lily";
-import type { HeroLayout } from "./hero-layout";
+import { tabletDial, type HeroLayout } from "./hero-layout";
 import { drawBackLilies, drawFrontLilies } from "./hero-lilies";
 import { drawHeroRecords } from "./hero-records";
 import { drawGlints, drawStarDust, skyDefs } from "./hero-sky";
@@ -11,7 +11,8 @@ import { draw } from "./svg";
 // The hero's scene: a twenty-five hour dial of stained glass keeping Manila
 // time, a glass lily at its heart, and the records flowing into it, under a
 // night sky. Keyboard strings cross the scene in space, and a bed of glass
-// lilies fills a band round the dial.
+// lilies fills a band round the dial. On a tablet the dial sits below the
+// copy, and every string runs under every lily.
 
 const reducedMotion = "(prefers-reduced-motion: reduce)";
 const manilaTime = new Intl.DateTimeFormat("en-GB", {
@@ -193,15 +194,18 @@ export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
     width = hero.clientWidth;
     height = hero.clientHeight;
     const mobile = width < 760;
-    const heart = mobile ? { x: width * 0.7, y: 196 } : { x: width * 0.79, y: height * 0.52 };
-    const radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
-    const layout: HeroLayout = { width, height, heart, radius, mobile, reduce, hero };
+    const tablet = !mobile && width < 1280;
+    let heart = mobile ? { x: width * 0.7, y: 196 } : { x: width * 0.79, y: height * 0.52 };
+    let radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
+    if (tablet) ({ heart, radius } = tabletDial(hero, width, height));
+    const layout: HeroLayout = { width, height, heart, radius, mobile, tablet, reduce, hero };
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     svg.innerHTML = defs;
     const stars = drawStarDust(sky, layout);
     // Far lilies and strings behind the dial, whose face is faintly smoked
-    // glass so what runs behind it reads as behind.
-    drawBackLilies(svg, layout);
+    // glass so what runs behind it reads as behind. On a tablet the far
+    // lilies wait until the strings are all down.
+    if (!tablet) drawBackLilies(svg, layout);
     const strings = drawStrings(layout);
     strings.paint(svg, "back");
     draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, svg);
@@ -210,10 +214,17 @@ export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
     glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
     ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
     core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
-    // Nearer strings among the near lilies, and glints over all.
+    // Nearer strings among the near lilies, and glints over all. On a tablet
+    // every string runs under every lily.
     strings.paint(svg, "mid");
-    drawFrontLilies(svg, layout);
-    strings.paint(svg, "near");
+    if (tablet) {
+      strings.paint(svg, "near");
+      drawBackLilies(svg, layout);
+      drawFrontLilies(svg, layout);
+    } else {
+      drawFrontLilies(svg, layout);
+      strings.paint(svg, "near");
+    }
     const glints = strings.finish(svg);
     play = glints.play;
     for (const place of [stars, glints.place, drawGlints(svg, layout)]) place();

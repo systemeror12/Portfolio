@@ -73,13 +73,15 @@ export function glint(parent: Element, x: number, y: number, size: number, delay
   return { element: at, x, y, r: size * 0.7 };
 }
 
-// Nine glints on desktop, five on phones. Returns place, to keep them off the
-// copy.
+// Nine glints on desktop, five on phones. On a tablet the dial moves, so
+// glints within 1.15R of its heart are left out. Returns place, to keep them
+// off the copy.
 export function drawGlints(parent: Element, layout: HeroLayout) {
-  const { width, height, mobile, hero } = layout;
+  const { width, height, heart, radius, mobile, tablet, hero } = layout;
   const group = draw("g", { class: "hero-glints" }, parent);
-  const glints = glintSpots[mobile ? "mobile" : "desktop"].map(([fx, fy, size], i) =>
-    glint(group, fx * width, fy * height, size, -i * 1.9),
-  );
+  const clear = ([fx, fy]: number[]) => !tablet || Math.hypot(fx * width - heart.x, fy * height - heart.y) > 1.15 * radius;
+  const glints = glintSpots[mobile ? "mobile" : "desktop"]
+    .filter(clear)
+    .map(([fx, fy, size], i) => glint(group, fx * width, fy * height, size, -i * 1.9));
   return () => hideOnCopy(hero, glints);
 }
