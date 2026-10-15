@@ -27,11 +27,9 @@ async function dialGeometry(page: Page) {
     const dial = document.querySelector<SVGGElement>(".hero-scene .dial")!;
     const ring = dial.querySelector(".dial-ring")!;
     const box = dial.querySelector(".dial-boss")!.getBoundingClientRect();
-    const label = document.querySelector(".heart-label")!.getBoundingClientRect();
     return {
       heart: { x: box.left + box.width / 2, y: box.top + box.height / 2 },
       radius: Number(ring.getAttribute("r")),
-      label: { left: label.left, right: label.right, top: label.top, bottom: label.bottom },
     };
   });
 }
@@ -64,19 +62,6 @@ test("the dial has 25 panes of glass, its numerals, rings, ticks, lily, and boss
   await expect(scene.locator(".dial > g:first-child path")).not.toHaveCount(0);
 });
 
-test("the corner lilies look the same on every load", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  const lilies = async () => {
-    await page.goto("/");
-    return page
-      .locator(".hero-scene > g:not(.dial, .hero-records)")
-      .evaluateAll((groups) => groups.map((group) => group.outerHTML));
-  };
-  const first = await lilies();
-  expect(first).toHaveLength(2);
-  expect(await lilies()).toEqual(first);
-});
-
 test("the hands keep Manila time, and the hour hand rests near 25", async ({ page }) => {
   for (const [time, hour, minute, second] of [
     // 25:20:30: the hour hand has crept a third of a pane past 25.
@@ -105,32 +90,12 @@ test("the hands keep Manila time, and the hour hand rests near 25", async ({ pag
   }
 });
 
-test("on desktop the heart's label sits beside the heart", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("the dial is bare: no words under its heart, no lily on its rim", async ({ page }) => {
   await page.goto("/");
-  const label = page.locator(".hero .heart-label");
-  await expect(label).toHaveText("someone, paid right");
-  await expect(label).toHaveAttribute("aria-hidden", "true");
-  const { heart, label: box } = await dialGeometry(page);
-  expect(box.left - heart.x).toBeCloseTo(22, 0);
-  expect(box.top - heart.y).toBeCloseTo(14, 0);
-});
-
-test("on phones the heart's label is centred under the heart, inside the dial", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const { heart, radius, label } = await dialGeometry(page);
-  expect((label.left + label.right) / 2 - heart.x).toBeCloseTo(0, 0);
-  expect(label.top).toBeGreaterThan(heart.y);
-  // Every corner of the label sits inside the panes' inner ring.
-  for (const x of [label.left, label.right]) {
-    for (const y of [label.top, label.bottom]) {
-      expect(Math.hypot(x - heart.x, y - heart.y)).toBeLessThan(radius * 0.79);
-    }
-  }
-  expect(label.right).toBeLessThanOrEqual(390);
+  await expect(page.locator(".hero .heart-label")).toHaveCount(0);
+  await expect(page.locator(".hero")).not.toContainText("someone, paid right");
+  // Inside the dial, only its own heart lily blooms.
+  await expect(page.locator(".hero-scene .dial .lily")).toHaveCount(0);
 });
 
 test("the scene animates only while the hero is on screen", async ({ page }) => {
@@ -180,6 +145,8 @@ test("under reduced motion the dial updates every 15 seconds", async ({ page }) 
 test("a resize redraws the scene once and leaves no second copy", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
+  // The scene redraws once its fonts settle; count only what follows.
+  await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => {
     const scene = document.querySelector(".hero-scene")!;
     const counter = window as unknown as { redraws: number };
@@ -202,5 +169,6 @@ test("a resize redraws the scene once and leaves no second copy", async ({ page 
   await expect(scene.locator("defs")).toHaveCount(1);
   await expect(scene.locator(".dial-pane")).toHaveCount(25);
   await expect(scene).toHaveAttribute("viewBox", /^0 0 1100 /);
-  await expect(page.locator(".heart-label")).toHaveCount(1);
+  await expect(scene.locator(".lilies-front")).toHaveCount(1);
+  await expect(page.locator(".hero-sky .star-dust")).toHaveCount(1);
 });
