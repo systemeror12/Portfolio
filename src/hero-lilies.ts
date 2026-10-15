@@ -1,13 +1,14 @@
 import { lily3d, lilyGlass, lilyRose, lilySprig } from "./glass-lily";
-import { textLines, type HeroLayout, type Point } from "./hero-layout";
+import { copyFrame, textLines, type HeroLayout, type Point } from "./hero-layout";
 import { deg, seeded, smooth } from "./space";
 import { draw } from "./svg";
 
 // The hero's lily bed, in a band drawn round the dial: from the right edge
 // level with the top of the dial, round the dial clear of its rim, under it,
 // and down to the bottom edge at about 0.36W. On a phone the copy fills the
-// foot, so the bed is the corner beyond the dial. Nothing in it crosses the
-// dial, and the dial itself is bare.
+// foot, so the bed is the corner beyond the dial. On a tablet it runs round
+// the dial's sides and down to the foot on both sides. Nothing in it crosses
+// the dial, and the dial itself is bare.
 
 type Spot = Point & { size: number; dx: number; dy: number; seed: number };
 type Tier = { count: number; min: number; max: number; reach: number; overlap: number; ramp?: number };
@@ -41,8 +42,14 @@ function inside(outline: number[][], x: number, y: number) {
   return hit;
 }
 
-function bedOutline({ width: W, height: H, heart, radius: R, mobile }: HeroLayout) {
+function bedOutline({ width: W, height: H, heart, radius: R, mobile, tablet, hero }: HeroLayout) {
   if (mobile) return [[0.55 * W, -60], [W + 60, -60], [W + 60, heart.y + 0.4 * R], [heart.x, heart.y]];
+  if (tablet) {
+    // Everything below the buttons, or round the dial's sides if it rises
+    // beside them; plant keeps it off the copy and the dial.
+    const top = Math.min(heart.y - 0.6 * R, Math.max(copyFrame(hero).actions.b + 24, heart.y - 1.2 * R));
+    return [[-60, top], [W + 60, Math.min(top, heart.y - 1.15 * R)], [W + 60, H + 60], [-60, H + 60]];
+  }
   const arc = [];
   for (let a = -58; a <= 124; a += 3) arc.push([heart.x + 1.12 * R * Math.cos(a * deg), heart.y + 1.12 * R * Math.sin(a * deg)]);
   let y = arc.at(-1)![1];

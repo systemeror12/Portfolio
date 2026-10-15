@@ -9,6 +9,7 @@ export type HeroLayout = {
   heart: Point;
   radius: number;
   mobile: boolean;
+  tablet: boolean;
   reduce: boolean;
   hero: HTMLElement;
 };
@@ -43,7 +44,7 @@ export function textLines(hero: Element, pad: number): Box[] {
 }
 
 // Where the copy sits: its left edge, the name line, the heading's first
-// line, the lede, and the buttons.
+// line and each of its lines, the lede, and the buttons.
 export function copyFrame(hero: Element) {
   const box = local(hero);
   const bound = (boxes: Box[]): Box => ({
@@ -62,6 +63,7 @@ export function copyFrame(hero: Element) {
     left: box(hero.querySelector(".hero-copy")!.getBoundingClientRect()).l,
     name: bound(lines(".hero-name")),
     head: bound(heading.filter((k) => k.t < top + 8)),
+    heading,
     lede: bound(lines(".hero-lede")),
     actions: bound([...hero.querySelectorAll(".hero-actions a")].map((a) => box(a.getBoundingClientRect()))),
   };
@@ -74,4 +76,38 @@ export function hideOnCopy(hero: Element, items: { element: Element; x: number; 
     const on = text.some((k) => x + r > k.l && x - r < k.r && y + r > k.t && y - r < k.b);
     element.setAttribute("display", on ? "none" : "inline");
   }
+}
+
+// How far a point is from a box (0 inside it).
+export const away = (x: number, y: number, k: Box) =>
+  Math.hypot(Math.max(k.l - x, 0, x - k.r), Math.max(k.t - y, 0, y - k.b));
+
+// On a tablet, 760 to 1279px wide, the copy comes first, at the top, and the
+// dial sits below and right of it: the largest that fits whole on the
+// screen, its outer ring (1.03R) 20px inside the hero's edges and 32px clear
+// of every line of the copy, with its heart below the paragraph. Of the
+// places that hold within 3% of the largest, it takes the one nearest 0.6W
+// across, midway between the buttons and the foot.
+export function tabletDial(hero: Element, W: number, H: number) {
+  const f = copyFrame(hero);
+  const edge = 20;
+  const gap = 32;
+  const ring = 1.03;
+  const cap = Math.min(300, 0.3 * W);
+  const copy = [f.name, ...f.heading, f.lede, f.actions];
+  const prefer = [0.6 * W, (f.actions.b + H) / 2];
+  const spots: { x: number; y: number; r: number }[] = [];
+  for (let x = edge; x < W - edge; x += 6) {
+    for (let y = edge; y < H - edge; y += 6) {
+      if (y < f.lede.b) continue;
+      const room = Math.min(x - edge, W - edge - x, y - edge, H - edge - y, ...copy.map((k) => away(x, y, k) - gap)) / ring;
+      const r = Math.min(cap, room);
+      if (r > 0) spots.push({ x, y, r });
+    }
+  }
+  const most = Math.max(...spots.map((s) => s.r));
+  const from = (s: { x: number; y: number }) => Math.hypot(s.x - prefer[0], s.y - prefer[1]);
+  // A hero too short to hold a dial below the copy still gets a small one.
+  const best = spots.filter((s) => s.r >= most * 0.97).sort((a, b) => from(a) - from(b))[0] ?? { x: prefer[0], y: H - 60, r: 40 };
+  return { heart: { x: best.x, y: best.y }, radius: best.r };
 }

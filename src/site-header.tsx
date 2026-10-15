@@ -60,6 +60,22 @@ function ManilaClock() {
 export function Header({ currentPath }: { currentPath?: string }) {
   const [open, setOpen] = React.useState(false);
   const menuButtonRef = React.useRef<HTMLButtonElement>(null);
+  const headerRef = React.useRef<HTMLElement>(null);
+
+  // The header's height, so a tablet's hero can end at the bottom of the
+  // screen.
+  React.useEffect(() => {
+    const header = headerRef.current!;
+    const root = document.documentElement;
+    const measure = new ResizeObserver(() =>
+      root.style.setProperty("--header-h", `${header.offsetHeight}px`),
+    );
+    measure.observe(header);
+    return () => {
+      measure.disconnect();
+      root.style.removeProperty("--header-h");
+    };
+  }, []);
 
   const closeMenu = (restoreFocus = false) => {
     setOpen(false);
@@ -79,7 +95,7 @@ export function Header({ currentPath }: { currentPath?: string }) {
   }, [open]);
 
   return (
-    <header className="site-header" id="top">
+    <header ref={headerRef} className="site-header" id="top">
       <InternalLink
         className="identity"
         to="/"
