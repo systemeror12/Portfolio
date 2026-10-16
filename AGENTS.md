@@ -2,12 +2,12 @@
 
 ### Issue tracker
 
-Issues and PRDs are tracked in GitHub Issues. See `docs/agents/issue-tracker.md`.
+Issues, specs, and tickets live in GitHub Issues for `systemeror12/Portfolio`, through `gh`. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-Triage uses the five default canonical labels. See `docs/agents/triage-labels.md`.
+The five default labels, with no roles remapped. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Domain documentation uses a single-context layout. See `docs/agents/domain.md`.
+Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
