@@ -164,20 +164,60 @@ _Avoid_: ISO compliance certification, generic task status
 The Public Sector HRIS recruitment path including PDS tab restructuring and the distinct Plantilla and Job Order appointment tracks with their own letters and state guards.
 _Avoid_: Generic applicant tracking, HR hiring pipeline
 
+**Project Maintainer**:
+The developer who actively keeps a system working by resolving the issues QA raises against it. It describes ongoing responsibility, not the GitLab Maintainer role or sole authorship of every module.
+_Avoid_: GitLab Maintainer, sole author, built every module
+
+**Financial Brokerage**:
+The anonymized client of the Brokerage ERP Rebuild. Its real name, its banks, and its counterparties stay confidential.
+_Avoid_: The client's real name, bank names, counterparty names
+
+**Brokerage ERP Rebuild**:
+One piece of in-progress Project Evidence covering two systems: Jerome keeps the Financial Brokerage's live Odoo 10 ERP correct as its Project Maintainer while rebuilding it on Odoo 18 Community with two other developers. The Odoo 18 system is not yet live. Jerome's contribution is the work Jerome committed and merged: Fail-Closed Cutover, Report Parity, accounting correctness from QA tickets, and the delivery environment, plus fixes to the live Odoo 10 system.
+_Avoid_: The client's or repositories' real names, Odoo 18 migration only, completed migration, built every module
+
+**Fail-Closed Cutover**:
+The Brokerage ERP Rebuild's migration from Odoo 10 to Odoo 18: data is extracted, transformed, loaded, and verified, and cutover stops whenever a check cannot run or the verifier finds a difference. Before go-live its result may be stated only as "a cutover rehearsal on a sample of deals reconciled to zero differences against Odoo 10", never with the deal count.
+_Avoid_: Completed migration, data migrated, deal count, best-effort import
+
+**Report Parity**:
+Odoo 18 reports and printed documents that reproduce the Financial Brokerage's Odoo 10 formats, checked by comparing their content rather than their layout.
+_Avoid_: Report redesign, pixel-identical reports
+
+**Training Registration Platform**:
+An in-development Odoo 16 platform through which a Training Organization's participants register for trainings, take pre-tests and evaluations, and pay at checkout. Jerome is its main developer. It is not an HRIS and not yet in production.
+_Avoid_: The repository's internal codename, HRIS, event website, delivered client system
+
+**Member Rate Eligibility**:
+The Training Registration Platform's rule that only verified members of a member company register at the member rate. A disputed membership goes through a Membership Review Request and, if approved, Company Confirmation.
+_Avoid_: Discount code, member pricing toggle
+
+**Locked Registration Identity**:
+A registration whose attendee details are locked to the signed-in portal account, verified by email without creating duplicate contacts, and stored with the participant's consent and signature.
+_Avoid_: Free-text attendee form, guest checkout
+
+**Training Organization**:
+The anonymized client of the Training Registration Platform, kept generic: neither its real name nor its industry is stated.
+_Avoid_: The client's real name or industry
+
 **Upstream Work**:
 Code and behavior inherited from the original source of a fork, rather than authored by Jerome.
 _Avoid_: My work, project contribution
 
 **Featured Personal System**:
-The actively maintained `dots-hyprland-xenrya` fork, presented separately from the three professional and R&D case studies to demonstrate ongoing Linux desktop engineering, maintenance, and review-driven improvement. Its public presentation must distinguish Upstream Work from Jerome's own contributions.
-_Avoid_: Original dotfiles project, professional case study, repository showcase
+Caelestia-Xenrya, Jerome's current daily desktop: three actively maintained forks of the Caelestia dotfiles (`caelestia-xenrya`), CLI (`caelestia-cli-xenrya`), and shell (`caelestia-shell-xenrya`), presented as one system and separately from the professional and R&D case studies. Its public presentation must distinguish Upstream Work from Jerome's own contributions.
+_Avoid_: Original Caelestia project, three separate projects, professional case study, repository showcase
+
+**Previous Desktop**:
+The `dots-hyprland-xenrya` fork, Jerome's former daily desktop. It is no longer maintained or used daily, but its Personal System Contribution and the Upstream Contribution stay credited.
+_Avoid_: Featured Personal System, actively maintained fork, daily desktop
 
 **Fork Motivation**:
-Jerome adopted the upstream dotfiles because he valued their visual design, then forked them as his daily desktop foundation to address his own usability, performance, and workflow needs.
+Why Jerome forked a desktop project. For the Previous Desktop: its upstream visual design, adapted to Jerome's own usability, performance, and workflow needs. For the Featured Personal System: Caelestia's shell is built entirely in Quickshell, which makes personal modifications easier to add and the desktop easier to use.
 _Avoid_: Designed the original desktop, replaced the upstream project
 
 **Personal System Contribution**:
-Jerome's work on the Featured Personal System, grouped into workspace and wallpaper state, launcher performance and correctness, and cross-process reliability rather than presented as an undifferentiated commit feed.
+Jerome's own work on a desktop fork, grouped into themes rather than presented as an undifferentiated commit feed. For the Previous Desktop: workspace and wallpaper state, launcher performance and correctness, and cross-process reliability.
 _Avoid_: Fork activity, repository changes
 
 **Upstream Contribution**:
@@ -185,13 +225,17 @@ Jerome's original per-workspace wallpaper feature contribution to `yurihikari/ml
 _Avoid_: Maintained the upstream project, authored the maintainer's rework, unmerged contribution
 
 **Tool I Use**:
-An upstream application that is part of Jerome's active workflow but is not Project Evidence unless he makes a demonstrable contribution. Odysseus and T3 Code belong in this category and should link to their upstream projects.
+An upstream application that is part of Jerome's active workflow but is not Project Evidence unless Jerome makes a demonstrable contribution. T3 Code, Claude Code, Codex, OpenCode, and Hermes Agent belong in this category and should link to their upstream projects.
 _Avoid_: Active tech stack, my project, contributed fork
 
 **Lingkod HR**:
 Jerome's personal project currently in development in a private repository, with public Project Evidence limited to a high-level project description and its verified technology stack.
 _Avoid_: Public source project, delivered client system, detailed technical case study
 
-**Personal Projects**:
-A dedicated portfolio section for Jerome's personal Project Evidence, presenting Lingkod HR first and the Featured Personal System second.
-_Avoid_: Tools I Use, professional case studies
+**After Hours**:
+The homepage section for Jerome's personal Project Evidence (Lingkod HR, then the Featured Personal System) and Tools I Use, kept visibly separate from each other.
+_Avoid_: Personal Projects, professional case studies
+
+**In Progress**:
+The homepage section, between the Work section and After Hours, for professional Project Evidence that is not yet live: the Brokerage ERP Rebuild first, then the Training Registration Platform. Each piece states what Jerome owns and the line it holds instead of a Verified Result.
+_Avoid_: Case study, delivered systems, Work section pane
