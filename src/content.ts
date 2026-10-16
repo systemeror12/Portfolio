@@ -224,18 +224,36 @@ export const afterHours = {
     heading: "Tools I use",
     label: "Tools I Use",
     intro: "Not my projects. Just always open.",
-    items: [
+    // Claude Code, Codex, and OpenCode share a plaque, because one line
+    // describes all three.
+    plaques: [
       {
-        name: "Odysseus",
+        tools: [
+          { name: "T3 Code", href: "https://github.com/pingdotgg/t3code" },
+        ],
         description:
-          "A self-hosted AI workspace for exploring ideas close to my local environment.",
-        href: "https://github.com/pewdiepie-archdaemon/odysseus",
+          "The workspace where my agent threads, worktrees, and pull requests live.",
       },
       {
-        name: "T3 Code",
+        tools: [
+          {
+            name: "Claude Code",
+            href: "https://github.com/anthropics/claude-code",
+          },
+          { name: "Codex", href: "https://github.com/openai/codex" },
+          { name: "OpenCode", href: "https://github.com/anomalyco/opencode" },
+        ],
+        description: "The coding agents I run inside it, picked per task.",
+      },
+      {
+        tools: [
+          {
+            name: "Hermes Agent",
+            href: "https://github.com/NousResearch/hermes-agent",
+          },
+        ],
         description:
-          "A coding-agent workspace that keeps implementation and review next to the code.",
-        href: "https://github.com/pingdotgg/t3code",
+          "My personal assistant: it flags emails that need a reply and summarizes issues once they're finished.",
       },
     ],
   },
