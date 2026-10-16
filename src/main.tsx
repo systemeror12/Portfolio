@@ -1,464 +1,53 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  ArrowDownRight,
-  ArrowRight,
-  Check,
-  Code,
-  Download,
-  ExternalLink,
-  Layers3,
-  LockKeyhole,
-  Mail,
-  Menu,
-  Network,
-  X,
-} from "lucide-react";
-import { projectEvidence, workingMethod } from "./content";
+// Load base.css before the page stylesheets so their rules override it.
+import "./styles/base.css";
+import "./styles/homepage.css";
+import "./styles/hero.css";
+import "./styles/work.css";
+import "./styles/after-hours.css";
+import "./styles/method.css";
+import "./styles/contact.css";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
 import { DotsHyprlandCaseStudy } from "./dots-hyprland-case-study";
-import { InternalLink } from "./navigation";
-import "./styles.css";
+import { PublicSectorHrisCaseStudy } from "./public-sector-hris-case-study";
+import {
+  aiCaseStudyPath,
+  caseStudyPath,
+  dotsHyprlandCaseStudyPath,
+  paymentProviderCaseStudyPath,
+  publicSectorCaseStudyPath,
+} from "./routes";
+import { Header } from "./site-header";
+import { Hero } from "./hero";
+import { WorkSection } from "./work-section";
+import { AfterHoursSection } from "./after-hours-section";
+import { MethodSection } from "./method-section";
+import { ContactSection, SiteFooter } from "./contact-section";
+import { drawNightSky } from "./night-sky";
 
-const caseStudyPath = "/work/multi-company-hris";
-const aiCaseStudyPath = "/work/ai-odoo-rnd";
-const paymentProviderCaseStudyPath = "/work/payment-provider";
-const dotsHyprlandCaseStudyPath = "/systems/dots-hyprland";
-
-function Header({ currentPath }: { currentPath?: string }) {
-  const [open, setOpen] = React.useState(false);
-  const menuButtonRef = React.useRef<HTMLButtonElement>(null);
-
-  const closeMenu = (restoreFocus = false) => {
-    setOpen(false);
-    if (restoreFocus) {
-      requestAnimationFrame(() => menuButtonRef.current?.focus());
-    }
-  };
-  const closeMenuAfterNavigation = () => closeMenu();
-
-  React.useEffect(() => {
-    if (!open) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMenu(true);
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [open]);
-
-  return (
-    <header className="site-header">
-      <InternalLink
-        className="identity"
-        to="/"
-        aria-label="Jerome Mendoza, home"
-      >
-        <span>JM</span>
-        <strong>Jerome Mendoza</strong>
-      </InternalLink>
-      <nav className={open ? "open" : ""} aria-label="Primary navigation">
-        <InternalLink
-          to="/"
-          aria-current={!currentPath ? "page" : undefined}
-          onClick={closeMenuAfterNavigation}
-        >
-          Home
-        </InternalLink>
-        <InternalLink
-          to={caseStudyPath}
-          aria-current={currentPath === caseStudyPath ? "page" : undefined}
-          onClick={closeMenuAfterNavigation}
-        >
-          Case study
-        </InternalLink>
-        <InternalLink
-          to={aiCaseStudyPath}
-          aria-current={currentPath === aiCaseStudyPath ? "page" : undefined}
-          onClick={closeMenuAfterNavigation}
-        >
-          AI R&amp;D
-        </InternalLink>
-        <InternalLink
-          to={paymentProviderCaseStudyPath}
-          aria-current={
-            currentPath === paymentProviderCaseStudyPath ? "page" : undefined
-          }
-          onClick={closeMenuAfterNavigation}
-        >
-          Integration
-        </InternalLink>
-        <InternalLink
-          to={dotsHyprlandCaseStudyPath}
-          aria-current={
-            currentPath === dotsHyprlandCaseStudyPath ? "page" : undefined
-          }
-          onClick={closeMenuAfterNavigation}
-        >
-          Personal system
-        </InternalLink>
-        {!currentPath && (
-          <>
-            <InternalLink to="/#approach" onClick={closeMenuAfterNavigation}>
-              Approach
-            </InternalLink>
-            <InternalLink to="/#contact" onClick={closeMenuAfterNavigation}>
-              Contact
-            </InternalLink>
-          </>
-        )}
-      </nav>
-      <button
-        ref={menuButtonRef}
-        className="menu-button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-label={open ? "Close navigation" : "Open navigation"}
-      >
-        {open ? <X /> : <Menu />}
-      </button>
-    </header>
-  );
-}
-
-function Topology() {
-  return (
-    <figure className="topology" aria-labelledby="topology-title">
-      <figcaption className="topology-header">
-        <span id="topology-title">
-          <Network /> Reconstructed system map / HRIS
-        </span>
-        <span>Boundaries visible</span>
-      </figcaption>
-      <div className="topology-canvas">
-        <div className="topology-node company company-a">
-          <small>Legal company</small>
-          <strong>Company A</strong>
-          <span>rules · access</span>
-        </div>
-        <div className="topology-node company company-b">
-          <small>Legal company</small>
-          <strong>Company B</strong>
-          <span>rules · access</span>
-        </div>
-        <div className="topology-node core">
-          <Layers3 />
-          <small>Shared platform</small>
-          <strong>HR operations</strong>
-          <span>attendance · leave · payroll</span>
-        </div>
-        <div className="topology-node result">
-          <Check />
-          <small>Verified result</small>
-          <strong>Traceable payslips</strong>
-        </div>
-        <svg
-          viewBox="0 0 680 390"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path d="M135 88 C270 88 242 195 340 195" />
-          <path d="M135 302 C270 302 242 195 340 195" />
-          <path d="M440 195 C505 195 516 195 575 195" />
-        </svg>
-      </div>
-      <div className="topology-note">
-        <LockKeyhole /> Sanitized architecture · no client identity, data, or
-        scale shown
-      </div>
-    </figure>
-  );
-}
-
-function Hero() {
-  return (
-    <section className="hero">
-      <div className="hero-copy">
-        <span className="eyebrow">Platform Engineer / Philippines</span>
-        <h1>
-          Order for systems
-          <br />
-          that cannot stop.
-        </h1>
-        <p>
-          I adapt platforms, integrations, and workflows—making their rules,
-          state, and boundaries clear enough to trust.
-        </p>
-        <div className="hero-actions">
-          <InternalLink className="primary-action" to="/#evidence">
-            Explore system evidence <ArrowRight />
-          </InternalLink>
-          <InternalLink to="/#contact">Discuss a role</InternalLink>
-        </div>
-      </div>
-      <Topology />
-    </section>
-  );
-}
-function Evidence() {
-  return (
-    <section className="evidence" id="evidence">
-      <div className="section-heading">
-        <div>
-          <span>Selected Project Evidence</span>
-          <h2>Systems in operating context.</h2>
-        </div>
-        <p>
-          Each case explains the operation, my responsibility, the architecture,
-          its boundaries, and a result I can defend in an interview.
-        </p>
-      </div>
-      <div className="evidence-list">
-        {projectEvidence.map((item, index) => (
-          <article key={item.key}>
-            <div className="case-id">
-              <span>SYS / 0{index + 1}</span>
-              <small>{item.type}</small>
-            </div>
-            <div className="case-main">
-              <h3>{item.title}</h3>
-              <span>Operational problem</span>
-              <p>{item.problem}</p>
-              <span>Contribution</span>
-              <p>{item.contribution}</p>
-              {item.key === "lead" && (
-                <InternalLink className="case-link" to={caseStudyPath}>
-                  Open the Lead Case Study <ArrowRight />
-                </InternalLink>
-              )}
-              {item.key === "research" && (
-                <InternalLink className="case-link" to={aiCaseStudyPath}>
-                  Open the AI R&amp;D Case Study <ArrowRight />
-                </InternalLink>
-              )}
-              {item.key === "integration" && (
-                <InternalLink
-                  className="case-link"
-                  to={paymentProviderCaseStudyPath}
-                >
-                  Open the Integration Case Study <ArrowRight />
-                </InternalLink>
-              )}
-            </div>
-            <div className="case-detail">
-              <span>Architecture</span>
-              <p>{item.architecture}</p>
-              <span>Boundary</span>
-              <p>{item.boundary}</p>
-              <span>Verified Result</span>
-              <p>{item.result}</p>
-              <ul>
-                {item.signals.map((signal) => (
-                  <li key={signal}>{signal}</li>
-                ))}
-              </ul>
-            </div>
-            <ArrowDownRight className="case-arrow" />
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function PersonalSystem() {
-  return (
-    <section className="personal-system" aria-labelledby="personal-system-title">
-      <div className="personal-system-heading">
-        <span>Featured Personal System</span>
-        <h2 id="personal-system-title">A desktop platform I keep improving.</h2>
-      </div>
-      <article>
-        <div>
-          <span className="system-id">SYS / PERSONAL</span>
-          <small>Actively maintained fork</small>
-        </div>
-        <div>
-          <h3>dots-hyprland</h3>
-          <p>
-            A daily Hyprland desktop foundation whose upstream visual design I
-            admire, extended with my own workspace state, launcher behavior,
-            and cross-process reliability work.
-          </p>
-          <InternalLink className="case-link" to={dotsHyprlandCaseStudyPath}>
-            Inspect the Personal System <ArrowRight />
-          </InternalLink>
-        </div>
-      </article>
-    </section>
-  );
-}
-function Approach() {
-  return (
-    <section className="approach" id="approach">
-      <div className="approach-intro">
-        <span>Working method</span>
-        <h2>Reliability starts before the code.</h2>
-        <p>
-          My platform work connects technical behavior to the operation it
-          serves. That means understanding what must remain true when data,
-          organizations, and external systems cross boundaries.
-        </p>
-      </div>
-      <ol>
-        {workingMethod.map((step, index) => (
-          <li key={step.title}>
-            <span>0{index + 1}</span>
-            <div>
-              <h3>{step.title}</h3>
-              <p>{step.description}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-function Capabilities() {
-  return (
-    <section className="capabilities">
-      <div>
-        <span>Platform depth</span>
-        <h2>
-          Odoo is the deepest platform.
-          <br />
-          The engineering practice is broader.
-        </h2>
-      </div>
-      <div className="capability-grid">
-        <div>
-          <small>Platform adaptation</small>
-          <p>
-            Odoo modules, ORM, OWL, QWeb, multi-company workflows, and
-            operational reporting.
-          </p>
-        </div>
-        <div>
-          <small>Integration reliability</small>
-          <p>
-            REST APIs, Verified Payment Webhooks, transaction state, retries,
-            and failure handling.
-          </p>
-        </div>
-        <div>
-          <small>Delivery environment</small>
-          <p>
-            Python, JavaScript, PostgreSQL, Linux, Docker, Bash, Git, and
-            cross-functional implementation.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ToolsIUse() {
-  return (
-    <section className="tools" aria-label="Tools I Use">
-      <div className="tools-heading">
-        <span>Tools I Use</span>
-        <h2>Part of the working environment.</h2>
-        <p>
-          These upstream tools support the way I plan, investigate, and deliver
-          work. They are included here as workflow context.
-        </p>
-      </div>
-      <div className="tools-list">
-        <article>
-          <div>
-            <small>Local AI workspace</small>
-            <h3>Odysseus</h3>
-          </div>
-          <p>
-            A self-hosted workspace I use to explore ideas and keep AI-assisted
-            work close to my local development environment.
-          </p>
-          <a
-            href="https://github.com/pewdiepie-archdaemon/odysseus"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open Odysseus upstream project"
-          >
-            Upstream project <ExternalLink />
-          </a>
-        </article>
-        <article>
-          <div>
-            <small>Agent workspace</small>
-            <h3>T3 Code</h3>
-          </div>
-          <p>
-            A coding-agent workspace I use to keep implementation, review, and
-            delivery conversations connected to the codebase.
-          </p>
-          <a
-            href="https://github.com/pingdotgg/t3code"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open T3 Code upstream project"
-          >
-            Upstream project <ExternalLink />
-          </a>
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function Contact() {
-  return (
-    <footer id="contact">
-      <div className="contact-copy">
-        <span>Next conversation</span>
-        <h2>Need an engineer who can make complex operations legible?</h2>
-        <p>
-          I’m interested in Platform Engineer roles where platform knowledge,
-          integration judgment, and operational clarity matter.
-        </p>
-      </div>
-      <div className="contact-links">
-        <a href="mailto:mendozajeromevrixen@gmail.com">
-          <Mail /> Email Jerome <ArrowRight />
-        </a>
-        <a
-          href="https://github.com/systemeror12"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Code /> View GitHub profile <ArrowRight />
-        </a>
-        <a
-          href="https://www.linkedin.com/in/jerome-vrixen-mendoza-59b927293/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Network /> View LinkedIn profile <ArrowRight />
-        </a>
-        <a href="/jerome-mendoza-resume.pdf" download>
-          <Download /> Download web-safe resume <ArrowRight />
-        </a>
-      </div>
-      <div className="footer-line">
-        <span>Jerome Mendoza / Platform Engineer</span>
-        <InternalLink to="/#top">Return to top ↑</InternalLink>
-      </div>
-    </footer>
-  );
+// Mounts the night sky behind the page; the scene owns the layer's contents.
+function NightSky() {
+  const layer = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => drawNightSky(layer.current!), []);
+  return <div ref={layer} className="night-sky" aria-hidden="true" />;
 }
 
 function Home() {
   return (
-    <main id="top">
+    <>
       <Header />
-      <Hero />
-      <Evidence />
-      <PersonalSystem />
-      <Approach />
-      <Capabilities />
-      <ToolsIUse />
-      <Contact />
-    </main>
+      <main id="main" tabIndex={-1}>
+        <Hero />
+        <WorkSection />
+        <AfterHoursSection />
+        <MethodSection />
+        <ContactSection />
+      </main>
+      <SiteFooter />
+    </>
   );
 }
 
@@ -469,7 +58,7 @@ function App() {
     window.addEventListener("popstate", update);
     return () => window.removeEventListener("popstate", update);
   }, []);
-  return path === caseStudyPath ? (
+  const page = path === caseStudyPath ? (
     <>
       <Header currentPath={path} />
       <LeadCaseStudy />
@@ -484,6 +73,11 @@ function App() {
       <Header currentPath={path} />
       <PaymentProviderCaseStudy />
     </>
+  ) : path === publicSectorCaseStudyPath ? (
+    <>
+      <Header currentPath={path} />
+      <PublicSectorHrisCaseStudy />
+    </>
   ) : path === dotsHyprlandCaseStudyPath ? (
     <>
       <Header currentPath={path} />
@@ -491,6 +85,16 @@ function App() {
     </>
   ) : (
     <Home />
+  );
+  // A new page brings new text, so the sky is drawn afresh for it.
+  return (
+    <>
+      <NightSky key={path} />
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      {page}
+    </>
   );
 }
 

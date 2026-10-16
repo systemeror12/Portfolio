@@ -1,0 +1,183 @@
+/* Method: a four-note phrase on a bronze staff. The notes are violet glass,
+   and the last one, the result, is the rose. */
+.method {
+  position: relative;
+  padding-bottom: 72px;
+}
+.method-inner {
+  width: min(1200px, calc(100vw - 48px));
+  margin: 0 auto;
+}
+.method-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: end;
+  padding: 130px 0 70px;
+}
+.method-heading h2 {
+  margin: 0;
+  font: 400 clamp(36px, 4.6vw, 64px)/1.08 var(--serif);
+  letter-spacing: -0.01em;
+}
+.method-heading p {
+  max-width: 30em;
+  margin: 0;
+  color: var(--text-muted);
+}
+/* Five staff lines, 9px apart, run under the notes. */
+.method-phrase {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 36px;
+  list-style: none;
+  margin: 0;
+  padding: 0 18px 0 0;
+  background: repeating-linear-gradient(
+      180deg,
+      rgba(155, 135, 148, 0.7) 0 1px,
+      transparent 1px 9px
+    )
+    0 6px / 100% 37px no-repeat;
+}
+/* A final double bar closes the phrase. */
+.method-phrase::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 0;
+  width: 4px;
+  height: 37px;
+  border-left: 1px solid var(--bronze);
+  border-right: 3px solid var(--bronze);
+}
+.method-phrase li {
+  position: relative;
+  padding-top: 78px;
+}
+/* Each note's head sits on a line, one line higher than the last. */
+.method-phrase li::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  width: 16px;
+  height: 11px;
+  border: 1px solid var(--bronze);
+  border-radius: 50%;
+  background: var(--note);
+  transform: rotate(-22deg);
+}
+.method-phrase li::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  width: 1.5px;
+  height: 34px;
+  background: var(--bronze);
+}
+.method-phrase li:nth-child(1)::before {
+  top: 37px;
+}
+.method-phrase li:nth-child(1)::after {
+  top: 7px;
+}
+.method-phrase li:nth-child(2)::before {
+  top: 28px;
+}
+.method-phrase li:nth-child(2)::after {
+  top: -2px;
+}
+.method-phrase li:nth-child(3)::before {
+  top: 19px;
+}
+.method-phrase li:nth-child(3)::after {
+  top: -11px;
+}
+.method-phrase li:nth-child(4)::before {
+  top: 10px;
+  border-color: var(--glow);
+  background: var(--note-rose);
+  box-shadow: 0 0 16px 3px rgba(240, 180, 220, 0.5);
+}
+.method-phrase li:nth-child(4)::after {
+  top: -20px;
+  background: var(--glow);
+}
+.method-phrase span {
+  font: 400 15px/1 var(--serif);
+  color: var(--mist);
+}
+.method-phrase h3 {
+  margin: 10px 0;
+  font: 500 26px/1.12 var(--serif);
+}
+.method-phrase p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+/* Platform depth: two lines under a bronze hairline, after the phrase. */
+.method-depth {
+  max-width: 40em;
+  margin: 88px 0 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--bronze);
+}
+.method-depth p {
+  margin: 0;
+  color: var(--text-muted);
+}
+.method-depth p:first-child {
+  margin-bottom: 8px;
+  font: 400 clamp(22px, 2.2vw, 28px)/1.3 var(--serif);
+  color: var(--text);
+}
+@media (max-width: 900px) {
+  .method-heading {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 100px 0 44px;
+  }
+  /* The staff stands upright beside the steps, with no stems or final bar. */
+  .method-phrase {
+    grid-template-columns: 1fr;
+    row-gap: 40px;
+    padding: 0 0 0 64px;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(155, 135, 148, 0.7) 0 1px,
+        transparent 1px 9px
+      )
+      0 0 / 37px 100% no-repeat;
+  }
+  .method-phrase::after,
+  .method-phrase li::after {
+    display: none;
+  }
+  .method-phrase li {
+    padding-top: 0;
+  }
+  .method-depth {
+    margin-top: 64px;
+  }
+  .method-phrase li::before {
+    transform: rotate(-68deg);
+  }
+  /* Centred on the lines 36px, 27px, 18px, and 9px into the staff. */
+  .method-phrase li:nth-child(n)::before {
+    top: 6px;
+  }
+  .method-phrase li:nth-child(1)::before {
+    left: -35.5px;
+  }
+  .method-phrase li:nth-child(2)::before {
+    left: -44.5px;
+  }
+  .method-phrase li:nth-child(3)::before {
+    left: -53.5px;
+  }
+  .method-phrase li:nth-child(4)::before {
+    left: -62.5px;
+  }
+}

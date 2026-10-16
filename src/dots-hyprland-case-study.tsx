@@ -1,5 +1,7 @@
 import { ArrowLeft, ArrowRight, ExternalLink, ShieldCheck } from "lucide-react";
+import { CaseIron, CaseKind } from "./case-study-iron";
 import { InternalLink } from "./navigation";
+import "./styles/case-study.css";
 
 const repositoryUrl = "https://github.com/systemeror12/dots-hyprland-xenrya";
 const upstreamContributionUrl =
@@ -45,11 +47,10 @@ function ExternalEvidenceLink({
 export function DotsHyprlandCaseStudy() {
   return (
     <>
-      <main className="case-study personal-system-study">
+      <main id="main" tabIndex={-1} className="case-study personal-system-study">
         <section className="case-hero">
           <div>
-            <span className="eyebrow">Featured Personal System / Open source fork</span>
-            <p className="maintenance-label">Actively maintained fork</p>
+            <CaseKind id="dots-hyprland" />
             <h1>Evolving a Hyprland desktop into my daily platform</h1>
             <p>
               I use this fork every day as a practical place to improve desktop
@@ -120,7 +121,7 @@ export function DotsHyprlandCaseStudy() {
           <ol>
             {changes.map((change, index) => (
               <li key={change.title}>
-                <span>0{index + 1}</span>
+                <span aria-hidden="true">0{index + 1}</span>
                 <div>
                   <h3>{change.title}</h3>
                   <p>{change.detail}</p>
@@ -196,6 +197,7 @@ export function DotsHyprlandCaseStudy() {
             <li>Linux IPC</li>
           </ul>
         </section>
+        <CaseIron id="dots-hyprland" />
       </main>
       <footer className="case-footer">
         <InternalLink to="/">

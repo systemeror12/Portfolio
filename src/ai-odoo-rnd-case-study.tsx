@@ -1,8 +1,9 @@
 import { ArrowLeft, ArrowRight, LockKeyhole } from "lucide-react";
+import { CaseFor, CaseIron, CaseKind } from "./case-study-iron";
 import { InternalLink } from "./navigation";
+import "./styles/case-study.css";
 
 const aiOdooRndCaseStudy = {
-  eyebrow: "AI R&D Case Study / Sanitized Project Evidence",
   title: "AI R&D Case Study",
   summary:
     "A successful internal feasibility prototype for answering conversational Odoo questions from authorized business records—without presenting the work as a production client deployment.",
@@ -122,11 +123,12 @@ function AccessScopedRetrievalFlow() {
 export function AiOdooRndCaseStudy() {
   return (
     <>
-      <main className="case-study">
+      <main id="main" tabIndex={-1} className="case-study">
         <section className="case-hero">
           <div>
-            <span className="eyebrow">{aiOdooRndCaseStudy.eyebrow}</span>
+            <CaseKind id="ai-odoo-rnd" />
             <h1>{aiOdooRndCaseStudy.title}</h1>
+            <CaseFor id="ai-odoo-rnd" />
             <p>{aiOdooRndCaseStudy.summary}</p>
             <InternalLink className="back-link" to="/">
               <ArrowLeft /> Back to home
@@ -175,6 +177,7 @@ export function AiOdooRndCaseStudy() {
             ))}
           </ul>
         </section>
+        <CaseIron id="ai-odoo-rnd" />
       </main>
       <footer className="case-footer">
         <InternalLink to="/">
