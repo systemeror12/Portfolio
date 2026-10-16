@@ -26,6 +26,14 @@ import { WorkSection } from "./work-section";
 import { AfterHoursSection } from "./after-hours-section";
 import { MethodSection } from "./method-section";
 import { ContactSection, SiteFooter } from "./contact-section";
+import { drawNightSky } from "./night-sky";
+
+// Mounts the night sky behind the page; the scene owns the layer's contents.
+function NightSky() {
+  const layer = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => drawNightSky(layer.current!), []);
+  return <div ref={layer} className="night-sky" aria-hidden="true" />;
+}
 
 function Home() {
   return (
@@ -78,8 +86,10 @@ function App() {
   ) : (
     <Home />
   );
+  // A new page brings new text, so the sky is drawn afresh for it.
   return (
     <>
+      <NightSky key={path} />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
