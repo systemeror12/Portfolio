@@ -3,20 +3,14 @@ import { hero } from "./content";
 import { drawHeroDial } from "./hero-dial";
 import { InternalLink } from "./navigation";
 
-// Mounts the drawn scene before .hero-copy, behind its shade, over a sky of
-// its own. The scene owns both svgs' contents.
+// Mounts the drawn scene before .hero-copy, behind its shade, over the
+// page's night sky. The scene owns the svg's contents.
 function HeroScene() {
-  const sky = React.useRef<SVGSVGElement>(null);
   const scene = React.useRef<SVGSVGElement>(null);
 
-  React.useEffect(() => drawHeroDial(scene.current!, sky.current!), []);
+  React.useEffect(() => drawHeroDial(scene.current!), []);
 
-  return (
-    <>
-      <svg ref={sky} className="hero-sky" aria-hidden="true" />
-      <svg ref={scene} className="hero-scene" aria-hidden="true" />
-    </>
-  );
+  return <svg ref={scene} className="hero-scene" aria-hidden="true" />;
 }
 
 // The hero's copy over its drawn scene.
