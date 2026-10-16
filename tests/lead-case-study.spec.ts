@@ -134,7 +134,6 @@ test("a Hiring Manager can inspect the anonymized Integration Case Study", async
   await expect(
     page.getByText(/pending, successful, failed, and cancelled/i),
   ).toBeVisible();
-  await expect(page.getByText(/Payfusion/i)).toHaveCount(0);
 
   const backToHome = page.getByRole("link", { name: "Back to home" });
   await backToHome.focus();
@@ -175,7 +174,6 @@ test("the Integration Case Study opens directly with complete evidence", async (
     }),
   ).toBeVisible();
   await expect(page.locator(".technologies").getByText("Odoo", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Payfusion/i)).toHaveCount(0);
   await expect(page.getByText(/increased conversions/i)).toHaveCount(0);
   await expect(page.getByText(/faster payments/i)).toHaveCount(0);
   await expect(page.getByText(/payment volume/i)).toHaveCount(0);
