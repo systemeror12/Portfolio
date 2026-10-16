@@ -1,0 +1,121 @@
+/* After hours' iron panels under the staff divider, with no drawn scene */
+.progress {
+  position: relative;
+  padding-bottom: 72px;
+}
+.progress-inner {
+  width: min(1200px, calc(100vw - 48px));
+  margin: 0 auto;
+}
+.progress-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: end;
+  padding: 130px 0 0;
+}
+.progress-heading h2 {
+  margin: 0;
+  font: 400 clamp(36px, 4.6vw, 64px)/1.08 var(--serif);
+  letter-spacing: -0.01em;
+}
+.progress-heading p {
+  max-width: 30em;
+  margin: 0;
+  color: var(--text-muted);
+}
+/* the rebuild on the left, the platform on the right */
+.progress-pieces {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 28px;
+  row-gap: 44px;
+  align-items: start;
+  padding-top: 100px;
+}
+/* iron glass: each panel hangs from above, so it has no top edge */
+.progress-piece {
+  padding: 34px 36px 36px;
+  background: linear-gradient(180deg, var(--iron), var(--iron-deep));
+  border: 1px solid rgba(155, 135, 148, 0.45);
+  border-top: 0;
+  border-radius: 0 0 6px 6px;
+}
+.progress-piece h3 {
+  margin: 0;
+  font: 400 34px/1.15 var(--serif);
+}
+.progress-piece .progress-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 18px;
+  font-size: 15px;
+  color: var(--mist);
+}
+.progress-status svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  fill: var(--glow);
+}
+.progress-for {
+  margin: 14px 0 0;
+  color: var(--text-soft);
+}
+.progress-facts {
+  margin: 26px 0 0;
+  border-top: 1px solid var(--hair);
+}
+.progress-facts dt {
+  padding-top: 18px;
+  font-size: 15px;
+  color: var(--mist);
+}
+.progress-facts dd {
+  margin: 4px 0 0;
+  font-size: 16px;
+  color: var(--text-soft);
+}
+.progress-facts dt:last-of-type {
+  color: var(--peri);
+}
+/* the key ideas, joined by small iron rings */
+.progress-ideas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 0;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  color: var(--silver);
+}
+.progress-ideas li {
+  display: flex;
+  align-items: center;
+}
+.progress-ideas li + li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin: 0 9px;
+  border: 1.3px solid var(--bronze);
+  border-radius: 50%;
+}
+@media (max-width: 900px) {
+  .progress-heading {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 100px;
+  }
+  .progress-pieces {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 84px;
+  }
+}
+@media (max-width: 560px) {
+  .progress-piece {
+    padding: 28px 22px 30px;
+  }
+}

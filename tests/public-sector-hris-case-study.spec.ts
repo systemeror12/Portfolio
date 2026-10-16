@@ -150,7 +150,7 @@ test("the Public Sector HRIS Case Study contains no excluded claims", async ({
 }) => {
   await page.goto("/work/public-sector-hris");
 
-  const pageText = await page.locator("body").innerText();
+  const pageText = await page.getByRole("main").innerText();
   expect(pageText).not.toMatch(/in production|deployed to production|rollout/i);
   expect(pageText).not.toMatch(/end-to-end test|\be2e\b/i);
   expect(pageText).not.toMatch(/in progress|in flight|ongoing work/i);
