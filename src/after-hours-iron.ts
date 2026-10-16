@@ -3,7 +3,7 @@ import { draw } from "./svg";
 
 // After hours' iron: the projects hang on chains from a wrought-iron rail, each
 // with a crystal charm in front of its corner: a bud for Lingkod HR, still
-// taking shape, and an open lotus for the fork. A chain set with iron stars
+// taking shape, and an open lotus for the desktop. A chain set with iron stars
 // sags behind them, and the tools hang from a bar of their own.
 
 const reducedMotion = "(prefers-reduced-motion: reduce)";
@@ -87,9 +87,11 @@ function bud(parent: Element, x: number, top: number, panel: Box, statusRight: n
   draw("path", { d: "M-5,1.5 C-4.5,-2.5 4.5,-2.5 5,1.5 Z", fill: iron }, crystal);
 }
 
-// The lotus is open, with a crystal drop on two beads beneath it.
-function lotus(parent: Element, x: number, top: number, panel: Box, scale: number) {
-  const y = panel.t + 40;
+// The lotus is open, with a crystal drop on two beads beneath it. It hangs over
+// the panel's corner, or higher, its drop clear of the title, where the title
+// runs long beneath it.
+function lotus(parent: Element, x: number, top: number, panel: Box, title: Box, scale: number) {
+  const y = title.r + 8 > x - 26 * scale ? Math.min(panel.t + 40, title.t - 6 - 67 * scale) : panel.t + 40;
   beads(parent, x, top, y - 26 * scale);
   const flower = draw("g", { class: "after-lotus", transform: `${at(x, y)} scale(${scale})` }, parent);
   draw("circle", { r: 48, fill: "url(#after-glow)" }, flower);
@@ -110,27 +112,31 @@ export function drawAfterHoursIron(back: SVGSVGElement, front: SVGSVGElement) {
   const grid = back.parentElement!;
   const section = grid.closest("section")!;
   const lingkod = grid.querySelector<HTMLElement>(".after-lingkod")!;
-  const dots = grid.querySelector<HTMLElement>(".after-dots")!;
+  const desktop = grid.querySelector<HTMLElement>(".after-desktop")!;
   const status = lingkod.querySelector(".after-status")!;
+  const title = desktop.querySelector("h3")!;
   const toolList = grid.querySelector<HTMLElement>(".after-tool-list")!;
   const still = window.matchMedia(reducedMotion).matches;
   let drawn = "";
 
   // Where an element sits inside the grid, which both drawings share.
-  const rel = (element: Element): Box => {
+  const rel = (element: Element | Range): Box => {
     const g = grid.getBoundingClientRect();
     const r = element.getBoundingClientRect();
     return { l: r.left - g.left, t: r.top - g.top, r: r.right - g.left, b: r.bottom - g.top, w: r.width, h: r.height };
   };
-  // Where the status line's text ends, which decides where the bud hangs.
-  const statusRight = () => {
+  // Where a line's text sits, which decides where a charm hangs: the status
+  // line for the bud, the title for the lotus.
+  const text = (element: Element) => {
     const range = document.createRange();
-    range.selectNodeContents(status);
-    return range.getBoundingClientRect().right - grid.getBoundingClientRect().left;
+    range.selectNodeContents(element);
+    return rel(range);
   };
+  const statusRight = () => text(status).r;
   const layout = () => {
-    const boxes = [lingkod, dots, toolList, ...toolList.children].map(rel);
-    return JSON.stringify([grid.clientWidth, Math.round(statusRight()), boxes.map((box) => [box.l, box.t, box.w, box.h].map(Math.round))]);
+    const boxes = [lingkod, desktop, toolList, ...toolList.children].map(rel);
+    const ends = [statusRight(), text(title).r].map(Math.round);
+    return JSON.stringify([grid.clientWidth, ends, boxes.map((box) => [box.l, box.t, box.w, box.h].map(Math.round))]);
   };
 
   function build() {
@@ -139,7 +145,7 @@ export function drawAfterHoursIron(back: SVGSVGElement, front: SVGSVGElement) {
     front.replaceChildren();
     const width = grid.clientWidth;
     const top = 8;
-    const panels = [lingkod, dots].map(rel);
+    const panels = [lingkod, desktop].map(rel);
     sag(back, width, panels[0], panels[1]);
     rail(front, width, top);
     panels.forEach((panel, k) => {
@@ -156,7 +162,7 @@ export function drawAfterHoursIron(back: SVGSVGElement, front: SVGSVGElement) {
         front,
       );
       if (k === 0) bud(charm, x, hook, panel, statusRight(), scale, still);
-      else lotus(charm, x, hook, panel, scale);
+      else lotus(charm, x, hook, panel, text(title), scale);
     });
     // The tools hang from a bar of their own, apart from the projects.
     const list = rel(toolList);
@@ -183,7 +189,7 @@ export function drawAfterHoursIron(back: SVGSVGElement, front: SVGSVGElement) {
     });
   };
   const resize = new ResizeObserver(schedule);
-  for (const element of [grid, lingkod, dots, toolList]) resize.observe(element);
+  for (const element of [grid, lingkod, desktop, toolList]) resize.observe(element);
   document.fonts.ready.then(schedule);
 
   // The charms sway and the bud glows only while the section is on screen.

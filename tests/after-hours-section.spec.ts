@@ -19,6 +19,11 @@ const plaques = [
   },
 ] as const;
 const tools = plaques.flatMap((plaque) => plaque.tools);
+const repositories = [
+  ["Open the Caelestia-Xenrya dotfiles", "Dotfiles on GitHub", "https://github.com/systemeror12/caelestia-xenrya"],
+  ["Open the Caelestia-Xenrya CLI", "CLI on GitHub", "https://github.com/systemeror12/caelestia-cli-xenrya"],
+  ["Open the Caelestia-Xenrya shell", "Shell on GitHub", "https://github.com/systemeror12/caelestia-shell-xenrya"],
+] as const;
 
 function after(page: Page) {
   return page.locator("section#after");
@@ -31,7 +36,7 @@ async function boxes(page: Page) {
   await expect(section.locator(".after-pieces")).toHaveCSS("transform", "none");
   return {
     lingkod: (await section.getByRole("article", { name: "Lingkod HR" }).boundingBox())!,
-    dots: (await section.getByRole("article", { name: "dots-hyprland" }).boundingBox())!,
+    desktop: (await section.getByRole("article", { name: "Caelestia-Xenrya" }).boundingBox())!,
     tools: (await section.getByRole("region", { name: "Tools I Use" }).boundingBox())!,
   };
 }
@@ -68,7 +73,9 @@ test("After hours replaces Personal Projects and the separate Tools I Use region
     "id",
     "after",
   );
-  await expect(after(page).getByText(/^What I build when nobody's asked me to\./)).toBeVisible();
+  await expect(after(page).locator(".after-heading p")).toHaveText(
+    "What I build when nobody's asked me to. One is still taking shape. The other is the desktop I'm typing this on.",
+  );
   await expect(page.locator("#personal-projects")).toHaveCount(0);
   await expect(page.locator('a[href="/#personal-projects"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Personal Projects" })).toHaveCount(0);
@@ -80,13 +87,13 @@ test("After hours replaces Personal Projects and the separate Tools I Use region
   const order = await after(page)
     .locator("article h3, .after-tools h3")
     .allTextContents();
-  expect(order).toEqual(["Lingkod HR", "dots-hyprland", "Tools I use"]);
+  expect(order).toEqual(["Lingkod HR", "Caelestia-Xenrya", "Tools I use"]);
 });
 
-test("the panels carry the settled copy, the credit, and the fork link", async ({ page }) => {
+test("the panels carry the settled copy, the forks, and the Previous Desktop", async ({ page }) => {
   await page.goto("/");
   const lingkod = page.getByRole("article", { name: "Lingkod HR" });
-  const dots = page.getByRole("article", { name: "dots-hyprland" });
+  const desktop = page.getByRole("article", { name: "Caelestia-Xenrya" });
 
   await expect(lingkod.locator(".after-status")).toHaveText("In development, private repository");
   await expect(lingkod.getByRole("list", { name: "Tech stack" }).getByRole("listitem")).toHaveText([
@@ -97,25 +104,61 @@ test("the panels carry the settled copy, the credit, and the fork link", async (
     "Prisma",
     "Docker",
   ]);
-  await expect(dots.locator(".after-status")).toHaveText("Actively maintained fork");
-  await expect(dots.getByRole("heading", { level: 4 })).toHaveText(["From upstream", "Mine"]);
-  await expect(dots.locator(".after-credit code")).toHaveText([
-    "ml4w-lightcrimson-dotfiles",
-    "@systemeror12",
+  await expect(desktop).toHaveClass(/\bafter-desktop\b/);
+  await expect(desktop.locator(".after-status")).toHaveText("Actively maintained fork");
+  await expect(desktop.locator("h3 + p")).toHaveText(
+    "The Hyprland desktop I'm on every day. I moved to it because its shell is built entirely in Quickshell, which makes my own changes easier to add and the desktop easier to use.",
+  );
+  await expect(desktop.getByRole("heading", { level: 4 })).toHaveText(["From upstream", "Mine"]);
+  await expect(desktop.locator(".after-voice p")).toHaveText([
+    "The dotfiles, CLI, and shell, and their design. They aren't mine.",
+    "Animated wallpapers across the shell and CLI, settings that stay put, and a safe preview for testing changes.",
   ]);
 
   // An iron ring marks what came with the fork, a pink crystal my own work.
-  const markers = await dots.locator(".after-voice h4").evaluateAll((headings) =>
+  const markers = await desktop.locator(".after-voice h4").evaluateAll((headings) =>
     headings.map((heading) => getComputedStyle(heading, "::before").backgroundImage),
   );
   expect(markers[0]).toContain("circle");
   expect(markers[0]).not.toContain("bb6688");
   expect(markers[1]).toContain("bb6688");
 
-  const link = dots.getByRole("link", { name: "Read about the fork" });
-  await expect(link).toHaveAttribute("href", "/systems/dots-hyprland");
-  await link.click();
+  const forks = desktop.getByRole("list", { name: "Caelestia-Xenrya repositories" }).getByRole("link");
+  await expect(forks).toHaveCount(repositories.length);
+  for (const [name, text, href] of repositories) {
+    const link = desktop.getByRole("link", { name });
+    await expect(link).toHaveText(text);
+    await expect(link).toHaveAttribute("href", href);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noreferrer");
+  }
+  // The Caelestia page doesn't exist yet, so nothing reads about the fork.
+  await expect(desktop.getByRole("link", { name: "Read about the fork" })).toHaveCount(0);
+  await expect(page.locator('a[href="/systems/caelestia"]')).toHaveCount(0);
+
+  await expect(desktop.locator(".after-credit")).toHaveText(
+    "Upstream contribution: my per-workspace wallpaper feature was reworked and merged into ml4w-lightcrimson-dotfiles, crediting @systemeror12 as its original author.",
+  );
+  await expect(desktop.locator(".after-credit code")).toHaveText([
+    "ml4w-lightcrimson-dotfiles",
+    "@systemeror12",
+  ]);
+  const previous = desktop.getByRole("link", { name: "Previously: dots-hyprland" });
+  await expect(previous).toHaveAttribute("href", "/systems/dots-hyprland");
+  expect(await previous.getAttribute("target")).toBeNull();
+  // The credit sits under the Previous Desktop link.
+  const link = (await previous.boundingBox())!;
+  const credit = (await desktop.locator(".after-credit").boundingBox())!;
+  expect(credit.y).toBeGreaterThanOrEqual(link.y + link.height);
+  await previous.click();
   await expect(page).toHaveURL("/systems/dots-hyprland");
+});
+
+test("no homepage text calls dots-hyprland current", async ({ page }) => {
+  await page.goto("/");
+  const text = await page.locator("main").innerText();
+  const mentions = text.split("\n").filter((line) => /dots-hyprland/i.test(line));
+  expect(mentions).toEqual(["Previously: dots-hyprland"]);
 });
 
 test("Odysseus is gone from every route", async ({ page }) => {
@@ -182,21 +225,21 @@ for (const width of [390, 1024, 1440]) {
     });
 
     test("the panels sit in their settled places", async ({ page }) => {
-      const { lingkod, dots, tools } = await boxes(page);
+      const { lingkod, desktop, tools } = await boxes(page);
 
       if (width > 900) {
         // Lingkod HR on the left with the tools under it; the fork on the right beside both.
-        expect(dots.x).toBeGreaterThan(lingkod.x + lingkod.width);
-        expect(Math.abs(dots.y - lingkod.y)).toBeLessThan(1);
+        expect(desktop.x).toBeGreaterThan(lingkod.x + lingkod.width);
+        expect(Math.abs(desktop.y - lingkod.y)).toBeLessThan(1);
         expect(tools.x).toBeCloseTo(lingkod.x, 0);
         expect(tools.width).toBeCloseTo(lingkod.width, 0);
         expect(tools.y).toBeGreaterThan(lingkod.y + lingkod.height);
-        expect(dots.x).toBeGreaterThan(tools.x + tools.width);
+        expect(desktop.x).toBeGreaterThan(tools.x + tools.width);
       } else {
         // One column: Lingkod HR, the fork, then the tools.
-        for (const box of [dots, tools]) expect(box.x).toBeCloseTo(lingkod.x, 0);
-        expect(dots.y).toBeGreaterThan(lingkod.y + lingkod.height);
-        expect(tools.y).toBeGreaterThan(dots.y + dots.height);
+        for (const box of [desktop, tools]) expect(box.x).toBeCloseTo(lingkod.x, 0);
+        expect(desktop.y).toBeGreaterThan(lingkod.y + lingkod.height);
+        expect(tools.y).toBeGreaterThan(desktop.y + desktop.height);
       }
     });
 

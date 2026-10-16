@@ -34,7 +34,7 @@ function measure(page: Page) {
     range.selectNodeContents(section.querySelector(".after-lingkod .after-status")!);
     return {
       lingkod: box(section.querySelector(".after-lingkod")!),
-      dots: box(section.querySelector(".after-dots")!),
+      desktop: box(section.querySelector(".after-desktop")!),
       plaques: [...section.querySelectorAll(".after-tool")].map(box),
       status: box(range),
       rail: box(front.querySelector(".after-rail")!),
@@ -71,7 +71,7 @@ for (const width of [360, 390, 1024, 1440, 1920]) {
     test.beforeEach(({ page }) => open(page, width));
 
     test("each panel and plaque hangs from whatever is above it", async ({ page }) => {
-      const { lingkod, dots, plaques, rail, bar, hangers } = await measure(page);
+      const { lingkod, desktop, plaques, rail, bar, hangers } = await measure(page);
       const stacked = (upper: Box, lower: Box) =>
         upper.bottom <= lower.top + 1 && upper.right > lower.left && upper.left < lower.right;
       const above = (panel: Box, list: Box[], base: number) =>
@@ -79,7 +79,7 @@ for (const width of [360, 390, 1024, 1440, 1920]) {
 
       const expected = [
         [lingkod, rail.bottom],
-        [dots, above(dots, [lingkod], rail.bottom)],
+        [desktop, above(desktop, [lingkod], rail.bottom)],
         ...plaques.map((plaque) => [plaque, above(plaque, plaques, bar.bottom)] as const),
       ] as const;
       if (width <= 900) expect(expected[1][1]).toBeCloseTo(lingkod.bottom, 0);
@@ -117,6 +117,27 @@ for (const width of [360, 390, 1024, 1440, 1920]) {
     });
   });
 }
+
+test("the lotus never covers the desktop's title", async ({ page }) => {
+  for (const width of [360, 390, 834, 1024, 1440, 1920]) {
+    await open(page, width);
+    const { title, lotus } = await page.evaluate(() => {
+      const range = document.createRange();
+      range.selectNodeContents(document.querySelector("#after .after-desktop h3")!);
+      const box = ({ left, top, right, bottom }: DOMRect) => ({ left, top, right, bottom });
+      return {
+        title: box(range.getBoundingClientRect()),
+        lotus: box(document.querySelector("#after .after-lotus")!.getBoundingClientRect()),
+      };
+    });
+    const clear =
+      lotus.right <= title.left ||
+      lotus.left >= title.right ||
+      lotus.bottom <= title.top ||
+      lotus.top >= title.bottom;
+    expect(clear, `at ${width}px`).toBe(true);
+  }
+});
 
 test("on phones the bud hangs above Lingkod HR's panel, clear of the status line", async ({
   page,
