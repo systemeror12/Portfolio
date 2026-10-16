@@ -1,5 +1,6 @@
 import {
   aiCaseStudyPath,
+  brokerageErpRebuildCaseStudyPath,
   caseStudyPath,
   paymentProviderCaseStudyPath,
   publicSectorCaseStudyPath,
@@ -150,6 +151,7 @@ export type InProgressPiece = {
   owns: string;
   holds: string;
   keyIdeas: string[];
+  path?: string;
 };
 
 export const inProgress = {
@@ -161,6 +163,7 @@ export const inProgress = {
     owns: "What I own",
     holds: "The line it holds",
     keyIdeas: "Key ideas",
+    readMore: "Read the full case study",
   },
 };
 
@@ -175,6 +178,7 @@ export const inProgressPieces: InProgressPiece[] = [
     holds:
       "Cutover stops if a check can't run or an amount differs. A cutover rehearsal on a sample of deals reconciled to zero differences against Odoo 10.",
     keyIdeas: ["Fail-Closed Cutover", "Report Parity"],
+    path: brokerageErpRebuildCaseStudyPath,
   },
   {
     id: "training-registration-platform",

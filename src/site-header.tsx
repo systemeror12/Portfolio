@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { InternalLink } from "./navigation";
 import {
   aiCaseStudyPath,
+  brokerageErpRebuildCaseStudyPath,
   caseStudyPath,
   paymentProviderCaseStudyPath,
   publicSectorCaseStudyPath,
@@ -145,6 +146,9 @@ export function Header({ currentPath }: { currentPath?: string }) {
         </InternalLink>
         <InternalLink
           to="/#in-progress"
+          aria-current={
+            currentPath === brokerageErpRebuildCaseStudyPath ? "page" : undefined
+          }
           onClick={closeMenuAfterNavigation}
         >
           In progress

@@ -6,5 +6,6 @@ export const routes = [
   ["/work/ai-odoo-rnd", "AI R&D Case Study"],
   ["/work/payment-provider", "Payment Provider Module"],
   ["/work/public-sector-hris", "Government Water District HRIS"],
+  ["/work/brokerage-erp-rebuild", "Brokerage ERP Rebuild"],
   ["/systems/dots-hyprland", "Evolving my previous Hyprland desktop"],
 ] as const;

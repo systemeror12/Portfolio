@@ -10,6 +10,7 @@ const pieces = [
     holds:
       "Cutover stops if a check can't run or an amount differs. A cutover rehearsal on a sample of deals reconciled to zero differences against Odoo 10.",
     keyIdeas: ["Fail-Closed Cutover", "Report Parity"],
+    page: "/work/brokerage-erp-rebuild",
   },
   {
     title: "Training Registration Platform",
@@ -58,9 +59,17 @@ test("each card carries its copy, the rebuild first", async ({ page }) => {
     await expect(
       card.getByRole("list", { name: "Key ideas" }).getByRole("listitem"),
     ).toHaveText([...piece.keyIdeas]);
-    // Neither system is live, so neither card claims a result or links anywhere yet.
+    // Neither system is live, so neither card claims a result. Only the
+    // rebuild has its own page to link to.
     await expect(card.getByText("What changed")).toHaveCount(0);
-    await expect(card.getByRole("link")).toHaveCount(0);
+    if ("page" in piece) {
+      await expect(card.getByRole("link")).toHaveCount(1);
+      await expect(
+        card.getByRole("link", { name: `Read the full case study: ${piece.title}`, exact: true }),
+      ).toHaveAttribute("href", piece.page);
+    } else {
+      await expect(card.getByRole("link")).toHaveCount(0);
+    }
   }
 });
 

@@ -4,7 +4,8 @@ type Box = { left: number; top: number; right: number; bottom: number };
 
 // Each case's lines from the homepage: its pane's numeral and kind, who it
 // was for, who it served, and the records written around its pane. The
-// Previous Desktop has no pane, so it carries its spark and its own facts.
+// Brokerage ERP Rebuild and the Previous Desktop have no pane, so they carry
+// their spark and their own facts.
 const cases = [
   {
     path: "/work/multi-company-hris",
@@ -37,6 +38,12 @@ const cases = [
     for: "for the staff whose leave, overtime, and pass slips all hang on one punch",
     served: "the water district's staff",
     records: ["punch", "import", "correction", "one record"],
+  },
+  {
+    path: "/work/brokerage-erp-rebuild",
+    kind: "In progress",
+    served: "the brokerage's accountants",
+    records: ["extract", "transform", "load", "verify"],
   },
   {
     path: "/systems/dots-hyprland",
