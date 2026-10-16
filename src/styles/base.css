@@ -43,6 +43,35 @@ body {
     radial-gradient(900px 700px at 100% 60%, color-mix(in srgb, var(--plum) 35%, transparent), transparent 70%),
     var(--void);
 }
+/* The night sky lies behind every page, the length of it. Only the bands on
+   screen twinkle. */
+#root {
+  position: relative;
+  isolation: isolate;
+}
+.night-sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.night-sky-band {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+.night-sky .twinkle {
+  animation: star-twinkle 5s ease-in-out infinite;
+}
+.night-sky-band.is-paused .twinkle {
+  animation-play-state: paused;
+}
+@keyframes star-twinkle {
+  50% {
+    opacity: 0.08;
+  }
+}
 h1,
 h2,
 h3,
