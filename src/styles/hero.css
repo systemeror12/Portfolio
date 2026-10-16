@@ -72,7 +72,7 @@
   position: absolute;
   inset: 40px -60px 0 -120px;
   z-index: -1;
-  background: radial-gradient(60% 60% at 32% 50%, rgba(6, 6, 11, 0.88), transparent 75%);
+  background: radial-gradient(72% 60% at 32% 50%, rgba(6, 6, 11, 0.88), transparent 75%);
 }
 .hero-name {
   margin: 0 0 28px;
@@ -141,6 +141,11 @@
   }
   .hero-copy {
     padding: clamp(40px, 6svh, 72px) 0 0;
+  }
+  /* The copy spans the hero here, so its shade centres on the paragraph
+     to reach the ends of its lines. */
+  .hero-copy::before {
+    background: radial-gradient(72% 60% at 50% 50%, rgba(6, 6, 11, 0.88), transparent 75%);
   }
 }
 /* In landscape the paragraph narrows to leave the dial room. */

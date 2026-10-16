@@ -227,7 +227,7 @@ export const hero = {
   role: "platform engineer in the Philippines",
   title: "Every record ends with",
   titleEmphasis: "a\u00a0person.",
-  lede: "A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets paid, or doesn't. I build the HR, payroll, and payment systems that make sure they do.",
+  lede: "A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets paid, or doesn't. I build and maintain the HR, payroll, payment, and accounting systems that make sure they do.",
   workAction: "See the work",
   emailAction: "Email me",
   email: "mendozajeromevrixen@gmail.com",
