@@ -157,6 +157,14 @@ test.describe("the homepage at release", () => {
       await readThrough(page);
 
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      // The In Progress cards stay inside the screen too.
+      const outside = await page.locator("section#in-progress article").evaluateAll((cards) =>
+        cards.filter((card) => {
+          const box = card.getBoundingClientRect();
+          return box.left < 0 || box.right > window.innerWidth;
+        }).length,
+      );
+      expect(outside).toBe(0);
       expect(errors).toEqual([]);
     });
   }
@@ -191,6 +199,9 @@ test.describe("the homepage at release", () => {
         .map((element) => element.textContent!.trim().slice(0, 40)),
     );
     expect(hidden).toEqual([]);
+    // In Progress is among the sections shown at once.
+    await expect(page.locator("section#in-progress .reveal")).toHaveCount(2);
+    await expect(page.locator("section#in-progress .reveal:not(.is-shown)")).toHaveCount(0);
   });
 
   test("no text falls under 4.5:1 contrast against any pixel behind it", async ({ page }) => {
@@ -304,7 +315,7 @@ test.describe("the homepage at release", () => {
     const targets = await links.evaluateAll((anchors) =>
       anchors.map((anchor) => ({ name: anchor.textContent!, id: anchor.getAttribute("href")!.split("#")[1] })),
     );
-    expect(targets.map(({ id }) => id)).toEqual(["after", "method", "contact"]);
+    expect(targets.map(({ id }) => id)).toEqual(["in-progress", "after", "method", "contact"]);
 
     for (const { name, id } of targets) {
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
