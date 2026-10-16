@@ -126,3 +126,19 @@ test("every header section link points at an id on the homepage", async ({
     await expect(page.locator(`[id="${id}"]`), id).toHaveCount(1);
   }
 });
+
+test("the In progress link sits before After hours on every route", async ({ page }) => {
+  for (const route of routes) {
+    await page.goto(route);
+    // On phones the links sit behind the menu button.
+    const menuButton = page.getByRole("button", { name: "Open navigation" });
+    if (await menuButton.isVisible()) await menuButton.click();
+    const nav = page.getByRole("navigation", { name: "Primary navigation" });
+    const link = nav.getByRole("link", { name: "In progress", exact: true });
+    await expect(link, route).toHaveAttribute("href", "/#in-progress");
+    const names = await nav
+      .getByRole("link")
+      .evaluateAll((links) => links.map((element) => element.textContent));
+    expect(names.indexOf("In progress"), route).toBe(names.indexOf("After hours") - 1);
+  }
+});

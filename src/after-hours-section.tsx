@@ -71,18 +71,23 @@ function ToolsIUse() {
       <h3>{tools.heading}</h3>
       <p className="after-tools-intro">{tools.intro}</p>
       <div className="after-tool-list">
-        {tools.items.map((tool) => (
-          <div className="after-tool" key={tool.name}>
-            <h4>{tool.name}</h4>
-            <p>{tool.description}</p>
-            <a
-              href={tool.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={`Open ${tool.name} upstream project`}
-            >
-              {tool.name} on GitHub
-            </a>
+        {tools.plaques.map((plaque) => (
+          <div className="after-tool" key={plaque.tools[0].name}>
+            <h4>{plaque.tools.map((tool) => tool.name).join(", ")}</h4>
+            <p>{plaque.description}</p>
+            <div className="after-tool-links">
+              {plaque.tools.map((tool) => (
+                <a
+                  key={tool.name}
+                  href={tool.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Open ${tool.name} upstream project`}
+                >
+                  {tool.name} on GitHub
+                </a>
+              ))}
+            </div>
           </div>
         ))}
       </div>
