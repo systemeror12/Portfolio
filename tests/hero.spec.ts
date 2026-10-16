@@ -42,7 +42,7 @@ test("the hero carries the Nocturne copy, labelled by the page's only h1", async
     "Jerome Mendoza, platform engineer in the Philippines",
   );
   await expect(hero).toContainText(
-    "A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets paid, or doesn't. I build the HR, payroll, and payment systems that make sure they do.",
+    "A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets paid, or doesn't. I build and maintain the HR, payroll, payment, and accounting systems that make sure they do.",
   );
   await expect(page.getByText("Reconstructed system map")).toHaveCount(0);
   await expect(hero.getByRole("link", { name: "Email me" })).toHaveAttribute(

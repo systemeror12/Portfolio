@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { lowContrastText } from "./contrast";
 
 // The hero on a tablet, 760 to 1279px wide: the copy at the top, the dial
 // below and right of it, whole on screen and clear of the copy, the bed round
@@ -79,6 +80,21 @@ for (const [width, height, radius] of [
     expect(s.strings).toBe(4);
     expect(s.underLilies).toBe(true);
     for (const distance of s.glints) expect(distance).toBeGreaterThan(1.15);
+  });
+}
+
+for (const [width, height] of [
+  [768, 1024],
+  [820, 1180],
+] as const) {
+  test(`at ${width}×${height} the paragraph keeps 4.5:1 against the strings behind it`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width, height });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    const { lines, failures } = await lowContrastText(page, ".hero-lede");
+    expect(lines).toBeGreaterThan(0);
+    expect(failures).toEqual([]);
   });
 }
 
