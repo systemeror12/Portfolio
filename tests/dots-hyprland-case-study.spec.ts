@@ -17,8 +17,13 @@ const selectedChanges = [
     "https://github.com/systemeror12/dots-hyprland-xenrya/pull/14",
   ],
 ];
+const caelestiaRepositories = [
+  ["Open the Caelestia-Xenrya dotfiles", "https://github.com/systemeror12/caelestia-xenrya"],
+  ["Open the Caelestia-Xenrya CLI", "https://github.com/systemeror12/caelestia-cli-xenrya"],
+  ["Open the Caelestia-Xenrya shell", "https://github.com/systemeror12/caelestia-shell-xenrya"],
+];
 
-test("a Hiring Manager can inspect the Featured Personal System", async ({
+test("a Hiring Manager can reach the Previous Desktop from After hours", async ({
   page,
 }) => {
   await page.goto("/");
@@ -45,10 +50,10 @@ test("a Hiring Manager can inspect the Featured Personal System", async ({
   await expect(page).toHaveURL("/systems/dots-hyprland");
   await expect(
     page.getByRole("heading", {
-      name: "Evolving a Hyprland desktop into my daily platform",
+      name: "Evolving my previous Hyprland desktop",
     }),
   ).toBeVisible();
-  await expect(page.getByText("Actively maintained fork", { exact: true })).toBeVisible();
+  await expect(page.locator(".case-hero .case-kind")).toHaveText("Previous desktop");
   await expect(
     page.getByRole("link", { name: /open the maintainer's public pull request/i }),
   ).toHaveAttribute("href", upstreamPullRequest);
@@ -86,5 +91,57 @@ test("the Personal System route loads directly with evidence and safe attributio
     await expect(link).toHaveAttribute("href", href);
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", "noreferrer");
+  }
+});
+
+test("the Previous Desktop never calls the fork current", async ({ page }) => {
+  await page.goto("/systems/dots-hyprland");
+  const text = (await page.locator("body").innerText()).toLowerCase();
+  for (const phrase of [
+    "every day",
+    "daily platform",
+    "daily-use",
+    "actively maintained",
+    "i will continue",
+  ]) {
+    expect(text).not.toContain(phrase);
+  }
+});
+
+test("Where it went next says the desktop moved to Caelestia-Xenrya", async ({ page }) => {
+  await page.goto("/systems/dots-hyprland");
+  const section = page.locator("section", {
+    has: page.getByText("Where it went next", { exact: true }),
+  });
+  await expect(page.getByText("Future maintenance", { exact: true })).toHaveCount(0);
+  await expect(section).toContainText("Caelestia-Xenrya");
+  await expect(section).toContainText(/built entirely in Quickshell/);
+  await expect(section).toContainText(/no longer maintained/);
+  for (const [name, href] of caelestiaRepositories) {
+    const link = section.getByRole("link", { name });
+    await expect(link).toHaveAttribute("href", href);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noreferrer");
+  }
+  await expect(page.locator('a[href="/systems/caelestia"]')).toHaveCount(0);
+});
+
+test("the Caelestia-Xenrya links read like the page's other evidence links", async ({ page }) => {
+  await page.goto("/systems/dots-hyprland");
+  const style = (name: string) =>
+    page.getByRole("link", { name }).evaluate((link) => {
+      const computed = getComputedStyle(link);
+      return {
+        color: computed.color,
+        line: computed.textDecorationLine,
+        font: computed.font,
+        icon: getComputedStyle(link.querySelector("svg")!).display,
+      };
+    });
+  const evidence = await style("Open the maintainer's public pull request");
+  expect(evidence.line).toBe("underline");
+  expect(evidence.icon).toBe("none");
+  for (const [name] of caelestiaRepositories) {
+    expect(await style(name)).toEqual(evidence);
   }
 });

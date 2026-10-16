@@ -1,6 +1,6 @@
 import React from "react";
 import { drawCaseIron } from "./case-iron";
-import { afterHours, workCases } from "./content";
+import { workCases } from "./content";
 
 // What the homepage already says about each case: its pane's numeral, its
 // kind, who it was for, who it served, and the records written around its
@@ -21,10 +21,11 @@ const caseFacts = {
   "payment-provider": fromWork("payment-provider"),
   "ai-odoo-rnd": fromWork("ai-odoo-rnd"),
   "public-sector-hris": fromWork("public-sector-hris"),
-  // The fork has no pane on the homepage. Its records follow its three themes.
+  // The Previous Desktop has no pane on the homepage, so it keeps its own
+  // facts. Its records follow its three themes.
   "dots-hyprland": {
-    kind: afterHours.dots.status,
-    served: "me, every day",
+    kind: "Previous desktop",
+    served: "me, until I moved to Caelestia",
     records: "workspace · wallpaper · launcher · processes",
   },
 } satisfies Record<string, CaseFacts>;
