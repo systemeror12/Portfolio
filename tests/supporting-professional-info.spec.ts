@@ -13,27 +13,19 @@ test("a Hiring Manager can inspect current workflow tools without mistaking them
   await expect(tools.getByText("Project Evidence")).toHaveCount(0);
   await expect(tools.getByText(/active tech stack/i)).toHaveCount(0);
 
-  await expect(
-    tools.getByRole("link", { name: /open odysseus upstream project/i }),
-  ).toHaveAttribute(
-    "href",
-    "https://github.com/pewdiepie-archdaemon/odysseus",
-  );
-  await expect(
-    tools.getByRole("link", { name: /open odysseus upstream project/i }),
-  ).toHaveAttribute("target", "_blank");
-  await expect(
-    tools.getByRole("link", { name: /open odysseus upstream project/i }),
-  ).toHaveAttribute("rel", "noreferrer");
-  await expect(
-    tools.getByRole("link", { name: /open t3 code upstream project/i }),
-  ).toHaveAttribute("href", "https://github.com/pingdotgg/t3code");
-  await expect(
-    tools.getByRole("link", { name: /open t3 code upstream project/i }),
-  ).toHaveAttribute("target", "_blank");
-  await expect(
-    tools.getByRole("link", { name: /open t3 code upstream project/i }),
-  ).toHaveAttribute("rel", "noreferrer");
+  for (const [name, href] of [
+    ["T3 Code", "https://github.com/pingdotgg/t3code"],
+    ["Claude Code", "https://github.com/anthropics/claude-code"],
+    ["Codex", "https://github.com/openai/codex"],
+    ["OpenCode", "https://github.com/anomalyco/opencode"],
+    ["Hermes Agent", "https://github.com/NousResearch/hermes-agent"],
+  ]) {
+    const link = tools.getByRole("link", { name: `Open ${name} upstream project` });
+    await expect(link).toHaveAttribute("href", href);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noreferrer");
+  }
+  await expect(tools.getByText(/odysseus/i)).toHaveCount(0);
 });
 
 test("a Hiring Manager can use the approved contact actions and download a web-safe resume", async ({

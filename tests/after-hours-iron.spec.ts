@@ -60,9 +60,9 @@ test("the iron is decoration, drawn once into two hidden svgs", async ({ page })
   await expect(front.locator(".after-tool-bar")).toHaveCount(1);
   await expect(front.locator(".after-bud")).toHaveCount(1);
   await expect(front.locator(".after-lotus")).toHaveCount(1);
-  // Two panels and two plaques, each on two chains.
-  await expect(front.locator(".after-hanger")).toHaveCount(4);
-  await expect(front.locator(".after-chain")).toHaveCount(8);
+  // Two panels and three plaques, each on two chains.
+  await expect(front.locator(".after-hanger")).toHaveCount(5);
+  await expect(front.locator(".after-chain")).toHaveCount(10);
   await expect(page.locator("#after .after-iron-back .after-sag path")).not.toHaveCount(0);
 });
 
@@ -93,6 +93,17 @@ for (const width of [360, 390, 1024, 1440, 1920]) {
           expect(chain.left).toBeGreaterThan(panel.left);
           expect(chain.right).toBeLessThan(panel.right);
         }
+      });
+    });
+
+    test("the plaques hang from the tool bar without overlapping", async ({ page }) => {
+      const { plaques, bar } = await measure(page);
+      expect(plaques).toHaveLength(3);
+      const overlap = (a: Box, b: Box) =>
+        a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+      plaques.forEach((plaque, k) => {
+        expect(plaque.top).toBeGreaterThan(bar.bottom);
+        for (const other of plaques.slice(k + 1)) expect(overlap(plaque, other)).toBe(false);
       });
     });
 
@@ -177,5 +188,5 @@ test("a resize redraws the iron once and leaves no second copy", async ({ page }
   await expect(iron.locator(".after-iron-back defs")).toHaveCount(1);
   await expect(iron.locator(".after-iron-back .after-sag")).toHaveCount(1);
   await expect(iron.locator(".after-rail")).toHaveCount(1);
-  await expect(iron.locator(".after-hanger")).toHaveCount(4);
+  await expect(iron.locator(".after-hanger")).toHaveCount(5);
 });

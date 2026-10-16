@@ -1,9 +1,24 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const tools = [
-  { name: "Odysseus", href: "https://github.com/pewdiepie-archdaemon/odysseus" },
-  { name: "T3 Code", href: "https://github.com/pingdotgg/t3code" },
+const plaques = [
+  {
+    tools: [{ name: "T3 Code", href: "https://github.com/pingdotgg/t3code" }],
+    line: "The workspace where my agent threads, worktrees, and pull requests live.",
+  },
+  {
+    tools: [
+      { name: "Claude Code", href: "https://github.com/anthropics/claude-code" },
+      { name: "Codex", href: "https://github.com/openai/codex" },
+      { name: "OpenCode", href: "https://github.com/anomalyco/opencode" },
+    ],
+    line: "The coding agents I run inside it, picked per task.",
+  },
+  {
+    tools: [{ name: "Hermes Agent", href: "https://github.com/NousResearch/hermes-agent" }],
+    line: "My personal assistant: it flags emails that need a reply and summarizes issues once they're finished.",
+  },
 ] as const;
+const tools = plaques.flatMap((plaque) => plaque.tools);
 
 function after(page: Page) {
   return page.locator("section#after");
@@ -103,11 +118,31 @@ test("the panels carry the settled copy, the credit, and the fork link", async (
   await expect(page).toHaveURL("/systems/dots-hyprland");
 });
 
-test("each tool links to its upstream project with a visible focus ring", async ({ page }) => {
+test("Odysseus is gone from every route", async ({ page }) => {
+  for (const path of [
+    "/",
+    "/work/multi-company-hris",
+    "/work/ai-odoo-rnd",
+    "/work/payment-provider",
+    "/work/public-sector-hris",
+    "/systems/dots-hyprland",
+  ]) {
+    await page.goto(path);
+    await expect(page.locator("body")).not.toContainText(/odysseus/i);
+    await expect(page.locator('a[href*="odysseus" i]')).toHaveCount(0);
+  }
+});
+
+test("Tools I use shows three plaques, each tool linking to its upstream project with a visible focus ring", async ({ page }) => {
   await page.goto("/");
   const region = page.getByRole("region", { name: "Tools I Use" });
   await expect(region.getByRole("heading", { name: "Tools I use" })).toBeVisible();
   await expect(region.getByText("Not my projects. Just always open.")).toBeVisible();
+  await expect(region.getByText(/Project Evidence|tech stack/i)).toHaveCount(0);
+  await expect(region.locator(".after-tool h4")).toHaveText(
+    plaques.map((plaque) => plaque.tools.map((tool) => tool.name).join(", ")),
+  );
+  await expect(region.locator(".after-tool p")).toHaveText(plaques.map((plaque) => plaque.line));
   await expect(region.getByRole("link")).toHaveCount(tools.length);
 
   for (const tool of tools) {

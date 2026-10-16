@@ -5,6 +5,7 @@ import "./styles/base.css";
 import "./styles/homepage.css";
 import "./styles/hero.css";
 import "./styles/work.css";
+import "./styles/in-progress.css";
 import "./styles/after-hours.css";
 import "./styles/method.css";
 import "./styles/contact.css";
@@ -23,6 +24,7 @@ import {
 import { Header } from "./site-header";
 import { Hero } from "./hero";
 import { WorkSection } from "./work-section";
+import { InProgressSection } from "./in-progress-section";
 import { AfterHoursSection } from "./after-hours-section";
 import { MethodSection } from "./method-section";
 import { ContactSection, SiteFooter } from "./contact-section";
@@ -42,6 +44,7 @@ function Home() {
       <main id="main" tabIndex={-1}>
         <Hero />
         <WorkSection />
+        <InProgressSection />
         <AfterHoursSection />
         <MethodSection />
         <ContactSection />

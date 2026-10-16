@@ -3,8 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 type Box = { left: number; top: number; right: number; bottom: number };
 
 // Each case's lines from the homepage: its pane's numeral and kind, who it
-// was for, who it served, and the records written around its pane. The fork
-// has no pane, so it carries its spark and its own records.
+// was for, who it served, and the records written around its pane. The
+// Previous Desktop has no pane, so it carries its spark and its own facts.
 const cases = [
   {
     path: "/work/multi-company-hris",
@@ -40,8 +40,8 @@ const cases = [
   },
   {
     path: "/systems/dots-hyprland",
-    kind: "Actively maintained fork",
-    served: "me, every day",
+    kind: "Previous desktop",
+    served: "me, until I moved to Caelestia",
     records: ["workspace", "wallpaper", "launcher", "processes"],
   },
 ] as const;

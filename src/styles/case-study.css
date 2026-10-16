@@ -179,7 +179,8 @@ body:has(main.case-study)::before {
 .case-footer a,
 .case-hero-meta a,
 .personal-contributions a,
-.upstream-contribution a {
+.upstream-contribution a,
+.next-desktop-links a {
   display: inline-block;
   font: 400 16px/1.6 var(--sans);
   color: var(--peri);
@@ -190,10 +191,10 @@ body:has(main.case-study)::before {
 .case-hero-meta a {
   display: block;
 }
-:is(.back-link, .case-footer a, .case-hero-meta a, .personal-contributions a, .upstream-contribution a) svg {
+:is(.back-link, .case-footer a, .case-hero-meta a, .personal-contributions a, .upstream-contribution a, .next-desktop-links a) svg {
   display: none;
 }
-:is(.back-link, .case-footer a, .case-hero-meta a, .personal-contributions a, .upstream-contribution a):hover {
+:is(.back-link, .case-footer a, .case-hero-meta a, .personal-contributions a, .upstream-contribution a, .next-desktop-links a):hover {
   color: var(--silver);
 }
 

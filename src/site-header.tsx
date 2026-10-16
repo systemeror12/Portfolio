@@ -144,6 +144,12 @@ export function Header({ currentPath }: { currentPath?: string }) {
           Public sector
         </InternalLink>
         <InternalLink
+          to="/#in-progress"
+          onClick={closeMenuAfterNavigation}
+        >
+          In progress
+        </InternalLink>
+        <InternalLink
           to="/#after"
           onClick={closeMenuAfterNavigation}
         >
