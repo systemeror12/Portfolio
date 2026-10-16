@@ -6,6 +6,12 @@ import "./styles/case-study.css";
 const repositoryUrl = "https://github.com/systemeror12/dots-hyprland-xenrya";
 const upstreamContributionUrl =
   "https://github.com/yurihikari/ml4w-lightcrimson-dotfiles/pull/3";
+// Where the desktop went next: the three Caelestia-Xenrya forks.
+const caelestiaRepositories = [
+  { name: "dotfiles", url: "https://github.com/systemeror12/caelestia-xenrya" },
+  { name: "CLI", url: "https://github.com/systemeror12/caelestia-cli-xenrya" },
+  { name: "shell", url: "https://github.com/systemeror12/caelestia-shell-xenrya" },
+];
 
 const changes = [
   {
@@ -51,12 +57,13 @@ export function DotsHyprlandCaseStudy() {
         <section className="case-hero">
           <div>
             <CaseKind id="dots-hyprland" />
-            <h1>Evolving a Hyprland desktop into my daily platform</h1>
+            <h1>Evolving my previous Hyprland desktop</h1>
             <p>
-              I use this fork every day as a practical place to improve desktop
-              state, launch behavior, and reliability. The upstream project is
-              the visual foundation; this page distinguishes that foundation
-              from my ongoing engineering work.
+              Before I moved to Caelestia-Xenrya, this fork was where I worked
+              and where I improved desktop state, launch behavior, and
+              reliability. The upstream project was the visual foundation; this
+              page distinguishes that foundation from the engineering work I
+              added to it.
             </p>
             <InternalLink className="back-link" to="/">
               <ArrowLeft /> Back to home
@@ -64,7 +71,7 @@ export function DotsHyprlandCaseStudy() {
           </div>
           <div className="case-hero-meta">
             <span>System role</span>
-            <strong>Daily-use desktop platform</strong>
+            <strong>Previous desktop, no longer maintained</strong>
             <span>Repository</span>
             <ExternalEvidenceLink href={repositoryUrl} ariaLabel="Open fork repository">
               Open fork
@@ -75,26 +82,26 @@ export function DotsHyprlandCaseStudy() {
         <section className="case-section case-problem">
           <span className="section-label">Fork motivation</span>
           <div>
-            <h2>Keep an admired visual foundation useful under daily use.</h2>
+            <h2>Keep an admired visual foundation useful in real work.</h2>
             <p>
               I forked the upstream desktop configuration to adapt it to how I
-              actually work. The goal is not to claim its visual design or
-              maintain the upstream repository; it is to make my own desktop
-              behavior clearer, faster, and less fragile as needs emerge.
+              actually worked. The goal was never to claim its visual design or
+              maintain the upstream repository; it was to make my own desktop
+              behavior clearer, faster, and less fragile as needs emerged.
             </p>
           </div>
         </section>
 
         <section className="case-section contribution">
-          <span className="section-label">Daily-use problems</span>
+          <span className="section-label">Problems in use</span>
           <div>
-            <h2>Desktop state crosses more boundaries than it first appears.</h2>
+            <h2>Desktop state crossed more boundaries than it first appeared.</h2>
             <p>
-              A wallpaper change can affect workspace presentation, generated
-              colors, previews, and the launcher. A launcher should open
+              A wallpaper change could affect workspace presentation, generated
+              colors, previews, and the launcher. A launcher had to open
               promptly while still reflecting installed applications. Those
-              behaviors span shell scripts, Hyprland, Quickshell, Rofi, cache
-              files, and IPC—so the failure path matters as much as the happy
+              behaviors spanned shell scripts, Hyprland, Quickshell, Rofi, cache
+              files, and IPC—so the failure path mattered as much as the happy
               path.
             </p>
           </div>
@@ -103,10 +110,10 @@ export function DotsHyprlandCaseStudy() {
         <section className="case-section">
           <span className="section-label">Upstream work</span>
           <div>
-            <h2>Build on a visual system whose authorship remains upstream.</h2>
+            <h2>Built on a visual system whose authorship remains upstream.</h2>
             <p>
-              The upstream project supplies the desktop&apos;s visual foundation.
-              My fork is where I make personal engineering changes and publish
+              The upstream project supplied the desktop&apos;s visual foundation.
+              My fork is where I made personal engineering changes and published
               their supporting evidence; it is not a claim of ownership over
               the upstream design or maintenance.
             </p>
@@ -116,7 +123,7 @@ export function DotsHyprlandCaseStudy() {
         <section className="personal-contributions" aria-labelledby="contributions-title">
           <div className="personal-contributions-heading">
             <span className="section-label">Personal System Contribution</span>
-            <h2 id="contributions-title">Three themes I continue to refine.</h2>
+            <h2 id="contributions-title">Three themes I refined.</h2>
           </div>
           <ol>
             {changes.map((change, index) => (
@@ -140,7 +147,7 @@ export function DotsHyprlandCaseStudy() {
         <section className="case-section decisions">
           <span className="section-label">Testing and review</span>
           <div>
-            <h2>Verify behavior at the seams where processes meet.</h2>
+            <h2>Verified behavior at the seams where processes met.</h2>
             <p>
               Selected changes document syntax checks, focused smoke scenarios,
               launcher timing checks, cache validation, and review before
@@ -175,14 +182,27 @@ export function DotsHyprlandCaseStudy() {
         </section>
 
         <section className="case-section outcome">
-          <span className="section-label">Future maintenance</span>
+          <span className="section-label">Where it went next</span>
           <div>
-            <h2>Keep the platform legible as its moving parts evolve.</h2>
+            <h2>The desktop moved to Caelestia-Xenrya.</h2>
             <p>
-              I will continue to treat this fork as a daily-use system: follow
-              upstream changes selectively, protect explicit state boundaries,
-              and validate the interactions that matter before relying on them.
+              I moved my desktop to Caelestia-Xenrya because Caelestia&apos;s
+              shell is built entirely in Quickshell, which makes personal
+              changes easier to add. This fork is no longer maintained, but its
+              changes and the upstream credit stay here.
             </p>
+            <ul className="next-desktop-links">
+              {caelestiaRepositories.map((repository) => (
+                <li key={repository.name}>
+                  <ExternalEvidenceLink
+                    href={repository.url}
+                    ariaLabel={`Open the Caelestia-Xenrya ${repository.name}`}
+                  >
+                    Caelestia-Xenrya {repository.name}
+                  </ExternalEvidenceLink>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -203,7 +223,7 @@ export function DotsHyprlandCaseStudy() {
         <InternalLink to="/">
           Return to homepage <ArrowRight />
         </InternalLink>
-        <span>dots-hyprland / Featured Personal System</span>
+        <span>dots-hyprland / Previous Desktop</span>
       </footer>
     </>
   );

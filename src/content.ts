@@ -141,6 +141,54 @@ export const workCases: WorkCase[] = [
   },
 ];
 
+export type InProgressPiece = {
+  id: string;
+  status: string;
+  title: string;
+  for: string;
+  role: string;
+  owns: string;
+  holds: string;
+  keyIdeas: string[];
+};
+
+export const inProgress = {
+  heading: "In progress.",
+  intro:
+    "Two systems I'm working on now. Neither is live yet, so instead of a result, each shows what I own and the line it holds.",
+  labels: {
+    role: "Role",
+    owns: "What I own",
+    holds: "The line it holds",
+    keyIdeas: "Key ideas",
+  },
+};
+
+export const inProgressPieces: InProgressPiece[] = [
+  {
+    id: "brokerage-erp-rebuild",
+    status: "Odoo 10 live, maintained by me · Odoo 18 rebuild in development",
+    title: "Brokerage ERP Rebuild",
+    for: "for a financial brokerage's accounting team, whose books have to balance before and after the move",
+    role: "Project Maintainer, with two other developers",
+    owns: "The Odoo 10 → 18 cutover, report parity with the Odoo 10 prints, accounting fixes from QA, and the test and dev setup. I also keep the live Odoo 10 system correct while we rebuild it.",
+    holds:
+      "Cutover stops if a check can't run or an amount differs. A cutover rehearsal on a sample of deals reconciled to zero differences against Odoo 10.",
+    keyIdeas: ["Fail-Closed Cutover", "Report Parity"],
+  },
+  {
+    id: "training-registration-platform",
+    status: "In development",
+    title: "Training Registration Platform",
+    for: "for people registering for a training organization's courses",
+    role: "Main developer since 2024",
+    owns: "Member-rate eligibility and membership review, registration identity locked to the signed-in account, training agreements and evaluations, and browser tests for the flows.",
+    holds:
+      "A non-member can't register at the member rate. A disputed membership goes to review before it counts.",
+    keyIdeas: ["Member Rate Eligibility", "Locked Registration Identity"],
+  },
+];
+
 export const method = {
   heading: "How I start on a system I've never seen.",
   intro:
@@ -224,18 +272,36 @@ export const afterHours = {
     heading: "Tools I use",
     label: "Tools I Use",
     intro: "Not my projects. Just always open.",
-    items: [
+    // Claude Code, Codex, and OpenCode share a plaque, because one line
+    // describes all three.
+    plaques: [
       {
-        name: "Odysseus",
+        tools: [
+          { name: "T3 Code", href: "https://github.com/pingdotgg/t3code" },
+        ],
         description:
-          "A self-hosted AI workspace for exploring ideas close to my local environment.",
-        href: "https://github.com/pewdiepie-archdaemon/odysseus",
+          "The workspace where my agent threads, worktrees, and pull requests live.",
       },
       {
-        name: "T3 Code",
+        tools: [
+          {
+            name: "Claude Code",
+            href: "https://github.com/anthropics/claude-code",
+          },
+          { name: "Codex", href: "https://github.com/openai/codex" },
+          { name: "OpenCode", href: "https://github.com/anomalyco/opencode" },
+        ],
+        description: "The coding agents I run inside it, picked per task.",
+      },
+      {
+        tools: [
+          {
+            name: "Hermes Agent",
+            href: "https://github.com/NousResearch/hermes-agent",
+          },
+        ],
         description:
-          "A coding-agent workspace that keeps implementation and review next to the code.",
-        href: "https://github.com/pingdotgg/t3code",
+          "My personal assistant: it flags emails that need a reply and summarizes issues once they're finished.",
       },
     ],
   },
