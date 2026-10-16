@@ -103,6 +103,18 @@
   border: 1.3px solid var(--bronze);
   border-radius: 50%;
 }
+/* the link to a piece's own page, as on the Work section's cases */
+.progress-link {
+  display: inline-block;
+  margin-top: 26px;
+  color: var(--peri);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+.progress-link:hover {
+  color: var(--silver);
+}
 @media (max-width: 900px) {
   .progress-heading {
     grid-template-columns: 1fr;

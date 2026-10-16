@@ -51,8 +51,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
   grid-template-areas:
-    "lingkod dots"
-    "tools dots";
+    "lingkod desktop"
+    "tools desktop";
   column-gap: 28px;
   row-gap: 44px;
   align-items: start;
@@ -108,8 +108,8 @@
 .after-lingkod {
   grid-area: lingkod;
 }
-.after-dots {
-  grid-area: dots;
+.after-desktop {
+  grid-area: desktop;
 }
 .after-tools {
   grid-area: tools;
@@ -208,10 +208,22 @@
   margin: 0;
   font-size: 16px;
 }
-.after-piece .after-credit {
+/* the three forks, then the Previous Desktop with its credit under it */
+.after-repos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 22px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.after-previous {
   margin-top: 26px;
   padding-top: 18px;
   border-top: 1px solid var(--hair);
+}
+.after-piece .after-credit {
+  margin-top: 8px;
   font-size: 15px;
   color: var(--mist);
 }
@@ -227,9 +239,6 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 5px;
-}
-.after-link {
-  margin-top: 22px;
 }
 .after-link:hover,
 .after-tool a:hover {
@@ -289,7 +298,7 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "lingkod"
-      "dots"
+      "desktop"
       "tools";
     padding-top: 84px;
   }

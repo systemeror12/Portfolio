@@ -1,5 +1,6 @@
 import {
   aiCaseStudyPath,
+  brokerageErpRebuildCaseStudyPath,
   caseStudyPath,
   paymentProviderCaseStudyPath,
   publicSectorCaseStudyPath,
@@ -150,6 +151,7 @@ export type InProgressPiece = {
   owns: string;
   holds: string;
   keyIdeas: string[];
+  path?: string;
 };
 
 export const inProgress = {
@@ -161,6 +163,7 @@ export const inProgress = {
     owns: "What I own",
     holds: "The line it holds",
     keyIdeas: "Key ideas",
+    readMore: "Read the full case study",
   },
 };
 
@@ -175,6 +178,7 @@ export const inProgressPieces: InProgressPiece[] = [
     holds:
       "Cutover stops if a check can't run or an amount differs. A cutover rehearsal on a sample of deals reconciled to zero differences against Odoo 10.",
     keyIdeas: ["Fail-Closed Cutover", "Report Parity"],
+    path: brokerageErpRebuildCaseStudyPath,
   },
   {
     id: "training-registration-platform",
@@ -245,19 +249,38 @@ export const afterHours = {
     stackLabel: "Tech stack",
     stack: ["Next.js", "React", "NestJS", "PostgreSQL", "Prisma", "Docker"],
   },
-  dots: {
+  desktop: {
     status: "Actively maintained fork",
-    title: "dots-hyprland",
+    title: "Caelestia-Xenrya",
     description:
-      "The Hyprland desktop I work in every day. I forked it because I loved how it looked, then kept going where it didn't fit how I work.",
+      "The Hyprland desktop I'm on every day. I moved to it because its shell is built entirely in Quickshell, which makes my own changes easier to add and the desktop easier to use.",
     upstream: {
       heading: "From upstream",
-      body: "The visual design. It's the reason I forked it, and it isn't mine.",
+      body: "The dotfiles, CLI, and shell, and their design. They aren't mine.",
     },
     mine: {
       heading: "Mine",
-      body: "Workspace and wallpaper state, launcher speed and correctness, and reliability across processes.",
+      body: "Animated wallpapers across the shell and CLI, settings that stay put, and a safe preview for testing changes.",
     },
+    repositoriesLabel: "Caelestia-Xenrya repositories",
+    repositories: [
+      {
+        name: "Dotfiles",
+        label: "Open the Caelestia-Xenrya dotfiles",
+        href: "https://github.com/systemeror12/caelestia-xenrya",
+      },
+      {
+        name: "CLI",
+        label: "Open the Caelestia-Xenrya CLI",
+        href: "https://github.com/systemeror12/caelestia-cli-xenrya",
+      },
+      {
+        name: "Shell",
+        label: "Open the Caelestia-Xenrya shell",
+        href: "https://github.com/systemeror12/caelestia-shell-xenrya",
+      },
+    ],
+    previously: "Previously: dots-hyprland",
     // Every second piece is code: the repository, then the handle.
     credit: [
       "Upstream contribution: my per-workspace wallpaper feature was reworked and merged into ",
@@ -266,7 +289,6 @@ export const afterHours = {
       "@systemeror12",
       " as its original author.",
     ],
-    readMore: "Read about the fork",
   },
   tools: {
     heading: "Tools I use",

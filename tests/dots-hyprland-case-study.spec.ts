@@ -45,7 +45,9 @@ test("a Hiring Manager can reach the Previous Desktop from After hours", async (
   ]) {
     await expect(page.getByText(technology, { exact: true })).toBeVisible();
   }
-  await page.getByRole("link", { name: "Read about the fork" }).click();
+  await expect(page.getByRole("heading", { name: "Caelestia-Xenrya" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Read about the fork" })).toHaveCount(0);
+  await page.getByRole("link", { name: "Previously: dots-hyprland" }).click();
 
   await expect(page).toHaveURL("/systems/dots-hyprland");
   await expect(
