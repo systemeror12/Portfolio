@@ -4,6 +4,11 @@ import { draw } from "./svg";
 // dust the length of the page, about one star in six twinkling. It is cut
 // into bands so only the bands on screen twinkle, and a star that would sit
 // under a line of text is hidden, so the text keeps its contrast.
+//
+// Each band draws its still stars in one svg, and deals its twinkling stars
+// among four more that fade as a whole, each at its own pace. The browser
+// fades a whole svg off the main thread; a fading star of its own would
+// repaint its band, and everything over it, every frame.
 
 type Star = { element: SVGCircleElement; x: number; y: number; r: number };
 type Box = { l: number; t: number; r: number; b: number };
@@ -11,24 +16,29 @@ type Box = { l: number; t: number; r: number; b: number };
 const reducedMotion = "(prefers-reduced-motion: reduce)";
 const colors = ["#eef0ff", "#eef0ff", "#d9d2f0", "#f0b4dc", "#a599d8"];
 const bandHeight = 1000;
+// How long each of a band's twinkling svgs takes to fade and return.
+const paces = [3.4, 4.6, 5.8, 7];
 
-// The box of every line of text on the page, in the page's coordinates.
+// The box of every line of text on the page, and of the hero's pill buttons,
+// whose outline would frame a star, in the page's coordinates.
 function textLines(page: Element, pad: number): Box[] {
   const origin = page.getBoundingClientRect();
   const lines: Box[] = [];
   const range = document.createRange();
+  const rects = (element: Element | Range) => [...element.getClientRects()];
+  const add = (rect: DOMRect) =>
+    lines.push({
+      l: rect.left - origin.left - pad,
+      t: rect.top - origin.top - pad,
+      r: rect.right - origin.left + pad,
+      b: rect.bottom - origin.top + pad,
+    });
+  page.querySelectorAll(".hero-action").forEach((button) => rects(button).forEach(add));
   const walker = document.createTreeWalker(page, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     if (!node.textContent!.trim() || node.parentElement?.closest("svg")) continue;
     range.selectNodeContents(node);
-    for (const rect of range.getClientRects()) {
-      lines.push({
-        l: rect.left - origin.left - pad,
-        t: rect.top - origin.top - pad,
-        r: rect.right - origin.left + pad,
-        b: rect.bottom - origin.top + pad,
-      });
-    }
+    rects(range).forEach(add);
   }
   return lines;
 }
@@ -42,7 +52,7 @@ export function drawNightSky(layer: HTMLElement) {
   let height = 0;
   let stars: Star[] = [];
 
-  // Bands off screen hold their twinkle.
+  // Bands off screen stop twinkling.
   const visible = new IntersectionObserver((entries) => {
     for (const entry of entries) entry.target.classList.toggle("is-paused", !entry.isIntersecting);
   });
@@ -57,31 +67,34 @@ export function drawNightSky(layer: HTMLElement) {
     // Each band has its own seed, so a longer page keeps the sky above.
     for (let i = 0, top = 0; top < height; i++, top += bandHeight) {
       const tall = Math.min(bandHeight, height - top);
-      const band = draw("svg", { class: "night-sky-band", viewBox: `0 0 ${width} ${tall}` }, layer);
+      const band = document.createElement("div");
+      band.className = "night-sky-band";
       band.style.top = `${top}px`;
       band.style.height = `${tall}px`;
+      layer.append(band);
       let n = 13 + i * 7919;
       const random = () => (n = (n * 16807) % 2147483647) / 2147483647;
+      const [still, ...twinkles] = [0, ...paces].map((pace) => {
+        const svg = draw("svg", { viewBox: `0 0 ${width} ${tall}` }, band);
+        if (pace) {
+          svg.classList.add("twinkles");
+          svg.style.animationDuration = `${pace}s`;
+          svg.style.animationDelay = `${(-random() * pace).toFixed(2)}s`;
+        }
+        return svg;
+      });
       for (let k = 0, count = Math.round((width * tall) / area); k < count; k++) {
         const x = random() * width;
         const y = random() * tall;
         const r = 0.35 + random() ** 4 * 1.5;
+        const fill = colors[Math.floor(random() * colors.length)];
+        const opacity = (0.22 + random() * 0.62).toFixed(2);
+        const twinkle = random() < 0.16;
         const star = draw(
           "circle",
-          {
-            cx: x.toFixed(1),
-            cy: y.toFixed(1),
-            r: r.toFixed(2),
-            fill: colors[Math.floor(random() * colors.length)],
-            opacity: (0.22 + random() * 0.62).toFixed(2),
-          },
-          band,
+          { class: twinkle ? "star twinkle" : "star", cx: x.toFixed(1), cy: y.toFixed(1), r: r.toFixed(2), fill, opacity },
+          twinkle ? twinkles[Math.floor(random() * twinkles.length)] : still,
         );
-        if (random() < 0.16) {
-          star.classList.add("twinkle");
-          star.style.animationDelay = `${(-random() * 6).toFixed(2)}s`;
-          star.style.animationDuration = `${(3 + random() * 4).toFixed(1)}s`;
-        }
         stars.push({ element: star, x, y: top + y, r: r + 3 });
       }
       visible.observe(band);
@@ -94,7 +107,7 @@ export function drawNightSky(layer: HTMLElement) {
     const lines = textLines(page, 8);
     for (const { element, x, y, r } of stars) {
       const under = lines.some((k) => x + r > k.l && x - r < k.r && y + r > k.t && y - r < k.b);
-      element.setAttribute("display", under ? "none" : "inline");
+      element.style.display = under ? "none" : "";
     }
   }
 

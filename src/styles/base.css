@@ -44,7 +44,8 @@ body {
     var(--void);
 }
 /* The night sky lies behind every page, the length of it. Only the bands on
-   screen twinkle. */
+   screen twinkle, and the hero's lilies twinkle with the same keyframes. A
+   band off screen drops its animations, so it holds no layers. */
 #root {
   position: relative;
   isolation: isolate;
@@ -61,11 +62,16 @@ body {
   left: 0;
   width: 100%;
 }
-.night-sky .twinkle {
+.night-sky-band svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.night-sky .twinkles {
   animation: star-twinkle 5s ease-in-out infinite;
 }
-.night-sky-band.is-paused .twinkle {
-  animation-play-state: paused;
+.night-sky-band.is-paused .twinkles {
+  animation: none;
 }
 @keyframes star-twinkle {
   50% {
