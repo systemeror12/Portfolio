@@ -5,24 +5,17 @@
   display: grid;
   align-items: center;
 }
-/* The drawn scene fills the hero, over a sky of its own that is composited
-   apart, so its stars twinkle without redrawing the dial. Glass shimmers,
+/* The drawn scene fills the hero, over the page's night sky. Glass shimmers,
    stars twinkle, glints breathe, and lilies sway, only while on screen. */
-.hero-scene,
-.hero-sky {
+.hero-scene {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-.hero-sky {
-  pointer-events: none;
-  will-change: transform;
-}
 .hero-scene .glass {
   animation: hero-shimmer 7s ease-in-out infinite;
 }
-.hero-sky .twinkle,
 .hero-scene .twinkle {
   animation: star-twinkle 5s ease-in-out infinite;
 }
@@ -36,17 +29,12 @@
   transform-box: fill-box;
   transform-origin: center;
 }
-:is(.hero-scene, .hero-sky).is-paused :is(.glass, .twinkle, .glint, .lily-sway) {
+.hero-scene.is-paused :is(.glass, .twinkle, .glint, .lily-sway) {
   animation-play-state: paused;
 }
 @keyframes hero-shimmer {
   50% {
     opacity: 0.55;
-  }
-}
-@keyframes star-twinkle {
-  50% {
-    opacity: 0.08;
   }
 }
 @keyframes glint-breathe {

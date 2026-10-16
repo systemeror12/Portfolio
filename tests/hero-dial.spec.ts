@@ -170,5 +170,5 @@ test("a resize redraws the scene once and leaves no second copy", async ({ page 
   await expect(scene.locator(".dial-pane")).toHaveCount(25);
   await expect(scene).toHaveAttribute("viewBox", /^0 0 1100 /);
   await expect(scene.locator(".lilies-front")).toHaveCount(1);
-  await expect(page.locator(".hero-sky .star-dust")).toHaveCount(1);
+  await expect(page.locator(".night-sky")).toHaveCount(1);
 });

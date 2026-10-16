@@ -2,7 +2,7 @@ import { lilyDefs } from "./glass-lily";
 import { tabletDial, type HeroLayout } from "./hero-layout";
 import { drawBackLilies, drawFrontLilies } from "./hero-lilies";
 import { drawHeroRecords } from "./hero-records";
-import { drawGlints, drawStarDust, skyDefs } from "./hero-sky";
+import { drawGlints, skyDefs } from "./hero-sky";
 import { drawStrings } from "./hero-strings";
 import { hourHand, minuteHand } from "./iron-hands";
 import { seeded } from "./space";
@@ -174,9 +174,8 @@ function dial(parent: Element, radius: number, reduce: boolean) {
   return { hour, minute, second, bloom };
 }
 
-// Draws the scene into svg, and the stars into sky behind it, both sized to
-// their parent. Returns a cleanup function.
-export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
+// Draws the scene into svg, sized to its parent. Returns a cleanup function.
+export function drawHeroDial(svg: SVGSVGElement) {
   const hero = svg.parentElement!;
   const reduce = window.matchMedia(reducedMotion).matches;
   const start = performance.now();
@@ -201,7 +200,6 @@ export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
     const layout: HeroLayout = { width, height, heart, radius, mobile, tablet, reduce, hero };
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     svg.innerHTML = defs;
-    const stars = drawStarDust(sky, layout);
     // Far lilies and strings behind the dial, whose face is faintly smoked
     // glass so what runs behind it reads as behind. On a tablet the far
     // lilies wait until the strings are all down.
@@ -227,7 +225,7 @@ export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
     }
     const glints = strings.finish(svg);
     play = glints.play;
-    for (const place of [stars, glints.place, drawGlints(svg, layout)]) place();
+    for (const place of [glints.place, drawGlints(svg, layout)]) place();
     tick(start);
   }
 
@@ -283,7 +281,7 @@ export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
     frame = requestAnimationFrame(loop);
   };
   const visible = new IntersectionObserver(([entry]) => {
-    for (const layer of [svg, sky]) layer.classList.toggle("is-paused", !entry.isIntersecting);
+    svg.classList.toggle("is-paused", !entry.isIntersecting);
     if (reduce) return;
     if (entry.isIntersecting && !frame) frame = requestAnimationFrame(loop);
     else if (!entry.isIntersecting) {
@@ -302,6 +300,5 @@ export function drawHeroDial(svg: SVGSVGElement, sky: SVGSVGElement) {
     cancelAnimationFrame(frame);
     window.clearInterval(timer);
     svg.replaceChildren();
-    sky.replaceChildren();
   };
 }
