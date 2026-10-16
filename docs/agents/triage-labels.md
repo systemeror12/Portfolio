@@ -1,11 +1,13 @@
-# Triage Labels
+# Triage labels
 
-| Canonical role    | Tracker label     | Meaning                                  |
-| ----------------- | ----------------- | ---------------------------------------- |
-| `needs-triage`    | `needs-triage`    | Maintainer needs to evaluate this issue  |
-| `needs-info`      | `needs-info`      | Waiting on reporter for more information |
-| `ready-for-agent` | `ready-for-agent` | Fully specified, ready for an AFK agent  |
-| `ready-for-human` | `ready-for-human` | Requires human implementation            |
-| `wontfix`         | `wontfix`         | Will not be actioned                     |
+Skills name a triage **role**. Apply the role's label from this table.
 
-When a skill mentions a canonical role, use its corresponding tracker label.
+| Role | Label | Meaning |
+| --- | --- | --- |
+| `needs-triage` | `needs-triage` | No maintainer has evaluated it yet. |
+| `needs-info` | `needs-info` | Waiting on the reporter for more information. |
+| `ready-for-agent` | `ready-for-agent` | Fully specified; an agent can build it unattended. |
+| `ready-for-human` | `ready-for-human` | Needs a human to build or decide. |
+| `wontfix` | `wontfix` | Will not be done. |
+
+Edit the Label column to match the tracker's own names.

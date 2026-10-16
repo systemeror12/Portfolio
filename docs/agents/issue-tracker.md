@@ -1,45 +1,28 @@
 # Issue tracker: GitHub
 
-Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Issues, specs, and tickets for this repo live in GitHub Issues for
+`systemeror12/Portfolio`. Use the `gh` CLI, which infers the repo inside the clone.
 
-## Conventions
+## Operations
 
-- **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
-- **Read an issue**: `gh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
-- **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.
-- **Comment on an issue**: `gh issue comment <number> --body "..."`
-- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
-- **Close**: `gh issue close <number> --comment "..."`
+- **Read**: `gh issue view <n> --json number,title,body,labels,assignees,comments`.
+- **List**: `gh issue list --state open --label <label> --json number,title,labels,assignees`.
+- **Create**: `gh issue create --title "..." --body-file -`, with the body on
+  stdin, so no draft file lands in the checkout.
+- **Sub-issue**: `gh issue create --parent <parent> ...`, or
+  `gh issue edit <child> --parent <parent>`.
+- **Blocked by**: `gh issue edit <n> --add-blocked-by <blocker>`. A ticket is
+  unblocked when every blocker is closed.
+- **Claim**: `gh issue edit <n> --add-assignee @me`. An issue with an assignee
+  is claimed.
+- **Comment**: `gh issue comment <n> --body-file -`, with the body on stdin.
+- **Label**: `gh issue edit <n> --add-label "..."` or `--remove-label "..."`,
+  using the strings in `triage-labels.md`.
+- **Close**: `gh issue close <n> --comment "..."`.
 
-Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
+## Skill actions
 
-## Pull requests as a triage surface
-
-**PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
-
-When set to `yes`, PRs run through the same labels and states as issues, using the `gh pr` equivalents:
-
-- **Read a PR**: `gh pr view <number> --comments` and `gh pr diff <number>` for the diff.
-- **List external PRs for triage**: `gh pr list --state open --json number,title,body,labels,author,authorAssociation,comments` then keep only `authorAssociation` of `CONTRIBUTOR`, `FIRST_TIME_CONTRIBUTOR`, or `NONE`.
-- **Comment / label / close**: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.
-
-GitHub shares one number space across issues and PRs, so resolve an ambiguous `#42` with `gh pr view 42` and fall back to `gh issue view 42`.
-
-## When a skill says "publish to the issue tracker"
-
-Create a GitHub issue.
-
-## When a skill says "fetch the relevant ticket"
-
-Run `gh issue view <number> --comments`.
-
-## Wayfinding operations
-
-Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
-
-- **Map**: an issue labelled `wayfinder:map`, holding Notes, Decisions-so-far, and Fog.
-- **Child ticket**: an issue linked to the map as a GitHub sub-issue. Where sub-issues aren't enabled, add it to a task list and put `Part of #<map>` in the child body.
-- **Blocking**: use GitHub's native issue dependencies. Where unavailable, use a `Blocked by: #<n>` line.
-- **Frontier query**: choose the first open, unassigned child without an open blocker.
-- **Claim**: `gh issue edit <n> --add-assignee @me`.
-- **Resolve**: comment with the answer, close the child, then add a context pointer to the map.
+- **Publish a spec** (`specs`): comment the spec on its source issue.
+- **Publish tickets** (`to-tickets`): create one issue per ticket as a
+  sub-issue of the source issue, then add each Blocked by as a dependency.
+- **Claim a ticket** (`swarm-tickets`): assign it, as in Claim.

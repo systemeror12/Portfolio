@@ -1,31 +1,22 @@
-# Domain Docs
+# Domain docs
 
-How engineering skills should consume this repo's domain documentation.
+The glossary and ADRs are source-of-truth docs. Read them before exploring
+the code.
 
-## Before exploring, read these
+## Layout
 
-- `CONTEXT.md` at the repository root.
-- `docs/adr/` entries relevant to the work.
+### Single-context
 
-If these files don't exist, proceed silently. Domain-modeling workflows create them lazily when terminology or decisions are resolved.
+- `GLOSSARY.md` at the root holds every domain term.
+- `docs/adr/` holds every decision record.
 
-## File structure
+## Reading rules
 
-This is a single-context repository:
-
-```text
-/
-├── CONTEXT.md
-├── docs/adr/
-└── src/
-```
-
-## Use the glossary's vocabulary
-
-Use terms as defined in `CONTEXT.md` in issue titles, proposals, tests, and implementation. Avoid synonyms the glossary explicitly rejects.
-
-If a required concept is missing, reconsider whether the language belongs to the project or note the gap for domain modeling.
-
-## Flag ADR conflicts
-
-Explicitly surface output that contradicts an existing ADR rather than silently overriding it.
+- **Missing files**: carry on without them. The `domain-modeling` skill
+  writes the glossary and ADRs as terms and decisions settle.
+- **Glossary terms**: name every domain concept with its glossary term, in
+  issue titles, specs, tickets, tests, and code. The term replaces each
+  synonym its entry lists under `_Avoid_`. A concept with no glossary entry
+  is a gap: raise it with the user.
+- **ADR conflicts**: when your output contradicts an ADR, name the ADR and say
+  why it should be reopened.
