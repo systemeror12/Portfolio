@@ -6,7 +6,7 @@ import { useReveal } from "./reveal";
 import { dotsHyprlandCaseStudyPath } from "./routes";
 import { StaffDivider } from "./staff-divider";
 
-const { lingkod, dots, tools } = afterHours;
+const { lingkod, desktop, tools } = afterHours;
 
 function Spark() {
   return (
@@ -34,33 +34,52 @@ function LingkodHr() {
   );
 }
 
-function DotsHyprland() {
+// The Featured Personal System, with the Previous Desktop and its Upstream
+// Contribution one click away.
+function Desktop() {
   return (
-    <article className="after-piece after-dots" aria-labelledby="dots-hyprland-title">
+    <article className="after-piece after-desktop" aria-labelledby="caelestia-xenrya-title">
       <p className="after-status">
         <Spark />
-        {dots.status}
+        {desktop.status}
       </p>
-      <h3 id="dots-hyprland-title">{dots.title}</h3>
-      <p>{dots.description}</p>
+      <h3 id="caelestia-xenrya-title">{desktop.title}</h3>
+      <p>{desktop.description}</p>
       <div className="after-split">
         <div className="after-voice after-upstream">
-          <h4>{dots.upstream.heading}</h4>
-          <p>{dots.upstream.body}</p>
+          <h4>{desktop.upstream.heading}</h4>
+          <p>{desktop.upstream.body}</p>
         </div>
         <div className="after-voice after-mine">
-          <h4>{dots.mine.heading}</h4>
-          <p>{dots.mine.body}</p>
+          <h4>{desktop.mine.heading}</h4>
+          <p>{desktop.mine.body}</p>
         </div>
       </div>
-      <p className="after-credit">
-        {dots.credit.map((piece, index) =>
-          index % 2 ? <code key={piece}>{piece}</code> : piece,
-        )}
-      </p>
-      <InternalLink className="after-link" to={dotsHyprlandCaseStudyPath}>
-        {dots.readMore}
-      </InternalLink>
+      <ul className="after-repos" aria-label={desktop.repositoriesLabel}>
+        {desktop.repositories.map((repository) => (
+          <li key={repository.name}>
+            <a
+              className="after-link"
+              href={repository.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={repository.label}
+            >
+              {repository.name} on GitHub
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div className="after-previous">
+        <InternalLink className="after-link" to={dotsHyprlandCaseStudyPath}>
+          {desktop.previously}
+        </InternalLink>
+        <p className="after-credit">
+          {desktop.credit.map((piece, index) =>
+            index % 2 ? <code key={piece}>{piece}</code> : piece,
+          )}
+        </p>
+      </div>
     </article>
   );
 }
@@ -122,7 +141,7 @@ export function AfterHoursSection() {
         <div ref={pieces.ref} className={`after-pieces ${pieces.className}`}>
           <svg ref={iron.back} className="after-iron after-iron-back" aria-hidden="true" />
           <LingkodHr />
-          <DotsHyprland />
+          <Desktop />
           <ToolsIUse />
           <svg ref={iron.front} className="after-iron after-iron-front" aria-hidden="true" />
         </div>
