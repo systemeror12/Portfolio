@@ -85,7 +85,7 @@ Customers could pay through the client's required Regional Payment Provider dire
 _Avoid_: Increased conversions, faster payments
 
 **Excluded Project**:
-The cancelled palletization system, which must not be presented as a delivered public case study or completed client outcome.
+The cancelled palletization system, which must not be presented as a delivered public case study or completed client outcome. Jerome built it before the client cancelled, so the Resume may list it as cancelled work.
 _Avoid_: Inventory case study, delivered palletization system
 
 **Multi-Company HRIS**:
@@ -233,17 +233,13 @@ Jerome's personal project currently in development in a private repository, with
 _Avoid_: Public source project, delivered client system, detailed technical case study
 
 **After Hours**:
-The homepage section for Jerome's personal Project Evidence (Lingkod HR, then the Featured Personal System) and Tools I Use, kept visibly separate from each other. On the Resume, its Project Evidence appears under the plain heading "Personal Projects", without Tools I Use.
-_Avoid_: Personal Projects (on the site), professional case studies
+The homepage section for Jerome's personal Project Evidence (Lingkod HR, then the Featured Personal System) and Tools I Use, kept visibly separate from each other.
+_Avoid_: Personal Projects, professional case studies
 
 **In Progress**:
 The homepage section, between the Work section and After Hours, for professional Project Evidence that is not yet live: the Brokerage ERP Rebuild first, then the Training Registration Platform. Each piece states what Jerome owns and the line it holds instead of a Verified Result.
 _Avoid_: Case study, delivered systems, Work section pane
 
 **Resume**:
-The downloadable PDF of Jerome's experience, generated with LibreOffice from `docs/jerome-mendoza-resume.html`. It stays level with the site's Project Evidence, uses plain resume headings rather than site section names, and names no employer, client, bank, counterparty, or repository.
-_Avoid_: CV, portfolio PDF
-
-**Current Work**:
-The Resume's heading for the In Progress pieces. Each entry keeps the site card's status, role, what Jerome owns, and the line it holds, and states no Verified Result.
-_Avoid_: In Progress (on the Resume), recent projects
+Jerome's private resume, kept outside this repository and shared through job boards and email. It may name the employer, but clients stay anonymized as on the site. The site links no resume.
+_Avoid_: Site resume download, portfolio PDF
