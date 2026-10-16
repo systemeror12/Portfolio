@@ -6,6 +6,7 @@ const routes = [
   "/work/ai-odoo-rnd",
   "/work/payment-provider",
   "/work/public-sector-hris",
+  "/work/brokerage-erp-rebuild",
   "/systems/dots-hyprland",
 ] as const;
 
@@ -136,6 +137,12 @@ test("the In progress link sits before After hours on every route", async ({ pag
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
     const link = nav.getByRole("link", { name: "In progress", exact: true });
     await expect(link, route).toHaveAttribute("href", "/#in-progress");
+    // Only the rebuild's own page marks it current.
+    if (route === "/work/brokerage-erp-rebuild") {
+      await expect(link, route).toHaveAttribute("aria-current", "page");
+    } else {
+      await expect(link, route).not.toHaveAttribute("aria-current");
+    }
     const names = await nav
       .getByRole("link")
       .evaluateAll((links) => links.map((element) => element.textContent));

@@ -10,12 +10,14 @@ import "./styles/after-hours.css";
 import "./styles/method.css";
 import "./styles/contact.css";
 import { AiOdooRndCaseStudy } from "./ai-odoo-rnd-case-study";
+import { BrokerageErpRebuildCaseStudy } from "./brokerage-erp-rebuild-case-study";
 import { LeadCaseStudy } from "./lead-case-study";
 import { PaymentProviderCaseStudy } from "./payment-provider-case-study";
 import { DotsHyprlandCaseStudy } from "./dots-hyprland-case-study";
 import { PublicSectorHrisCaseStudy } from "./public-sector-hris-case-study";
 import {
   aiCaseStudyPath,
+  brokerageErpRebuildCaseStudyPath,
   caseStudyPath,
   dotsHyprlandCaseStudyPath,
   paymentProviderCaseStudyPath,
@@ -80,6 +82,11 @@ function App() {
     <>
       <Header currentPath={path} />
       <PublicSectorHrisCaseStudy />
+    </>
+  ) : path === brokerageErpRebuildCaseStudyPath ? (
+    <>
+      <Header currentPath={path} />
+      <BrokerageErpRebuildCaseStudy />
     </>
   ) : path === dotsHyprlandCaseStudyPath ? (
     <>

@@ -1,6 +1,6 @@
 import React from "react";
 import { drawCaseIron } from "./case-iron";
-import { workCases } from "./content";
+import { inProgressPieces, workCases } from "./content";
 
 // What the homepage already says about each case: its pane's numeral, its
 // kind, who it was for, who it served, and the records written around its
@@ -21,6 +21,14 @@ const caseFacts = {
   "payment-provider": fromWork("payment-provider"),
   "ai-odoo-rnd": fromWork("ai-odoo-rnd"),
   "public-sector-hris": fromWork("public-sector-hris"),
+  // The rebuild isn't live, so it has no pane: its kind is its section's,
+  // its records follow the cutover, and who it was for comes from its card.
+  "brokerage-erp-rebuild": {
+    kind: "In progress",
+    for: inProgressPieces.find((piece) => piece.id === "brokerage-erp-rebuild")!.for,
+    served: "the brokerage's accountants",
+    records: "extract · transform · load · verify",
+  },
   // The Previous Desktop has no pane on the homepage, so it keeps its own
   // facts. Its records follow its three themes.
   "dots-hyprland": {
@@ -40,7 +48,8 @@ function Spark() {
 }
 
 // The kind line that opens the hero, as on the case's card on the homepage:
-// the pane's numeral, lit, then the kind. The fork carries its spark instead.
+// the pane's numeral, lit, then the kind. A case with no pane carries its
+// spark instead.
 // The case's records follow, where the chain begins.
 export function CaseKind({ id }: { id: CaseId }) {
   const facts: CaseFacts = caseFacts[id];

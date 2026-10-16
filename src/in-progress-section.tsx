@@ -1,4 +1,5 @@
 import { inProgress, inProgressPieces, type InProgressPiece } from "./content";
+import { InternalLink } from "./navigation";
 import { useReveal } from "./reveal";
 import { StaffDivider } from "./staff-divider";
 
@@ -13,7 +14,8 @@ function Spark() {
 }
 
 // Neither system is live, so each piece states what I own and the line it
-// holds in place of a result.
+// holds in place of a result. A piece with its own page links to it, as the
+// Work section's cases do.
 function Piece({ piece }: { piece: InProgressPiece }) {
   const titleId = `${piece.id}-title`;
   return (
@@ -37,6 +39,15 @@ function Piece({ piece }: { piece: InProgressPiece }) {
           <li key={idea}>{idea}</li>
         ))}
       </ul>
+      {piece.path && (
+        <InternalLink
+          className="progress-link"
+          to={piece.path}
+          aria-label={`${labels.readMore}: ${piece.title}`}
+        >
+          {labels.readMore}
+        </InternalLink>
+      )}
     </article>
   );
 }
