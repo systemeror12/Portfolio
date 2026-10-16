@@ -111,8 +111,8 @@ test("the Work section names no client, no Confidential Scale, and no Excluded P
   await page.goto("/");
   const text = await work(page).innerText();
 
-  // Client identity: the provider's and the district's real names stay private.
-  expect(text).not.toMatch(/Payfusion/i);
+  // Client identity: real names are checked by the private-name scan
+  // (tests/private-names.spec.ts), which keeps them out of the repo.
   expect(text).not.toMatch(/client company|client organization/i);
   // Confidential Scale: "multiple legal companies" only, never a count.
   expect(text).not.toMatch(/Confidential Scale/i);

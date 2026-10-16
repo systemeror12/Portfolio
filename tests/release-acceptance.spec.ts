@@ -1,13 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-
-const routes = [
-  ["/", "Every record ends with a person."],
-  ["/work/multi-company-hris", "Multi-Company HRIS"],
-  ["/work/ai-odoo-rnd", "AI R&D Case Study"],
-  ["/work/payment-provider", "Payment Provider Module"],
-  ["/work/public-sector-hris", "Government Water District HRIS"],
-  ["/systems/dots-hyprland", "Evolving a Hyprland desktop into my daily platform"],
-] as const;
+import { routes } from "./public-routes";
 
 test("every public route loads directly without horizontal overflow", async ({
   page,
@@ -94,7 +86,6 @@ test("public routes contain none of the explicitly excluded public claims", asyn
 }) => {
   const excludedClaims = [
     /Confidential Scale/i,
-    /Payfusion/i,
     /\bphone number\b/i,
     /\bstreet address\b/i,
     /production-ready/i,
