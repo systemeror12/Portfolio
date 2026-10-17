@@ -28,7 +28,7 @@ test("a Hiring Manager can inspect current workflow tools without mistaking them
   await expect(tools.getByText(/odysseus/i)).toHaveCount(0);
 });
 
-test("a Hiring Manager can use the approved contact actions and download a web-safe resume", async ({
+test("a Hiring Manager can use the approved contact actions, and the site offers no resume", async ({
   page,
 }) => {
   await page.goto("/");
@@ -57,21 +57,11 @@ test("a Hiring Manager can use the approved contact actions and download a web-s
     await expect(action).toHaveAttribute("rel", "noreferrer");
   }
 
-  const resume = contact.getByRole("link", { name: "Resume (PDF)", exact: true });
-  await resume.focus();
-  await expect(resume).toBeFocused();
-  await expect(resume).toHaveAttribute("href", "/jerome-mendoza-resume.pdf");
-  await expect(resume).toHaveAttribute("download");
-
-  const [download] = await Promise.all([
-    page.waitForEvent("download"),
-    resume.press("Enter"),
-  ]);
-  expect(download.suggestedFilename()).toBe("jerome-mendoza-resume.pdf");
-
+  // The resume is private now, so the outdated one must not come back.
+  await expect(contact.getByRole("link", { name: /resume/i })).toHaveCount(0);
+  await expect(page.locator('a[href$=".pdf"]')).toHaveCount(0);
   const resumeResponse = await page.request.get("/jerome-mendoza-resume.pdf");
-  expect(resumeResponse.ok()).toBeTruthy();
-  expect(resumeResponse.headers()["content-type"]).toContain("application/pdf");
+  expect(resumeResponse.headers()["content-type"] ?? "").not.toContain("application/pdf");
 });
 
 test("supporting professional information excludes private contact details", async ({
@@ -81,9 +71,4 @@ test("supporting professional information excludes private contact details", asy
 
   await expect(page.getByText(/phone number/i)).toHaveCount(0);
   await expect(page.getByText(/street address/i)).toHaveCount(0);
-
-  const resumeResponse = await page.request.get("/jerome-mendoza-resume.pdf");
-  expect(resumeResponse.ok()).toBeTruthy();
-  const resumeContents = await resumeResponse.body();
-  expect(resumeContents.toString("latin1")).not.toMatch(/phone|street|address/i);
 });

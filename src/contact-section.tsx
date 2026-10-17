@@ -33,9 +33,6 @@ export function ContactSection() {
                 {link.label}
               </a>
             ))}
-            <a href={contact.resume.href} download>
-              {contact.resume.label}
-            </a>
           </div>
         </div>
       </div>

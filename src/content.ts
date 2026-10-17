@@ -340,7 +340,6 @@ export const contact = {
       href: "https://www.linkedin.com/in/jerome-vrixen-mendoza-59b927293/",
     },
   ],
-  resume: { label: "Resume (PDF)", href: "/jerome-mendoza-resume.pdf" },
   footer: { name: "Jerome Mendoza", line: "Made at 25:00, Manila" },
 };
 
