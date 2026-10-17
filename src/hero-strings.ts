@@ -161,17 +161,24 @@ function tabletRoutes({ width: W, height: H, heart, radius: R, hero }: HeroLayou
 }
 
 // Builds the strings and sorts their keys into three depths. The scene
-// paints each depth where it belongs: back behind the dial, mid between the
-// dial and the front lilies, and near over everything; then calls finish to
-// glint where they cross. finish returns place, to keep the glints off the
-// copy, and play, which runs a pink glissando along every string.
+// paints each depth where it belongs, with its lamps in a layer of their own
+// over it: back behind the dial, mid between the dial and the front lilies,
+// and near over everything; then calls finish to glint where they cross.
+// finish returns place, to keep the glints off the copy, and play, which runs
+// a pink glissando along every string. The lamps' layers are hidden while no
+// run plays.
 export function drawStrings(layout: HeroLayout) {
   const { width, height, heart, mobile, hero } = layout;
   const cam = camera(heart, width, height);
   const ribbons = routes(layout).map(({ through, width }, i) => ribbon3d(cam, through, width, i));
   const layers = layRibbons(ribbons);
-  const paint = (parent: Element, layer: keyof typeof layers) =>
-    paintRuns(draw("g", { class: `ribbons-${layer}` }, parent), layers[layer]);
+  const lampLayers = new Set<SVGSVGElement>();
+  const show = (on: boolean) => lampLayers.forEach((lamps) => (lamps.style.display = on ? "" : "none"));
+  const paint = (parent: Element, lamps: SVGSVGElement, layer: keyof typeof layers) => {
+    lampLayers.add(lamps);
+    show(false);
+    paintRuns(draw("g", { class: `ribbons-${layer}` }, parent), layers[layer], lamps);
+  };
 
   function finish(parent: Element) {
     const group = draw("g", { class: "string-glints" }, parent);
@@ -181,11 +188,17 @@ export function drawStrings(layout: HeroLayout) {
     // When a record lands and none is already playing, a run plays along
     // every string over 2.2 seconds.
     const play = (now: number, arrived: boolean) => {
-      if (arrived && !run) run = now;
+      if (arrived && !run) {
+        run = now;
+        show(true);
+      }
       if (!run) return;
       const t = (now - run) / 2200;
       for (const { light, count } of runs) light(t > 1 ? null : t * (count + 10));
-      if (t > 1) run = 0;
+      if (t > 1) {
+        run = 0;
+        show(false);
+      }
     };
     return { place: () => hideOnCopy(hero, glints), play };
   }

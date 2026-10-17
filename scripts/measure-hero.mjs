@@ -5,7 +5,9 @@
 // Measure, against a local preview (`npm run build && npx vite preview`) or
 // the deployed site, keeping stdout as the result file:
 //   node scripts/measure-hero.mjs <url> [--label main] [--viewports desktop-1920,...]
-//     [--throttles 1,4] [--repeats 3] [--angle gl-egl] | tee main.jsonl
+//     [--throttles 1,4] [--repeats 3] [--angle gl-egl] [--hero-no-css] | tee main.jsonl
+// --hero-no-css pauses the hero's CSS animations, as #76's hero-no-css run
+// did, so only the animation loop moves.
 // Measure Chrome on an Android phone, at its own viewport, after
 // `adb forward tcp:9222 localabstract:chrome_devtools_remote`:
 //   node scripts/measure-hero.mjs <url> --cdp http://127.0.0.1:9222 | tee phone.jsonl
@@ -28,6 +30,7 @@ const { values: options, positionals } = parseArgs({
     angle: { type: "string", default: "gl-egl" },
     cdp: { type: "string" },
     compare: { type: "boolean", default: false },
+    "hero-no-css": { type: "boolean", default: false },
   },
 });
 
@@ -149,6 +152,9 @@ async function run(browser, page, url, throttle) {
   await page.evaluate(() => document.fonts.ready);
   if (throttle > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: throttle });
   await page.evaluate(() => window.scrollTo(0, 0));
+  if (options["hero-no-css"]) {
+    await page.addStyleTag({ content: ".hero-scene, .hero-scene * { animation-play-state: paused !important; }" });
+  }
   const screen = await page.evaluate(() => ({
     width: innerWidth,
     height: innerHeight,
@@ -214,7 +220,7 @@ async function measure(url) {
           result = { valid: false, invalid: [e.message.split("\n")[0]], pass: false };
         }
         await close();
-        result = { label: options.label, viewport: name, throttle, run: i, ...result };
+        result = { label: options.label, heroNoCss: options["hero-no-css"], viewport: name, throttle, run: i, ...result };
         console.log(JSON.stringify(result));
         results.push(result);
       }

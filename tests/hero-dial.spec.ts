@@ -24,9 +24,8 @@ const angle = (page: Page, selector: string) =>
 // The heart and the dial's radius, in page coordinates.
 async function dialGeometry(page: Page) {
   return page.evaluate(() => {
-    const dial = document.querySelector<SVGGElement>(".hero-scene .dial")!;
-    const ring = dial.querySelector(".dial-ring")!;
-    const box = dial.querySelector(".dial-boss")!.getBoundingClientRect();
+    const ring = document.querySelector(".hero-scene .dial-ring")!;
+    const box = document.querySelector(".hero-scene .dial-boss")!.getBoundingClientRect();
     return {
       heart: { x: box.left + box.width / 2, y: box.top + box.height / 2 },
       radius: Number(ring.getAttribute("r")),
@@ -58,8 +57,15 @@ test("the dial has 25 panes of glass, its numerals, rings, ticks, lily, and boss
   await expect(scene.locator(".dial-boss")).toHaveCount(1);
   await expect(scene.locator(".iron-hand-hour")).toHaveCount(1);
   await expect(scene.locator(".iron-hand-minute")).toHaveCount(1);
-  // The centre lily is the dial's first drawing, under the panes.
-  await expect(scene.locator(".dial > g:first-child path")).not.toHaveCount(0);
+  // The centre lily lies at the dial's heart, under the panes.
+  await expect(scene.locator(".dial-heart > g path")).not.toHaveCount(0);
+  expect(
+    await page.evaluate(
+      () =>
+        document.querySelector(".dial-heart")!.compareDocumentPosition(document.querySelector(".dial-pane")!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ),
+  ).toBeTruthy();
 });
 
 test("the hands keep Manila time, and the hour hand rests near 25", async ({ page }) => {
@@ -169,7 +175,7 @@ test("a resize redraws the scene once and leaves no second copy", async ({ page 
   await expect(scene.locator(".dial")).toHaveCount(1);
   await expect(scene.locator("defs")).toHaveCount(1);
   await expect(scene.locator(".dial-pane")).toHaveCount(25);
-  await expect(scene.locator("> svg[data-layer=records]")).toHaveAttribute("viewBox", /^0 0 1100 /);
+  await expect(scene.locator("> svg[data-band=clockwork]")).toHaveAttribute("viewBox", /^0 0 1100 /);
   await expect(scene.locator(".lilies-front")).toHaveCount(1);
   await expect(page.locator(".night-sky")).toHaveCount(1);
 });
