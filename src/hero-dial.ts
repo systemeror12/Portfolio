@@ -20,6 +20,9 @@ const manilaTime = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
   second: "2-digit",
 });
+// The heart's pulse keeps 96% of itself every sixtieth of a second.
+const pulseFade = 0.96;
+const pulseStep = 1000 / 60;
 const paneTones = ["#2b2436", "#3a2d4d", "#4a3a63", "#33293f"];
 const defs = `<defs>
   <radialGradient id="hero-glow"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".25" stop-color="#bb6688" stop-opacity=".42"/><stop offset=".55" stop-color="#4a3a63" stop-opacity=".2"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
@@ -188,6 +191,8 @@ export function drawHeroDial(svg: SVGSVGElement) {
   let records: ReturnType<typeof drawHeroRecords>;
   let play: (now: number, arrived: boolean) => void;
   let pulse = 0;
+  // When the loop last ran a frame; unset until it runs, and while it's paused.
+  let last: number | undefined;
 
   function build() {
     width = hero.clientWidth;
@@ -230,8 +235,9 @@ export function drawHeroDial(svg: SVGSVGElement) {
   }
 
   // The dial keeps Manila minutes and seconds; the hour hand stays near 25,
-  // creeping one pane an hour, so its heart stays upright.
-  function tick(now: number) {
+  // creeping one pane an hour, so its heart stays upright. The pulse fades by
+  // the time since the last frame, elapsed.
+  function tick(now: number, elapsed = 0) {
     const parts = Object.fromEntries(
       manilaTime.formatToParts(new Date()).map((part) => [part.type, Number(part.value)]),
     );
@@ -241,9 +247,12 @@ export function drawHeroDial(svg: SVGSVGElement) {
     turn(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
     turn(hands.second, -90 + ((parts.second + millis) / 60) * 360);
     // Each record that reaches the heart pulses it and lights the lily a
-    // little, and sets a run playing along the strings.
+    // little, and sets a run playing along the strings. A frame after a pause
+    // takes no arrival it didn't see, so the heart doesn't flash as the hero
+    // comes back on screen.
     const arrived = records.advance(now);
-    if (arrived) pulse = 1;
+    pulse *= pulseFade ** (elapsed / pulseStep);
+    if (arrived && last !== undefined) pulse = 1;
     if (!reduce) play(now, arrived);
     const breathe = reduce ? 0 : (Math.sin(((now - start) / 1000) * 1.4) + 1) / 2;
     glow.setAttribute("r", String(130 + breathe * 18 + pulse * 30));
@@ -251,7 +260,6 @@ export function drawHeroDial(svg: SVGSVGElement) {
     ring.setAttribute("opacity", (pulse * 0.6).toFixed(2));
     core.setAttribute("r", String(3.2 + pulse * 1.4));
     hands.bloom.setAttribute("opacity", (0.85 + pulse * 0.15).toFixed(2));
-    pulse *= 0.96;
   }
 
   build();
@@ -277,7 +285,8 @@ export function drawHeroDial(svg: SVGSVGElement) {
   // timer, without a sweeping second hand.
   let frame = 0;
   const loop = (now: number) => {
-    tick(now);
+    tick(now, last === undefined ? 0 : Math.max(0, now - last));
+    last = now;
     frame = requestAnimationFrame(loop);
   };
   const visible = new IntersectionObserver(([entry]) => {
@@ -287,6 +296,7 @@ export function drawHeroDial(svg: SVGSVGElement) {
     else if (!entry.isIntersecting) {
       cancelAnimationFrame(frame);
       frame = 0;
+      last = undefined;
     }
   });
   visible.observe(hero);
