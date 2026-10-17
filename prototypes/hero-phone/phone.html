@@ -1,0 +1,2109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero prototype: phones</title>
+    <script>
+      // The variant: now (the hero as it ships), a or b. Set before the
+      // styles apply, so the copy lays out once.
+      document.documentElement.dataset.v = (() => {
+        const v = new URLSearchParams(location.search).get("v");
+        return ["now", "a", "b"].includes(v) ? v : "a";
+      })();
+      if (window.self !== window.top) document.documentElement.classList.add("is-framed");
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+    />
+    <style>
+      /* PROTOTYPE, settled: the hero with A3 "Crossing" from round 3. Round 2
+         A's keyboard ribbons are laid like the white strings in the
+         reference, drawn in space so near keys come wide and far ones narrow.
+         Four run nearly straight: two cross in an X just past the end of the
+         heading, one runs low under the buttons, and one high over the copy.
+         Round 2 B's
+         lily bed is redrawn as true lilies, under round 1 A's night sky.
+         Round 7 fills a band the maintainer drew round the dial with a bed
+         of larger lilies, none crossing the clock, and leaves the dial
+         itself bare.
+
+         #69 put the dial below the copy on tablets, and the hero ends at the
+         fold there.
+
+         PROTOTYPE for #68: the hero on phones. ?v=now is the hero as it
+         ships. Both variants end the hero at the fold, under the header,
+         so the heading and both buttons are on the first screen, and keep
+         the dial whole, in what the copy leaves: above it in portrait,
+         beside it in landscape. The strings are the maintainer's: one
+         along the top, one down the left, and one low across the dial's
+         foot; the one that fell through the dial to the right edge is
+         gone. The lily bed is planted as on desktop and tablets, and the
+         variants differ in where it grows:
+           a, Cradle: as on a tablet. The dial sits a little right of the
+              middle, and the bed holds it from below and on both sides.
+           b, Sweep: as on desktop. The dial sits against the right edge,
+              and the bed sweeps in from the left edge, round the dial's
+              left side and under it. */
+
+      /* From src/styles/base.css */
+      :root {
+        --void: #06060b;
+        --plum: #2b2436;
+        --stain: #4a3a63;
+        --bronze: #9b8794;
+        --mist: #9a8fab;
+        --peri: #a599d8;
+        --glow: #f0b4dc;
+        --silver: #ece8f4;
+        --night: #0d0c14;
+        --lilac: #cfc8de;
+        --rose: #bb6688;
+        --text-soft: #cbc4d9;
+        --hair: rgba(207, 200, 222, 0.14);
+        --serif: "Shippori Mincho", "Hiragino Mincho ProN", serif;
+        --sans: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+        color: var(--silver);
+        background: var(--void);
+        font-synthesis: none;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding-bottom: 72px;
+        font: 400 17px/1.75 var(--sans);
+        -webkit-font-smoothing: antialiased;
+        background:
+          radial-gradient(1100px 700px at 15% 0%, color-mix(in srgb, var(--stain) 22%, transparent), transparent 70%),
+          radial-gradient(900px 700px at 100% 60%, color-mix(in srgb, var(--plum) 35%, transparent), transparent 70%),
+          var(--void);
+      }
+      h1 {
+        font-family: var(--serif);
+        font-weight: 400;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font: inherit;
+      }
+      .site-header {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        padding: 18px max(24px, calc((100vw - 1200px) / 2));
+        color: var(--silver);
+        background: linear-gradient(rgba(6, 6, 11, 0.92), rgba(6, 6, 11, 0));
+      }
+      .identity {
+        margin-right: auto;
+        font: 500 18px/1 var(--serif);
+        white-space: nowrap;
+      }
+      .site-header nav {
+        display: flex;
+        gap: 22px;
+      }
+      .site-header nav a {
+        font-size: 14px;
+        color: var(--mist);
+        white-space: nowrap;
+        transition: color 0.2s ease;
+      }
+      .site-header nav a:hover,
+      .site-header nav a[aria-current="page"] {
+        color: var(--silver);
+      }
+      .clock {
+        margin: 0;
+        font-size: 15px;
+        color: var(--mist);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .clock b {
+        margin-left: 6px;
+        font: 500 17px/1 var(--serif);
+        color: var(--silver);
+      }
+      .menu-button {
+        display: none;
+        background: none;
+        border: 0;
+        color: var(--silver);
+      }
+      @media (max-width: 1060px) {
+        .site-header {
+          gap: 16px;
+          padding: 14px 20px;
+        }
+        .menu-button {
+          display: grid;
+          place-items: center;
+          width: 38px;
+          height: 38px;
+          margin-right: -8px;
+        }
+        .menu-button svg {
+          width: 20px;
+        }
+        .site-header nav {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          padding: 8px 20px 18px;
+          background: var(--night);
+          border-bottom: 1px solid var(--hair);
+          flex-direction: column;
+          gap: 0;
+        }
+        .site-header nav.open {
+          display: flex;
+        }
+        .site-header nav a {
+          padding: 10px 0;
+          font-size: 16px;
+        }
+      }
+      @media (max-width: 560px) {
+        .clock span {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+      :focus-visible {
+        outline: 2px solid var(--glow);
+        outline-offset: 4px;
+        border-radius: 3px;
+      }
+      main:focus {
+        outline: none;
+      }
+      .skip-link {
+        position: absolute;
+        left: 16px;
+        top: -60px;
+        z-index: 20;
+        padding: 10px 14px;
+        border-radius: 6px;
+        background: var(--silver);
+        color: var(--void);
+        font-weight: 500;
+      }
+      .skip-link:focus {
+        top: 12px;
+      }
+
+      /* From src/styles/hero.css */
+      .hero {
+        position: relative;
+        min-height: max(700px, 100svh);
+        overflow: hidden;
+        display: grid;
+        align-items: center;
+      }
+      .hero-scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .hero-scene .glass {
+        animation: hero-shimmer 7s ease-in-out infinite;
+      }
+      .hero-scene .sparkle {
+        animation: hero-twinkle 4s ease-in-out infinite;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      @keyframes hero-shimmer {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      @keyframes hero-twinkle {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: scale(0.7);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .hero-copy {
+        position: relative;
+        z-index: 1;
+        width: min(1200px, calc(100% - 48px));
+        margin: 0 auto;
+        padding: 64px 0 80px;
+        /* The strings run behind the copy unbroken; a halo the shape of
+           each letter keeps the words clear of them. */
+        text-shadow: 0 0 3px var(--void), 0 0 10px var(--void), 0 0 22px rgba(6, 6, 11, 0.8);
+      }
+      .hero-copy::before {
+        content: "";
+        position: absolute;
+        inset: 40px -60px 0 -120px;
+        z-index: -1;
+        background: radial-gradient(60% 60% at 32% 50%, rgba(6, 6, 11, 0.88), transparent 75%);
+      }
+      .hero-name {
+        margin: 0 0 28px;
+        color: var(--mist);
+        font-size: 16px;
+      }
+      .hero-name strong {
+        color: var(--silver);
+        font-weight: 500;
+      }
+      .hero h1 {
+        max-width: 9.5em;
+        margin: 0;
+        font: 400 clamp(46px, 6vw, 86px)/1.02 var(--serif);
+        letter-spacing: -0.015em;
+      }
+      .hero h1 em {
+        font-style: normal;
+        color: var(--glow);
+      }
+      .hero-lede {
+        max-width: 34em;
+        margin: 34px 0 0;
+        font-size: 19px;
+        color: var(--text-soft);
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 40px;
+      }
+      .hero-action {
+        display: inline-flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 0 24px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .hero-action-solid {
+        text-shadow: none;
+        background: var(--silver);
+        color: var(--void);
+      }
+      .hero-action-solid:hover {
+        background: #fff;
+        box-shadow: 0 0 30px rgba(240, 180, 220, 0.35);
+      }
+      .hero-action-line {
+        border: 1px solid rgba(236, 232, 244, 0.32);
+        color: var(--silver);
+      }
+      .hero-action-line:hover {
+        border-color: var(--glow);
+        color: var(--glow);
+      }
+      @media (max-width: 560px) {
+        .hero {
+          align-items: end;
+          min-height: max(900px, 100svh);
+        }
+        .hero-copy {
+          padding: 0 0 64px;
+        }
+        .hero-copy::before {
+          inset: -40px -40px -20px -40px;
+          background: linear-gradient(transparent, rgba(6, 6, 11, 0.92) 30%);
+        }
+        .hero-lede {
+          font-size: 17px;
+        }
+        .hero-action {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+
+      /* The sky, from round 1's A: a layer of its own behind the
+         scene, so its stars twinkle without redrawing the dial. */
+      .hero-sky {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        will-change: transform;
+      }
+      .hero-sky svg {
+        position: absolute;
+      }
+      .hero:has(.hero-scene.is-paused) .hero-sky .twinkle {
+        animation-play-state: paused;
+      }
+      /* Dust that twinkles, glints that breathe. */
+      .hero-scene .twinkle {
+        animation: star-twinkle 5s ease-in-out infinite;
+      }
+      .hero-scene .glint {
+        animation: glint-breathe 7s ease-in-out infinite;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      @keyframes star-twinkle {
+        50% {
+          opacity: 0.08;
+        }
+      }
+      @keyframes glint-breathe {
+        0%,
+        100% {
+          opacity: 0.55;
+          transform: scale(0.8) rotate(-4deg);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+        }
+      }
+      /* B: the lilies turn a little in the night air. */
+      .hero-scene .lily-sway {
+        animation: lily-sway 11s ease-in-out infinite alternate;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      @keyframes lily-sway {
+        from {
+          transform: rotate(-3deg);
+        }
+        to {
+          transform: rotate(3deg);
+        }
+      }
+      .hero-scene.is-paused :is(.glass, .sparkle, .twinkle, .glint, .lily-sway) {
+        animation-play-state: paused;
+      }
+
+      /* From src/styles/hero.css: #69 as it ships. On a tablet the copy
+         comes first, at the top, with the dial below and right of it, and
+         the hero ends at the bottom of the screen. */
+      @media (min-width: 760px) and (max-width: 1279.98px) {
+        .hero {
+          align-items: start;
+          min-height: max(600px, calc(100svh - var(--header-h, 66px)));
+        }
+        .hero-copy {
+          padding: clamp(40px, 6svh, 72px) 0 0;
+        }
+      }
+      @media (min-width: 760px) and (max-width: 1279.98px) and (orientation: landscape) {
+        .hero-lede {
+          max-width: min(34em, 58vw);
+        }
+      }
+
+      /* #68: phones, under 760px wide. The hero ends at the fold, under the
+         header. The copy sits at its foot, its gaps a little tighter, and
+         the scene has the band left above it: at least --band, so on a
+         short screen the hero grows rather than lose the dial. */
+      @media (max-width: 759.98px) {
+        html:not([data-v="now"]) .hero {
+          align-items: end;
+          grid-template-rows: minmax(var(--band, 150px), 1fr) auto;
+          min-height: calc(100svh - var(--header-h, 66px));
+        }
+        html:not([data-v="now"]) .hero::before {
+          content: "";
+        }
+        html:not([data-v="now"]) .hero-copy {
+          padding: 0 0 24px;
+        }
+        html:not([data-v="now"]) .hero-copy::before {
+          inset: -40px -40px -20px -40px;
+          background: linear-gradient(transparent, rgba(6, 6, 11, 0.92) 30%);
+        }
+        html:not([data-v="now"]) .hero-name {
+          margin-bottom: 18px;
+        }
+        html:not([data-v="now"]) .hero-lede {
+          margin-top: 22px;
+          font-size: 17px;
+        }
+        html:not([data-v="now"]) .hero-actions {
+          margin-top: 28px;
+        }
+        html:not([data-v="now"]) .hero-action {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+      /* Phones in landscape, under 500px high: a layout of their own. The
+         copy takes a column on the left, the heading in two lines, and the
+         dial sits whole in the room beside it. */
+      @media (orientation: landscape) and (max-height: 499.98px) {
+        html:not([data-v="now"]) .hero {
+          --column: min(600px, 66vw);
+          align-items: center;
+          grid-template-rows: none;
+          min-height: calc(100svh - var(--header-h, 66px));
+        }
+        html:not([data-v="now"]) .hero::before {
+          content: none;
+        }
+        html:not([data-v="now"]) .hero-copy {
+          padding: 6px 0 12px;
+        }
+        html:not([data-v="now"]) .hero-copy::before {
+          inset: -20px -40px -20px -120px;
+          background: radial-gradient(60% 60% at 32% 50%, rgba(6, 6, 11, 0.88), transparent 75%);
+        }
+        html:not([data-v="now"]) :is(.hero-name, .hero h1, .hero-lede, .hero-actions) {
+          max-width: var(--column);
+        }
+        html:not([data-v="now"]) .hero-name {
+          margin-bottom: 8px;
+        }
+        html:not([data-v="now"]) .hero-lede {
+          margin-top: 10px;
+          font-size: 17px;
+        }
+        html:not([data-v="now"]) .hero-actions {
+          margin-top: 14px;
+        }
+        html:not([data-v="now"]) .hero-action {
+          flex: none;
+        }
+      }
+
+      /* The prototype's switcher: not part of the design. */
+      .proto-switch {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+        border-radius: 10px;
+        background: #f4f4f5;
+        color: #27272a;
+        font: 500 12px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+      }
+      .proto-switch span {
+        padding: 0 6px 0 4px;
+        color: #52525b;
+      }
+      .proto-switch a {
+        padding: 7px 9px;
+        border-radius: 7px;
+        color: #27272a;
+      }
+      .proto-switch a:hover {
+        background: #e4e4e7;
+      }
+      .proto-switch a[aria-current="page"] {
+        background: #27272a;
+        color: #fafafa;
+      }
+      .proto-switch a:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 1px;
+      }
+      .is-framed .proto-switch {
+        display: none;
+      }
+
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" id="top">
+      <a class="identity" href="/" aria-label="Jerome Mendoza, home">Jerome Mendoza</a>
+      <nav id="primary-nav" aria-label="Primary navigation">
+        <a href="/" aria-current="page">Home</a>
+        <a href="/work/multi-company-hris">Case study</a>
+        <a href="/work/ai-odoo-rnd">AI R&amp;D</a>
+        <a href="/work/payment-provider">Integration</a>
+        <a href="/work/public-sector-hris">Public sector</a>
+        <a href="/#after">After hours</a>
+        <a href="/#method">Method</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="clock" role="img" aria-label="Manila time"><span>Manila</span><b>--:--</b></p>
+      <button class="menu-button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </header>
+    <main id="main" tabindex="-1">
+      <section class="hero" aria-labelledby="hero-title">
+        <svg class="hero-scene" aria-hidden="true"></svg>
+        <div class="hero-copy">
+          <p class="hero-name"><strong>Jerome Mendoza</strong>, platform engineer in the Philippines</p>
+          <h1 id="hero-title">Every record ends with <em>a&nbsp;person.</em></h1>
+          <p class="hero-lede">
+            A punch at the gate. An overtime request. A payment webhook at 25:00. Somewhere down the line, someone gets
+            paid, or doesn't. I build the HR, payroll, and payment systems that make sure they do.
+          </p>
+          <div class="hero-actions">
+            <a class="hero-action hero-action-solid" href="/#work">See the work</a>
+            <a class="hero-action hero-action-line" href="mailto:mendozajeromevrixen@gmail.com">Email me</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <nav class="proto-switch" aria-label="Prototype variants">
+      <span>#68</span>
+      <a href="?v=now" data-v="now">Now</a>
+      <a href="?v=a" data-v="a">A</a>
+      <a href="?v=b" data-v="b">B</a>
+      <a href="frames.html" data-frames>5 sizes</a>
+    </nav>
+
+    <script type="module">
+      // ------------------------------------------------------------------
+      // Shared drawing helpers
+      // ------------------------------------------------------------------
+
+      const ns = "http://www.w3.org/2000/svg";
+      const reducedMotion = "(prefers-reduced-motion: reduce)";
+
+      // Creates an SVG element with the given attributes and appends it to parent.
+      function draw(name, attributes, parent) {
+        const element = document.createElementNS(ns, name);
+        for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value));
+        parent.appendChild(element);
+        return element;
+      }
+      const seeded = (seed) => {
+        let n = seed;
+        return () => (n = (n * 16807) % 2147483647) / 2147483647;
+      };
+
+      // ------------------------------------------------------------------
+      // The iron hands (src/iron-hands.ts)
+      // ------------------------------------------------------------------
+
+      const came = { fill: "#9b8794" };
+      const fine = { "vector-effect": "non-scaling-stroke", "stroke-linecap": "round", "stroke-linejoin": "round" };
+      const heartPath = "M0 10 C -12 0, -12 -12, 0 -5 C 12 -12, 12 0, 0 10 Z";
+      const pane = (d, fill, parent) => draw("path", { d, fill, stroke: "#9b8794", "stroke-width": 0.9, ...fine }, parent);
+      const wire = (d, parent, stroke, width) => draw("path", { d, fill: "none", stroke, "stroke-width": width, ...fine }, parent);
+
+      function piece(parent, length, turn, attributes) {
+        const hand = draw("g", attributes, parent);
+        const scale = length / 100;
+        const unit = draw("g", { transform: `rotate(${turn}) scale(${scale.toFixed(3)} ${(scale * 1.08).toFixed(3)})` }, hand);
+        return [hand, unit];
+      }
+
+      function hourHand(parent, length, turn = 0) {
+        const [hand, unit] = piece(parent, length, turn, { class: "iron-hand iron-hand-hour" });
+        draw("path", { d: "M-15,0 L-6,-2.4 L31,-1.6 L31,1.6 L-6,2.4 Z", ...came }, unit);
+        draw("circle", { cx: -9.5, r: 1.4, fill: "#06060b" }, unit);
+        wire("M22,-1.7 C24,-8.5 31,-12 35.5,-10 C38,-8.8 37.4,-6 35,-6.4 M22,1.7 C24,8.5 31,12 35.5,10 C38,8.8 37.4,6 35,6.4", unit, "#b8a3ae", 1);
+        wire(heartPath, draw("g", { transform: "translate(40 0) rotate(90) scale(.95)" }, unit), "#b8a3ae", 1.3);
+        wire(heartPath, draw("g", { transform: "translate(41.6 0) rotate(90) scale(.52)" }, unit), "#f0b4dc", 1);
+        draw("path", { d: "M45,-3.2 L84,-2.6 L84,2.6 L45,3.2 Z", fill: "#d8d0e4", "fill-opacity": 0.5, stroke: "#9b8794", "stroke-width": 0.9, ...fine }, unit);
+        for (let i = 1; i < 12; i++) {
+          const x = 45 + i * 3.25;
+          draw("path", { d: `M${x},-3.1 V3.1`, stroke: "#06060b", "stroke-width": 0.5, opacity: 0.6, ...fine }, unit);
+          if ([1, 1, 0, 1, 1, 1, 0][(i - 1) % 7]) draw("rect", { x: x - 0.85, y: -3, width: 1.7, height: 3.6, fill: "#06060b", opacity: 0.85 }, unit);
+        }
+        pane("M84,-2.6 C90,-5.8 96.5,-4.6 100,.6 C95,-1.4 90,-.4 84,2.6 Z", "#7a4870", unit);
+        draw("path", { d: "M85.5,1.6 L95,-3.4", stroke: "#9b8794", "stroke-width": 0.5, opacity: 0.6, ...fine }, unit);
+        draw("path", { d: heartPath, transform: "translate(89.5 -.4) rotate(90) scale(.15)", fill: "#f0b4dc" }, unit);
+        return hand;
+      }
+
+      function minuteHand(parent, length, turn = 0) {
+        const [hand, unit] = piece(parent, length, turn, { class: "iron-hand iron-hand-minute" });
+        draw("path", { d: "M-13,0 L-5,-1.8 L64,-.9 L64,.9 L-5,1.8 Z", ...came }, unit);
+        draw("circle", { cx: -8.5, r: 1.1, fill: "#06060b" }, unit);
+        wire("M9,-1.4 C12,-7.5 21,-8.6 23.4,-4.6 C24.6,-2.2 22,-1.2 20.8,-3 M9,1.4 C12,7.5 21,8.6 23.4,4.6 C24.6,2.2 22,1.2 20.8,3", unit, "#b8a3ae", 1);
+        draw("circle", { cx: 29, r: 1.5, ...came }, unit);
+        wire("M62,-1 C59.5,-2 57.5,-3.6 56.4,-6.2 M62,1 C59.5,2 57.5,3.6 56.4,6.2", unit, "#b8a3ae", 1);
+        pane("M62,0 L74,-3.4 L100,0 L74,3.4 Z", "#5b4680", unit);
+        draw("path", { d: "M64,0 H97 M74,-3.4 L80,0 L74,3.4", fill: "none", stroke: "#9b8794", "stroke-width": 0.5, opacity: 0.7, ...fine }, unit);
+        return hand;
+      }
+
+      // ------------------------------------------------------------------
+      // The dial and its lilies (src/hero-dial.ts)
+      // ------------------------------------------------------------------
+
+      const manilaTime = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Manila", minute: "2-digit", second: "2-digit" });
+      const paneTones = ["#2b2436", "#3a2d4d", "#4a3a63", "#33293f"];
+      const baseDefs = `
+        <radialGradient id="hero-glow"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".25" stop-color="#bb6688" stop-opacity=".42"/><stop offset=".55" stop-color="#4a3a63" stop-opacity=".2"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
+        <radialGradient id="hero-petal" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#8d93bd"/><stop offset=".32" stop-color="#535b7e"/><stop offset=".72" stop-color="#394060"/><stop offset="1" stop-color="#2a2f48"/></radialGradient>
+        <radialGradient id="hero-petal-in" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#aeb2da"/><stop offset=".5" stop-color="#6a7296"/><stop offset="1" stop-color="#454c6c"/></radialGradient>
+        <radialGradient id="hero-lily-glow"><stop offset="0" stop-color="#f2f3ff" stop-opacity=".5"/><stop offset=".4" stop-color="#b9bde6" stop-opacity=".25"/><stop offset="1" stop-color="#b9bde6" stop-opacity="0"/></radialGradient>
+        <radialGradient id="glint-halo"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".5"/><stop offset=".3" stop-color="#a599d8" stop-opacity=".16"/><stop offset="1" stop-color="#a599d8" stop-opacity="0"/></radialGradient>
+        <radialGradient id="glint-halo-lilac"><stop offset="0" stop-color="#d9d2ff" stop-opacity=".42"/><stop offset=".3" stop-color="#a599d8" stop-opacity=".12"/><stop offset="1" stop-color="#a599d8" stop-opacity="0"/></radialGradient>`;
+
+      const smoked = { petal: "url(#hero-petal)", petalIn: "url(#hero-petal-in)", edge: "#b9bedd", edgeOpacity: 0.75, vein: "#cdd1ee", dust: "#eef0ff" };
+      const plum = { petal: "rgba(74,58,99,.2)", petalIn: "rgba(74,58,99,.3)", edge: "#9b8794", edgeOpacity: 0.55, vein: "#9b8794", dust: "#cfc8de" };
+      const petalPath = "M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C9,-88 31,-64 28,-34 C26,-16 12,-5 0,0 Z";
+      const petalShade = "M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C2,-70 1,-40 0,0 Z";
+
+      // Round 2 adds tilt, to see a lily from the side (1 is face on) with its
+      // axis turned by lean; sway, to let it turn in the air; and twinkle,
+      // the share of its starlight that twinkles. With none of them it draws
+      // as the shipped lily does.
+      function lily(parent, x, y, scale, rotation, seed, { opacity = 0.9, bud = true, glitter = 46, tint = smoked, tilt = 1, lean = 0, sway = false, twinkle = 0 } = {}) {
+        const random = seeded(seed);
+        const transform = tilt === 1 ? `translate(${x} ${y}) rotate(${rotation}) scale(${scale})` : `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${lean}) scale(${scale} ${(scale * tilt).toFixed(3)}) rotate(${rotation})`;
+        let group = draw("g", { transform, opacity }, parent);
+        if (sway) {
+          group = draw("g", { class: "lily-sway" }, group);
+          group.style.animationDelay = `${(-seed * 1.7) % 11}s`;
+        }
+        const line = { fill: "none", stroke: tint.vein, "vector-effect": "non-scaling-stroke" };
+        const ring = (count, size, fill, turn, veins) => {
+          for (let i = 0; i < count; i++) {
+            const angle = i * (360 / count) + turn + (random() - 0.5) * 12;
+            const petal = draw("g", { transform: `rotate(${angle.toFixed(1)}) scale(${(size * (0.86 + random() * 0.22)).toFixed(2)})` }, group);
+            draw("path", { d: petalPath, fill, stroke: tint.edge, "stroke-width": 1, "stroke-opacity": tint.edgeOpacity, "vector-effect": "non-scaling-stroke" }, petal);
+            draw("path", { d: petalShade, fill: "#12142a", opacity: 0.3 }, petal);
+            draw("path", { d: "M0,-5 C1,-40 2,-70 8,-94", ...line, "stroke-width": 0.7, opacity: 0.4 }, petal);
+            if (veins) draw("path", { d: "M1,-28 C-6,-36 -12,-42 -17,-50 M2,-44 C8,-52 13,-58 16,-64", ...line, "stroke-width": 0.5, opacity: 0.2 }, petal);
+          }
+        };
+        ring(7, 1, tint.petal, 0, true);
+        ring(5, 0.56, tint.petalIn, 180 / 7, false);
+        if (bud) {
+          draw("circle", { r: 40, fill: tint.glow ?? "url(#hero-lily-glow)" }, group);
+          for (const angle of [-24, 0, 24]) {
+            draw("path", { d: "M0,0 C-7,-6 -6,-18 0,-26 C6,-18 7,-6 0,0 Z", transform: `rotate(${angle})`, fill: tint.budFill ?? "#8e94bd", stroke: tint.budEdge ?? "#d6d9f2", "stroke-width": 0.8, "stroke-opacity": 0.7, "fill-opacity": 0.75, "vector-effect": "non-scaling-stroke" }, group);
+          }
+        }
+        for (let i = 0; i < glitter; i++) {
+          const angle = random() * Math.PI * 2;
+          const r = 3 + 82 * random() ** 1.7;
+          const dot = draw("circle", { cx: (Math.cos(angle) * r).toFixed(1), cy: (Math.sin(angle) * r).toFixed(1), r: (random() * 1.1 + 0.35).toFixed(2), fill: tint.dust, opacity: (random() * 0.6 + 0.25).toFixed(2) }, group);
+          if (twinkle && i % Math.round(1 / twinkle) === 0) {
+            dot.classList.add("twinkle");
+            dot.style.animationDelay = `${(-i * 0.73) % 6}s`;
+          }
+        }
+        return group;
+      }
+
+      // The dial's panes, numerals, rings, and ticks, with the hands and the
+      // boss on top. heart draws what blooms at its centre, under the panes.
+      function dial(parent, radius, reduce, heart) {
+        const r1 = radius * 0.79;
+        const r2 = radius * 0.95;
+        const step = (2 * Math.PI) / 25;
+        const up = -Math.PI / 2;
+        const at = (r, a) => [r * Math.cos(a), r * Math.sin(a)];
+        const bloom = heart ? heart(parent, radius) : lily(parent, 0, 0, radius * 0.0048, 0, 5, { opacity: 0.85, bud: false, glitter: 24, tint: plum });
+        for (let k = 0; k < 25; k++) {
+          const a0 = (k - 0.5) * step + up;
+          const a1 = (k + 0.5) * step + up;
+          const [x0, y0] = at(r1, a0);
+          const [x1, y1] = at(r2, a0);
+          const [x2, y2] = at(r2, a1);
+          const [x3, y3] = at(r1, a1);
+          const fill = k === 0 ? "#7a4870" : k % 5 ? paneTones[k % 4] : "#5b4680";
+          const glass = draw("path", { d: `M${x0},${y0} L${x1},${y1} A${r2},${r2} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x0},${y0} Z`, class: k % 3 ? "dial-pane" : "dial-pane glass", fill, opacity: 0.78, stroke: "#9b8794", "stroke-width": 0.8 }, parent);
+          if (k % 3 === 0) glass.style.animationDelay = `${-k * 0.6}s`;
+          const [fx0, fy0] = at(r1, a0 + (a1 - a0) * (0.3 + ((k * 37) % 40) / 100));
+          const [fx1, fy1] = at(r2, a0 + (a1 - a0) * 0.7);
+          draw("path", { d: `M${fx0},${fy0} L${fx1},${fy1}`, stroke: "#9b8794", "stroke-width": 0.5, opacity: 0.6 }, parent);
+          const [dx, dy] = at(radius, a0);
+          draw("path", { d: "M0 -5 L3 0 L0 5 L-3 0 Z", transform: `translate(${dx} ${dy}) rotate(${(a0 * 180) / Math.PI})`, fill: "#9b8794" }, parent);
+          const hour = k === 0 ? 25 : k;
+          const [tx, ty] = at(radius * 0.87, k * step + up);
+          draw("text", { class: "dial-numeral", x: tx, y: ty, "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Shippori Mincho, serif", "font-size": (radius * (hour === 25 ? 0.05 : 0.034)).toFixed(1), fill: hour === 25 ? "#f0b4dc" : "#cfc8de", opacity: hour === 25 ? 1 : 0.7 }, parent).textContent = String(hour);
+        }
+        [radius, radius * 1.03, r1, radius * 0.7].forEach((r, i) => draw("circle", { class: "dial-ring", r, fill: "none", stroke: "#9b8794", "stroke-width": i === 3 ? 0.6 : 1, opacity: i === 3 ? 0.5 : 0.8 }, parent));
+        for (let k = 0; k < 125; k++) {
+          const a = (k * 2 * Math.PI) / 125;
+          const [x0, y0] = at(radius * 0.7, a);
+          const [x1, y1] = at(radius * (k % 5 ? 0.725 : 0.745), a);
+          draw("path", { class: "dial-tick", d: `M${x0},${y0} L${x1},${y1}`, stroke: "#9b8794", "stroke-width": 0.7, opacity: 0.7 }, parent);
+        }
+        const hour = hourHand(parent, radius * 0.56);
+        const minute = minuteHand(parent, radius * 0.72);
+        const second = draw("g", reduce ? { class: "dial-second-hand", display: "none" } : { class: "dial-second-hand" }, parent);
+        draw("path", { d: `M${-radius * 0.1},0 L${radius * 0.76},0`, stroke: "#f0b4dc", "stroke-width": 0.9, opacity: 0.8 }, second);
+        draw("circle", { class: "dial-boss", r: 7, fill: "#9b8794" }, parent);
+        draw("circle", { r: 10, fill: "none", stroke: "#9b8794", "stroke-width": 0.9, opacity: 0.8 }, parent);
+        draw("circle", { r: 2.5, fill: "#06060b" }, parent);
+        return { hour, minute, second, bloom };
+      }
+
+      // ------------------------------------------------------------------
+      // The records (src/hero-records.ts)
+      // ------------------------------------------------------------------
+
+      const sparkPath = "M0 -6 L1 -1 L6 0 L1 1 L0 6 L-1 1 L-6 0 L-1 -1 Z";
+      const copy = ".hero-name, .hero-copy h1, .hero-lede, .hero-actions";
+      const bez = ([p0, p1, p2, p3], t) => {
+        const u = 1 - t;
+        return u * u * u * p0 + 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t * p3;
+      };
+      const dbez = ([p0, p1, p2, p3], t) => {
+        const u = 1 - t;
+        return 3 * u * u * (p1 - p0) + 6 * u * t * (p2 - p1) + 3 * t * t * (p3 - p2);
+      };
+      const along = ([xs, ys], t) => {
+        const tx = dbez(xs, t);
+        const ty = dbez(ys, t);
+        const l = Math.hypot(tx, ty) || 1;
+        return { x: bez(xs, t), y: bez(ys, t), nx: -ty / l, ny: tx / l };
+      };
+
+      function boxes(hero, selector, pad) {
+        const origin = hero.getBoundingClientRect();
+        return [...document.querySelectorAll(selector)].map((element) => {
+          const box = element.getBoundingClientRect();
+          return { l: box.left - origin.left - pad, t: box.top - origin.top - pad, r: box.right - origin.left + pad, b: box.bottom - origin.top + pad };
+        });
+      }
+
+      // Piano keys along a curve. Returns boxes for the labels to keep off,
+      // and the points along its middle.
+      function ribbon(parent, d, width) {
+        const guide = draw("path", { d }, parent);
+        const length = guide.getTotalLength();
+        const points = Array.from({ length: 81 }, (_, i) => {
+          const at = (l) => guide.getPointAtLength(Math.min(length, Math.max(0, l)));
+          const { x, y } = at((length * i) / 80);
+          const ahead = at((length * i) / 80 + 1);
+          const behind = at((length * i) / 80 - 1);
+          const l = Math.hypot(ahead.x - behind.x, ahead.y - behind.y) || 1;
+          return { x, y, nx: -(ahead.y - behind.y) / l, ny: (ahead.x - behind.x) / l };
+        });
+        guide.remove();
+        const offset = (o) => "M" + points.map(({ x, y, nx, ny }) => `${(x + nx * o).toFixed(1)},${(y + ny * o).toFixed(1)}`).join(" L");
+        const group = draw("g", { class: "ribbon", "data-width": width }, parent);
+        const band = { fill: "none", "stroke-width": width };
+        draw("path", { class: "ribbon-band", d: offset(0), ...band, stroke: "#d8d0e4", opacity: 0.42 }, group);
+        draw("path", { d: offset(0), ...band, stroke: "#06060b", "stroke-dasharray": "1.2 8.8", opacity: 0.55 }, group);
+        draw("path", { d: offset(-width * 0.2), fill: "none", stroke: "#06060b", "stroke-width": width * 0.6, "stroke-dasharray": "6 4 6 14 6 4 6 4 6 14", "stroke-dashoffset": 3, opacity: 0.9 }, group);
+        for (const o of [-width / 2, width / 2]) draw("path", { d: offset(o), fill: "none", stroke: "#9b8794", "stroke-width": 0.8, opacity: 0.6 }, group);
+        return { boxes: points.map(({ x, y }) => ({ l: x - width, t: y - width, r: x + width, b: y + width })), points };
+      }
+
+      function drawHeroRecords(svg, layout) {
+        const { width: W, height: H, heart, radius: R, mobile, reduce, sparkles: sparkleCount = 16 } = layout;
+        const hero = svg.parentElement;
+        const start = performance.now();
+        const group = draw("g", { class: "hero-records" }, svg);
+        const random = seeded(11);
+
+        draw("linearGradient", { id: "hero-fade", gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: heart.x, y2: 0 }, svg.querySelector("defs") ?? svg).innerHTML =
+          '<stop offset="0" stop-color="#cfc8de" stop-opacity=".06"/><stop offset=".6" stop-color="#cfc8de" stop-opacity=".34"/><stop offset="1" stop-color="#f0b4dc" stop-opacity=".7"/>';
+
+        const origin = hero.getBoundingClientRect();
+        const header = document.querySelector(".site-header")?.getBoundingClientRect();
+        const headerBottom = header ? header.bottom - origin.top : 0;
+        const mark = (document.querySelector(".site-header .identity")?.getBoundingClientRect().right ?? 180) - origin.left;
+        const nav = document.querySelector(".site-header nav");
+        const links = (nav?.offsetWidth ? nav : document.querySelector(".site-header .clock"))?.getBoundingClientRect();
+        const linksLeft = (links?.left ?? W - 200) - origin.left;
+        const yb = Math.max(headerBottom + 14, (headerBottom + heart.y - R * 1.06) / 2);
+        const x0 = Math.max(mark + 40, linksLeft - 150);
+        const route = mobile
+          ? { d: `M${mark + 32},-20 C ${mark + 27},40 ${mark - 23},75 ${mark - 93},95 S -10,130 -30,175`, width: 12 }
+          : { d: `M${x0},-30 C ${x0 + 30},${yb * 0.8} ${x0 + 90},${yb + 12} ${x0 + 220},${yb + 12} S ${W - 120},${Math.max(headerBottom + 16, yb - 22)} ${W + 30},${yb + 36}`, width: 16 };
+        // A variant may draw the ribbon its own way, or route it elsewhere.
+        const keys = layout.keys ? layout.keys(group, { ...route, mark, x0, yb, headerBottom }) : ribbon(group, route.d, route.width);
+
+        const sparkles = Array.from({ length: sparkleCount }, () => {
+          const at = draw("g", {}, group);
+          const sparkle = draw("path", { class: "sparkle", d: sparkPath, fill: "#f0b4dc" }, at);
+          sparkle.style.animationDelay = `${(-random() * 4).toFixed(2)}s`;
+          return at;
+        });
+
+        const starts = mobile
+          ? [[-20, H * 0.05], [-20, H * 0.32], [W * 0.25, -20], [-20, H * 0.55], [W * 0.55, -20], [W + 20, H * 0.42], [W + 20, H * 0.02]]
+          : [[-20, H * 0.14], [-20, H * 0.8], [W * 0.3, -20], [-20, H * 0.42], [W * 0.55, H + 20], [W * 0.95, -20], [W + 20, H * 0.85]];
+        const threads = starts.map(([x, y], i) => {
+          const staff = i < 3;
+          const stroke = staff || x < heart.x ? "url(#hero-fade)" : "rgba(207,200,222,.26)";
+          const lines = Array.from({ length: staff ? 5 : 1 }, () => draw("path", { class: staff ? "record-staff" : "record-thread", fill: "none", stroke, "stroke-width": 0.8 }, group));
+          const marks = staff
+            ? [0, 1].map(() => {
+                const note = draw("g", { class: "record-note" }, group);
+                draw("ellipse", { rx: 4.6, ry: 3.2, transform: "rotate(-22)", fill: "#ece8f4" }, note);
+                draw("path", { d: "M4 -1 V-17", stroke: "#ece8f4", "stroke-width": 1.2 }, note);
+                return note;
+              })
+            : [draw("circle", { class: "record-dot", r: 2.2, fill: "#ece8f4" }, group)];
+          if (reduce) marks.forEach((m) => m.setAttribute("display", "none"));
+          return { x, y, seed: i * 1.7, speed: 9000 + ((i * 1931) % 5000), offset: (i * 0.37) % 1, lines, marks, progress: [] };
+        });
+        const spacing = mobile ? 3.6 : 4.6;
+
+        function curve(th, t, sway) {
+          const dx = heart.x - th.x;
+          const dy = heart.y - th.y;
+          return [
+            [th.x, th.x + dx * 0.35 + Math.sin(t * 0.35 + th.seed) * 22 * sway, th.x + dx * 0.72 + Math.cos(t * 0.25 + th.seed) * 18 * sway, heart.x],
+            [th.y, th.y + dy * 0.1 + Math.cos(t * 0.3 + th.seed) * 26 * sway - 40, heart.y - dy * 0.08 + Math.sin(t * 0.4 + th.seed) * 16 * sway, heart.y],
+          ];
+        }
+
+        function place() {
+          const text = boxes(hero, copy, 10);
+          let n = 29;
+          const spot = () => (n = (n * 16807) % 2147483647) / 2147483647;
+          for (const at of sparkles) {
+            let x = 0;
+            let y = 0;
+            let clear = false;
+            for (let tries = 0; tries < 30 && !clear; tries++) {
+              x = spot() * W;
+              y = spot() * H;
+              clear = !text.some((k) => x > k.l && x < k.r && y > k.t && y < k.b);
+            }
+            at.setAttribute("transform", `translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${(spot() * 0.8 + 0.5).toFixed(2)})`);
+            at.setAttribute("display", clear ? "inline" : "none");
+          }
+        }
+
+        function advance(now) {
+          const t = (now - start) / 1000;
+          let arrived = false;
+          for (const th of threads) {
+            const path = curve(th, t, reduce ? 0 : 1);
+            if (th.lines.length === 1) {
+              const [xs, ys] = path;
+              th.lines[0].setAttribute("d", `M${xs[0]},${ys[0]} C${xs[1]},${ys[1]} ${xs[2]},${ys[2]} ${xs[3]},${ys[3]}`);
+            } else {
+              const points = Array.from({ length: 41 }, (_, i) => ({ ...along(path, i / 40), f: (1 - i / 40) ** 0.8 }));
+              th.lines.forEach((line, j) => {
+                const o = (j - 2) * spacing;
+                line.setAttribute("d", "M" + points.map(({ x, y, nx, ny, f }) => `${(x + nx * o * f).toFixed(1)},${(y + ny * o * f).toFixed(1)}`).join(" L"));
+              });
+            }
+            if (reduce) continue;
+            th.marks.forEach((m, k) => {
+              const p = (now / th.speed + th.offset + k * 0.5) % 1;
+              if (p < (th.progress[k] ?? 0)) arrived = true;
+              th.progress[k] = p;
+              const e = p * p * (3 - 2 * p);
+              const pt = along(path, e);
+              m.setAttribute("opacity", Math.min(1, p * 6, (1 - p) * 8).toFixed(2));
+              if (m instanceof SVGCircleElement) {
+                m.setAttribute("cx", pt.x.toFixed(1));
+                m.setAttribute("cy", pt.y.toFixed(1));
+                return;
+              }
+              const o = (k ? 1 : -1) * (k + 1) * 0.5 * spacing * (1 - e) ** 0.8;
+              m.setAttribute("transform", `translate(${(pt.x + pt.nx * o).toFixed(1)} ${(pt.y + pt.ny * o).toFixed(1)}) scale(${(0.6 + 0.4 * (1 - e)).toFixed(2)})`);
+            });
+          }
+          return arrived;
+        }
+
+        // The point on the ribbon's middle nearest x, for things hung from it.
+        const ribbonAt = (x) => keys.points.reduce((best, p) => (Math.abs(p.x - x) < Math.abs(best.x - x) ? p : best));
+
+        return { place, advance, ribbonAt, keys };
+      }
+
+      // ------------------------------------------------------------------
+      // Round 1 A's night sky: dust and glints
+      // ------------------------------------------------------------------
+
+      // A glint like the reference's: long rays up and down, shorter across,
+      // a fainter cross between them, a white core and a halo.
+      function glint(parent, x, y, size, { ray = "#f6d9ee", halo = "url(#glint-halo)", core = "#fff8fd", delay = 0 } = {}) {
+        const at = draw("g", { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)})` }, parent);
+        const g = draw("g", { class: "glint" }, at);
+        g.style.animationDelay = `${delay.toFixed(2)}s`;
+        const c = size * 0.06;
+        const h = size * 0.62;
+        draw("circle", { r: (size * 1.1).toFixed(1), fill: halo }, g);
+        draw("path", { d: `M0,${-size} Q${c},${-c} ${h},0 Q${c},${c} 0,${size} Q${-c},${c} ${-h},0 Q${-c},${-c} 0,${-size}Z`, fill: ray }, g);
+        const s = size * 0.36;
+        const e = s * 0.12;
+        draw("path", { d: `M0,${-s} Q${e},${-e} ${s},0 Q${e},${e} 0,${s} Q${-e},${e} ${-s},0 Q${-e},${-e} 0,${-s}Z`, fill: ray, opacity: 0.55, transform: "rotate(45)" }, g);
+        draw("circle", { r: (size * 0.09).toFixed(2), fill: core }, g);
+        return { element: at, x, y, r: size * 0.7 };
+      }
+
+      // An svg of its own behind the scene, for the sky.
+      function skyLayer(L) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "hero-sky";
+        wrapper.setAttribute("aria-hidden", "true");
+        L.hero.insertBefore(wrapper, L.svg);
+        const svg = document.createElementNS(ns, "svg");
+        wrapper.appendChild(svg);
+        Object.assign(svg.style, { left: "0", top: "0", width: "100%", height: "100%" });
+        svg.setAttribute("viewBox", `0 0 ${L.width} ${L.height}`);
+        return svg;
+      }
+
+      // Dust of stars over the hero in three sizes, a few twinkling.
+      function starDust(L, parent, { count, seed, colors, twinkle = 0.16, bright = 1 }) {
+        const random = seeded(seed);
+        const group = draw("g", { class: "star-dust" }, parent);
+        const stars = [];
+        for (let i = 0; i < count; i++) {
+          const x = random() * L.width;
+          const y = random() * L.height;
+          const r = 0.35 + random() ** 4 * 1.5 * bright;
+          const star = draw("circle", { cx: x.toFixed(1), cy: y.toFixed(1), r: r.toFixed(2), fill: colors[Math.floor(random() * colors.length)], opacity: (0.22 + random() * 0.62).toFixed(2) }, group);
+          if (random() < twinkle) {
+            star.classList.add("twinkle");
+            star.style.animationDelay = `${(-random() * 6).toFixed(2)}s`;
+            star.style.animationDuration = `${(3 + random() * 4).toFixed(1)}s`;
+          }
+          stars.push({ element: star, x, y, r: r + 3 });
+        }
+        L.placers.push(() => hideOnCopy(L, stars));
+        return group;
+      }
+
+      // The box of every line of the copy's text, and of its buttons, in the
+      // hero's coordinates.
+      function textLines(hero, pad) {
+        const origin = hero.getBoundingClientRect();
+        const rects = [...hero.querySelectorAll(".hero-actions a")].map((a) => a.getBoundingClientRect());
+        for (const element of hero.querySelectorAll(".hero-copy *")) {
+          for (const node of element.childNodes) {
+            if (node.nodeType !== Node.TEXT_NODE || !node.textContent.trim()) continue;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            rects.push(...range.getClientRects());
+          }
+        }
+        return rects.map((r) => ({ l: r.left - origin.left - pad, t: r.top - origin.top - pad, r: r.right - origin.left + pad, b: r.bottom - origin.top + pad }));
+      }
+
+      // Where the copy sits, in the hero's coordinates: its left edge, the
+      // name line, the heading's first line, the lede, and the buttons.
+      function copyFrame(hero) {
+        const origin = hero.getBoundingClientRect();
+        const local = (r) => ({ l: r.left - origin.left, t: r.top - origin.top, r: r.right - origin.left, b: r.bottom - origin.top });
+        const bound = (boxes) => ({ l: Math.min(...boxes.map((k) => k.l)), t: Math.min(...boxes.map((k) => k.t)), r: Math.max(...boxes.map((k) => k.r)), b: Math.max(...boxes.map((k) => k.b)) });
+        const lines = (element) => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return [...range.getClientRects()].filter((r) => r.width).map(local);
+        };
+        const heading = lines(hero.querySelector(".hero-copy h1"));
+        const top = Math.min(...heading.map((k) => k.t));
+        return {
+          left: local(hero.querySelector(".hero-copy").getBoundingClientRect()).l,
+          name: bound(lines(hero.querySelector(".hero-name"))),
+          head: bound(heading.filter((k) => k.t < top + 8)),
+          heading,
+          lede: bound(lines(hero.querySelector(".hero-lede"))),
+          actions: bound([...hero.querySelectorAll(".hero-actions a")].map((a) => local(a.getBoundingClientRect()))),
+        };
+      }
+
+      // Hides the stars that would sit on the copy, once it has settled.
+      function hideOnCopy(L, items) {
+        const text = textLines(L.hero, 8);
+        for (const { element, x, y, r } of items) {
+          const on = text.some((k) => x + r > k.l && x - r < k.r && y + r > k.t && y - r < k.b);
+          element.setAttribute("display", on ? "none" : "inline");
+        }
+      }
+
+      // Glints at fractions of the hero, kept off the copy. On tablets and
+      // the new phones the dial moves, so they keep off it too.
+      function glints(L, parent, spots, options = {}) {
+        const clear = ([fx, fy]) => !(L.tablet || L.phone) || Math.hypot(fx * L.width - L.heart.x, fy * L.height - L.heart.y) > 1.15 * L.radius;
+        const items = spots.filter(clear).map(([fx, fy, size], i) => glint(parent, fx * L.width, fy * L.height, size, { ...options, delay: -i * 1.9 }));
+        L.placers.push(() => hideOnCopy(L, items));
+      }
+
+      // The sky as round 1's A drew it: dust over the whole hero, and nine
+      // glints (five on a phone) where they sat then.
+      function nightSky(L) {
+        starDust(L, skyLayer(L), { count: Math.round((L.width * L.height) / (L.mobile ? 2400 : 3200)), seed: 13, colors: ["#eef0ff", "#eef0ff", "#d9d2f0", "#f0b4dc", "#a599d8"] });
+      }
+      function nightGlints(L, parent) {
+        glints(L, parent, L.mobile
+          ? [[0.08, 0.08, 12], [0.62, 0.02, 8], [0.94, 0.37, 10], [0.36, 0.33, 7], [0.92, 0.985, 14]]
+          : [[0.05, 0.17, 18], [0.3, 0.09, 10], [0.57, 0.23, 14], [0.6, 0.87, 22], [0.985, 0.44, 11], [0.7, 0.15, 8], [0.875, 0.8, 24], [0.36, 0.94, 12], [0.84, 0.27, 7]]);
+      }
+
+      // ------------------------------------------------------------------
+      // Piano keys
+      // ------------------------------------------------------------------
+
+      const deg = Math.PI / 180;
+      const smooth = (a, b, t) => {
+        const x = Math.min(1, Math.max(0, (t - a) / (b - a)));
+        return x * x * (3 - 2 * x);
+      };
+      const poly = (points) => "M" + points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" L") + "Z";
+      // The white keys that have a black key after them, in an octave from C.
+      const sharps = [1, 1, 0, 1, 1, 1, 0];
+
+      // Lights a run of keys: the head brightest, the keys behind it fading.
+      // light(head) moves the run to key head; light(null) puts it out.
+      function keyLights(keys, { trail = 9, color = "#f0b4dc" } = {}) {
+        const lamps = Array.from({ length: trail }, () => draw("path", { fill: color, opacity: 0 }, keys[0].lamps));
+        let last = null;
+        return (head) => {
+          const i = head === null ? null : Math.floor(head);
+          if (i === last) return;
+          last = i;
+          lamps.forEach((lamp, j) => {
+            const key = i === null ? null : keys[i - j];
+            if (!key || !key.face) return lamp.setAttribute("opacity", "0");
+            if (lamp.parentNode !== key.lamps) key.lamps.appendChild(lamp);
+            lamp.setAttribute("d", key.d);
+            lamp.setAttribute("opacity", ((1 - j / trail) ** 1.5 * (0.35 + 0.65 * Math.min(1, key.face))).toFixed(2));
+          });
+        };
+      }
+
+      // ------------------------------------------------------------------
+      // Space: points are [x, y, z], x and y in the hero's pixels and z
+      // running away from us. The camera looks in from in front of the heart.
+      // ------------------------------------------------------------------
+
+      const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+      const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+      const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+      const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+      const span = (a) => Math.hypot(a[0], a[1], a[2]);
+      const unit = (a) => mul(a, 1 / (span(a) || 1));
+      const mix3 = (a, b, u) => add(a, mul(sub(b, a), u));
+
+      function camera(L) {
+        const { x, y } = L.heart;
+        const F = 1.1 * Math.max(L.width, L.height);
+        const scale = (z) => F / (F + z);
+        return {
+          eye: [x, y, -F],
+          scale,
+          project: ([px, py, pz]) => [x + (px - x) * scale(pz), y + (py - y) * scale(pz)],
+          // Where a point must sit in space to be seen at sx, sy from depth z.
+          unproject: ([sx, sy, z]) => [x + (sx - x) / scale(z), y + (sy - y) / scale(z), z],
+        };
+      }
+
+      // A smooth curve through points (centripetal Catmull-Rom), finely sampled.
+      function spline(points, steps = 32) {
+        const ends = [sub(mul(points[0], 2), points[1]), ...points, sub(mul(points.at(-1), 2), points.at(-2))];
+        const out = [];
+        for (let i = 1; i < ends.length - 2; i++) {
+          const [p0, p1, p2, p3] = ends.slice(i - 1, i + 3);
+          const d01 = Math.sqrt(span(sub(p1, p0))) || 1e-3;
+          const d12 = Math.sqrt(span(sub(p2, p1))) || 1e-3;
+          const d23 = Math.sqrt(span(sub(p3, p2))) || 1e-3;
+          const m1 = mul(add(sub(mul(sub(p1, p0), 1 / d01), mul(sub(p2, p0), 1 / (d01 + d12))), mul(sub(p2, p1), 1 / d12)), d12);
+          const m2 = mul(add(sub(mul(sub(p2, p1), 1 / d12), mul(sub(p3, p1), 1 / (d12 + d23))), mul(sub(p3, p2), 1 / d23)), d12);
+          for (let s = 0; s < steps; s++) {
+            const u = s / steps;
+            const [u2, u3] = [u * u, u * u * u];
+            out.push(add(add(mul(p1, 2 * u3 - 3 * u2 + 1), mul(m1, u3 - 2 * u2 + u)), add(mul(p2, 3 * u2 - 2 * u3), mul(m2, u3 - u2))));
+          }
+        }
+        out.push(points.at(-1));
+        return out;
+      }
+
+      // Keys lit face on and near are brightest; turned or far, darker.
+      const keyFace = [221, 214, 232];
+      const keyBack = [74, 63, 92];
+      const shade = ([r, g, b], k) => `rgb(${Math.round(6 + (r - 6) * k)},${Math.round(6 + (g - 6) * k)},${Math.round(11 + (b - 11) * k)})`;
+
+      // A keyboard ribbon in space, after the reference's strings: it runs
+      // through `through` ([x, y, z]: where it crosses the picture, and how
+      // deep), so near keys come long and wide and far ones short and narrow.
+      // Each key is spaced evenly in space, not on the screen.
+      function ribbon3d(cam, { through, width }) {
+        const dense = spline(through.map(cam.unproject));
+        const length = [0];
+        for (let i = 1; i < dense.length; i++) length.push(length[i - 1] + span(sub(dense[i], dense[i - 1])));
+        const total = length.at(-1);
+        const step = width * 0.62;
+        const n = Math.max(2, Math.round(total / step));
+        let j = 0;
+        const P = Array.from({ length: n + 1 }, (_, i) => {
+          const l = (total * i) / n;
+          while (j < dense.length - 2 && length[j + 1] < l) j++;
+          return mix3(dense[j], dense[j + 1], Math.min(1, Math.max(0, (l - length[j]) / (length[j + 1] - length[j] || 1))));
+        });
+        // Frames: the width starts across the ribbon in the picture plane and
+        // is carried along without spinning, so the ribbon lies flat.
+        const T = P.map((_, i) => unit(sub(P[Math.min(n, i + 1)], P[Math.max(0, i - 1)])));
+        let across = unit(cross([0, 0, 1], T[0]));
+        const frames = P.map((p, i) => {
+          if (i) across = unit(sub(across, mul(T[i], dot(across, T[i]))));
+          return { p, t: T[i], b: across };
+        });
+        const m = frames.length - 1;
+        const edge = frames.map(({ p, b }) => [add(p, mul(b, width / 2)), sub(p, mul(b, width / 2))]);
+        const flat = edge.map(([a, b]) => [cam.project(a), cam.project(b)]);
+        // A point s keys along and v of the way across, from the black keys' side.
+        const at = (s, v) => {
+          const i = Math.min(m - 1, Math.floor(s));
+          const u = s - i;
+          return cam.project(mix3(mix3(edge[i][0], edge[i + 1][0], u), mix3(edge[i][1], edge[i + 1][1], u), v));
+        };
+        const keys = [];
+        for (let i = 0; i < m; i++) {
+          const mid = mix3(frames[i].p, frames[i + 1].p, 0.5);
+          const normal = unit(cross(add(frames[i].t, frames[i + 1].t), add(frames[i].b, frames[i + 1].b)));
+          const c = dot(normal, unit(sub(mid, cam.eye)));
+          const light = 1.2 - 0.8 * smooth(-400, 1000, mid[2]);
+          const tone = Math.round(Math.min(1.25, (0.3 + 0.7 * Math.abs(c)) * light) * 16) / 16;
+          const [a0, b0] = flat[i];
+          const [a1, b1] = flat[i + 1];
+          keys.push({
+            quad: [a0, a1, b1, b0],
+            black: c > 0.22 && sharps[i % 7] && i < m - 1 ? [at(i + 0.68, 0), at(i + 1.32, 0), at(i + 1.32, 0.6), at(i + 0.68, 0.6)] : null,
+            rim: `M${a0[0].toFixed(1)},${a0[1].toFixed(1)} L${a1[0].toFixed(1)},${a1[1].toFixed(1)} M${b0[0].toFixed(1)},${b0[1].toFixed(1)} L${b1[0].toFixed(1)},${b1[1].toFixed(1)}`,
+            front: c > 0,
+            tone,
+            face: c > 0 ? tone : 0,
+            z: mid[2],
+          });
+        }
+        const line = frames.map(({ p }) => cam.project(p));
+        const boxes = frames
+          .filter((_, i) => i % 2 === 0)
+          .map(({ p }) => {
+            const [x, y] = cam.project(p);
+            const r = width * cam.scale(p[2]);
+            return { l: x - r, t: y - r, r: x + r, b: y + r };
+          });
+        return { keys, line, boxes };
+      }
+
+      // Sorts every ribbon's keys, in runs of six, into three depths: behind
+      // the dial, between the dial and the near lilies, and nearest of all.
+      function layRibbons(ribbons) {
+        const layers = { back: [], mid: [], near: [] };
+        for (const ribbon of ribbons) {
+          for (let i = 0; i < ribbon.keys.length; i += 6) {
+            const keys = ribbon.keys.slice(i, i + 6);
+            const z = keys.reduce((sum, key) => sum + key.z, 0) / keys.length;
+            layers[z > 0 ? "back" : z > -140 ? "mid" : "near"].push({ keys, z });
+          }
+        }
+        for (const runs of Object.values(layers)) runs.sort((a, b) => b.z - a.z);
+        return layers;
+      }
+
+      // Paints runs far to near: the white keys by tone, a place for lit
+      // keys, the black keys over them, and the bronze edges.
+      function paintRuns(group, runs) {
+        for (const { keys } of runs) {
+          const g = draw("g", {}, group);
+          const fills = new Map();
+          const black = [];
+          for (const key of keys) {
+            key.d = poly(key.quad);
+            const fill = key.front ? shade(keyFace, Math.min(1, key.tone * 0.6)) : shade(keyBack, key.tone);
+            fills.set(fill, (fills.get(fill) ?? "") + key.d);
+            if (key.black) black.push(poly(key.black));
+          }
+          for (const [fill, d] of fills) draw("path", { d, fill, stroke: "#06060b", "stroke-width": 0.6, "stroke-opacity": 0.5, "stroke-linejoin": "round" }, g);
+          const lamps = draw("g", { class: "key-lamps" }, g);
+          if (black.length) draw("path", { d: black.join(""), fill: "#06060b", opacity: 0.92 }, g);
+          draw("path", { d: keys.map((key) => key.rim).join(""), fill: "none", stroke: "#9b8794", "stroke-width": 0.8, opacity: (0.3 + 0.35 * Math.min(1, keys[0].tone)).toFixed(2) }, g);
+          for (const key of keys) key.lamps = lamps;
+        }
+      }
+
+      // Where two ribbons cross on the screen, as the reference's strings
+      // catch the light where they cross.
+      function crossings(ribbons, L) {
+        const meet = ([x1, y1], [x2, y2], [x3, y3], [x4, y4]) => {
+          const d = (x2 - x1) * (y4 - y3) - (y2 - y1) * (x4 - x3);
+          if (!d) return null;
+          const u = ((x3 - x1) * (y4 - y3) - (y3 - y1) * (x4 - x3)) / d;
+          const v = ((x3 - x1) * (y2 - y1) - (y3 - y1) * (x2 - x1)) / d;
+          return u >= 0 && u <= 1 && v >= 0 && v <= 1 ? [x1 + u * (x2 - x1), y1 + u * (y2 - y1)] : null;
+        };
+        const spots = [];
+        for (let i = 0; i < ribbons.length; i++) {
+          for (let j = i + 1; j < ribbons.length; j++) {
+            const [a, b] = [ribbons[i].line, ribbons[j].line];
+            search: for (let p = 0; p < a.length - 1; p++) {
+              for (let q = 0; q < b.length - 1; q++) {
+                const hit = meet(a[p], a[p + 1], b[q], b[q + 1]);
+                if (hit) {
+                  if (hit[0] > 12 && hit[0] < L.width - 12 && hit[1] > 12 && hit[1] < L.height - 12) spots.push(hit);
+                  break search;
+                }
+              }
+            }
+          }
+        }
+        return spots;
+      }
+
+      // ------------------------------------------------------------------
+      // Lilies, after the line-drawing reference
+      // ------------------------------------------------------------------
+
+      const lilyGlass = { ...smoked, back: "#20253b", anther: "#f0b4dc" };
+      const lilyRose = { petal: "url(#r3-rose)", petalIn: "url(#r3-rose-in)", back: "#3a2440", edge: "#ffd2ec", edgeOpacity: 0.85, vein: "#ffe2f3", dust: "#fff4fb", glow: "url(#r3-rose-glow)", anther: "#fff4fb" };
+
+      // A lily: six tepals that leave the throat, broaden, and roll back at
+      // their tips, round six stamens and a pistil. It is built in space and
+      // turned (spin about its own axis, then pitch to look up, then yaw to
+      // look right), so it can face us, look up or turn aside. Each tepal is
+      // a band like the ribbons, so where it rolls over, its back shows.
+      // Drawn 100 units long and scaled to size.
+      function lily3d(parent, x, y, size, { pitch = 0, yaw = 0, spin = 0, seed = 1, tint = lilyGlass, opacity = 0.9, glitter = 34, twinkle = 0, sway = false, open = 1 } = {}) {
+        const random = seeded(seed);
+        let group = draw("g", { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(size / 100).toFixed(3)})`, opacity }, parent);
+        if (sway) {
+          group = draw("g", { class: "lily-sway" }, group);
+          group.style.animationDelay = `${(-seed * 1.7) % 11}s`;
+        }
+        const [cp, sp, cy, sy] = [Math.cos(pitch * deg), Math.sin(pitch * deg), Math.cos(yaw * deg), Math.sin(yaw * deg)];
+        const view = ([px, py, pz]) => {
+          const [y1, z1] = [py * cp + pz * sp, -py * sp + pz * cp];
+          return [px * cy - z1 * sy, y1, px * sy + z1 * cy];
+        };
+        const axis = [0, 0, -1];
+        const flat = (points) => "M" + points.map(([px, py]) => `${px.toFixed(1)},${py.toFixed(1)}`).join(" L");
+        const between = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
+        const edge = { stroke: tint.edge, "stroke-width": 1, "stroke-opacity": tint.edgeOpacity, "stroke-linejoin": "round", "vector-effect": "non-scaling-stroke" };
+        const line = { fill: "none", stroke: tint.vein, "vector-effect": "non-scaling-stroke", "stroke-linecap": "round" };
+        const items = [];
+        const tepals = [];
+        for (let k = 0; k < 6; k++) {
+          const outer = k % 2 === 0;
+          const phi = (spin + k * 60 + (random() - 0.5) * 12) * deg;
+          const radial = [Math.cos(phi), Math.sin(phi), 0];
+          const across = cross(axis, radial);
+          const reach = (outer ? 100 : 92) * (0.92 + random() * 0.12);
+          const broad = (outer ? 24 : 32) * (0.9 + random() * 0.18);
+          const flare = (60 + random() * 16) * open;
+          const recurve = (outer ? 152 : 132) + random() * 22;
+          const steps = 18;
+          let p = mul(radial, 3);
+          const rows = [];
+          for (let i = 0; i <= steps; i++) {
+            const u = i / steps;
+            const alpha = (14 + (flare - 14) * smooth(0, 0.5, u) + (recurve - flare) * smooth(0.45, 1, u) ** 1.4) * deg;
+            const t = add(mul(axis, Math.cos(alpha)), mul(radial, Math.sin(alpha)));
+            if (i) p = add(p, mul(t, reach / steps));
+            const w = broad * Math.sin(Math.PI * u ** 0.72) ** 0.85 * (outer ? 1 : 1 + 0.05 * Math.sin(u * 19));
+            const inner = cross(t, across);
+            const lift = mul(inner, w * 0.16);
+            rows.push({ c: view(p), a: view(add(add(p, mul(across, w / 2)), lift)), b: view(add(sub(p, mul(across, w / 2)), lift)), facing: view(inner)[2] });
+          }
+          tepals.push({ rows, outer });
+          // Runs of the tepal that show the same face.
+          let start = 0;
+          for (let i = 1; i <= steps; i++) {
+            const shows = rows[i - 1].facing + rows[i].facing < 0;
+            const next = i < steps ? rows[i].facing + rows[i + 1].facing < 0 : !shows;
+            if (next === shows && i < steps) continue;
+            const run = rows.slice(start, i + 1);
+            start = i;
+            const z = run.reduce((sum, r) => sum + r.c[2], 0) / run.length;
+            items.push({
+              z,
+              paint() {
+                const outline = flat([...run.map((r) => r.a), ...run.map((r) => r.b).reverse()]) + "Z";
+                draw("path", { d: outline, fill: shows ? (outer ? tint.petal : tint.petalIn) : tint.back, ...edge }, group);
+                if (shows) {
+                  draw("path", { d: flat([...run.map((r) => r.c), ...run.map((r) => r.b).reverse()]) + "Z", fill: "#12142a", opacity: 0.28 }, group);
+                  draw("path", { d: flat(run.map((r) => r.c)), ...line, "stroke-width": 0.7, opacity: 0.42 }, group);
+                  for (const side of ["a", "b"]) draw("path", { d: flat(run.map((r) => between(r.c, r[side], 0.55))), ...line, "stroke-width": 0.5, opacity: 0.18 }, group);
+                } else {
+                  draw("path", { d: flat(run.map((r) => r.c)), ...line, "stroke-width": 0.6, opacity: 0.22 }, group);
+                }
+              },
+            });
+          }
+        }
+        // The throat's glow, then six stamens and the pistil.
+        items.push({ z: 2, paint: () => draw("circle", { r: 26, fill: tint.glow ?? "url(#hero-lily-glow)", opacity: 0.8 }, group) });
+        for (let k = 0; k <= 6; k++) {
+          const pistil = k === 6;
+          const phi = (spin + 30 + k * 60 + (random() - 0.5) * 16) * deg;
+          const radial = [Math.cos(phi), Math.sin(phi), 0];
+          const reach = pistil ? 70 : 56 + random() * 12;
+          const points = [];
+          let p = [0, 0, 0];
+          for (let i = 0; i <= 8; i++) {
+            const u = i / 8;
+            const alpha = (pistil ? 4 + 6 * u : 8 + 28 * u ** 1.5) * deg;
+            const t = add(mul(axis, Math.cos(alpha)), mul(radial, Math.sin(alpha)));
+            if (i) p = add(p, mul(t, reach / 8));
+            points.push(view(p));
+          }
+          const tip = points.at(-1);
+          const [ax, ay] = view(cross(axis, radial));
+          items.push({
+            z: tip[2] * 0.85,
+            paint() {
+              draw("path", { d: flat(points), ...line, "stroke-width": pistil ? 1.1 : 0.9, opacity: 0.78 }, group);
+              if (pistil) draw("circle", { cx: tip[0].toFixed(1), cy: tip[1].toFixed(1), r: 2.6, fill: "#fff4fb", opacity: 0.85 }, group);
+              else draw("path", { d: `M${(tip[0] - ax * 2.6).toFixed(1)},${(tip[1] - ay * 2.6).toFixed(1)} L${(tip[0] + ax * 2.6).toFixed(1)},${(tip[1] + ay * 2.6).toFixed(1)}`, stroke: tint.anther, "stroke-width": 2, "stroke-linecap": "round", "vector-effect": "non-scaling-stroke", opacity: 0.9 }, group);
+            },
+          });
+        }
+        items.sort((a, b) => b.z - a.z).forEach((item) => item.paint());
+        // Starlight caught on the tepals' inner faces.
+        for (let i = 0; i < glitter; i++) {
+          const { rows } = tepals[Math.floor(random() * 6)];
+          const r = Math.min(rows.length - 2, 2 + Math.floor(random() * (rows.length - 6)));
+          const v = 0.2 + random() * 0.6;
+          const shine = random();
+          if (rows[r].facing + rows[r + 1].facing >= 0) continue;
+          const [dx, dy] = between(rows[r].a, rows[r].b, v);
+          const spark = draw("circle", { cx: dx.toFixed(1), cy: dy.toFixed(1), r: ((shine * 1.1 + 0.35) * (100 / size)).toFixed(2), fill: tint.dust, opacity: (shine * 0.6 + 0.25).toFixed(2) }, group);
+          if (twinkle && i % Math.round(1 / twinkle) === 0) {
+            spark.classList.add("twinkle");
+            spark.style.animationDelay = `${(-i * 0.73) % 6}s`;
+          }
+        }
+        return group;
+      }
+
+      // A stem of closed buds and narrow leaves, like the reference's sprigs.
+      function lilySprig(parent, x, y, size, angle, { buds = 2, tint = lilyGlass, opacity = 0.85 } = {}) {
+        const g = draw("g", { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle}) scale(${(size / 100).toFixed(3)})`, opacity }, parent);
+        const stroke = { fill: "none", stroke: tint.edge, "stroke-width": 1, "vector-effect": "non-scaling-stroke", "stroke-linecap": "round" };
+        const leaf = (lx, ly, length, turn) => {
+          const l = draw("g", { transform: `translate(${lx} ${ly}) rotate(${turn}) scale(${length / 100})` }, g);
+          draw("path", { d: "M0,0 C-9,-20 -8,-64 0,-100 C8,-64 9,-20 0,0 Z", fill: "#1b2034", ...stroke, "stroke-opacity": 0.5 }, l);
+          draw("path", { d: "M0,-4 C1,-40 1,-70 0,-96", ...stroke, "stroke-opacity": 0.28 }, l);
+        };
+        const bud = (bx, by, length, turn) => {
+          const b = draw("g", { transform: `translate(${bx} ${by}) rotate(${turn}) scale(${length / 100})` }, g);
+          draw("path", { d: "M0,0 C-12,-10 -14,-48 -3,-92 Q0,-102 3,-92 C14,-48 12,-10 0,0 Z", fill: "url(#r3-bud)", ...stroke, "stroke-opacity": tint.edgeOpacity }, b);
+          draw("path", { d: "M-4,-8 C-7,-40 -5,-74 -1,-95 M4,-8 C6,-44 4,-76 1,-95", ...stroke, stroke: tint.vein, "stroke-opacity": 0.32 }, b);
+          draw("path", { d: "M-1,-22 C-2,-50 -1,-72 0,-88", ...stroke, stroke: "#eef0ff", "stroke-opacity": 0.3 }, b);
+        };
+        draw("path", { d: "M0,0 C3,-34 1,-66 6,-100", ...stroke, "stroke-opacity": 0.55, "stroke-width": 1.2 }, g);
+        leaf(1, -18, 42, -48);
+        leaf(3, -42, 34, 52);
+        leaf(4, -76, 26, -38);
+        bud(6, -100, 54, 4);
+        if (buds > 1) {
+          draw("path", { d: "M2,-56 C10,-64 18,-70 26,-80", ...stroke, "stroke-opacity": 0.5 }, g);
+          bud(26, -80, 36, 38);
+        }
+        return g;
+      }
+
+      // ------------------------------------------------------------------
+      // The lily bed (round 7). The maintainer drew it in red: from the
+      // right edge level with the top of the dial, round the dial clear of
+      // its rim, under it, and down to the bottom edge at about 0.36W. On a
+      // phone the copy fills the foot, so the bed is the corner beyond the
+      // dial. Nothing in it crosses the dial, and the dial itself is bare.
+      // ------------------------------------------------------------------
+
+      // Is the point inside the outline (ray casting)?
+      function inside(outline, x, y) {
+        let hit = false;
+        for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
+          const [xi, yi] = outline[i];
+          const [xj, yj] = outline[j];
+          if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
+        }
+        return hit;
+      }
+
+      function bedOutline(L) {
+        const { width: W, height: H, heart, radius: R, mobile } = L;
+        if (L.phone) return phoneBed(L);
+        if (mobile) return [[0.55 * W, -60], [W + 60, -60], [W + 60, heart.y + 0.4 * R], [heart.x, heart.y]];
+        if (L.tablet) return tabletBed(L);
+        const arc = [];
+        for (let a = -58; a <= 124; a += 3) arc.push([heart.x + 1.12 * R * Math.cos(a * deg), heart.y + 1.12 * R * Math.sin(a * deg)]);
+        let y = arc.at(-1)[1];
+        const tail = [[0.595, 0.85], [0.51, 0.91], [0.41, 0.925]].map(([fx, fy]) => [fx * W, (y = Math.min(H - 4, Math.max(y + 6, fy * H)))]);
+        const top = heart.y - 1.15 * R;
+        return [[W + 60, top], [heart.x + 0.72 * R, top], ...arc, ...tail, [0.36 * W, H], [0.35 * W, H + 60], [W + 60, H + 60]];
+      }
+
+      // Where round 6's rose-glass lily sat on the rim, by 9 and 10. It is
+      // gone, but the bed still keeps clear of its place, as it was planted
+      // when the maintainer chose it.
+      function roundSixRim(L) {
+        const { heart, radius: R, mobile } = L;
+        const hour = mobile ? 10 : 9.6;
+        const r = R * (mobile ? 0.98 : 0.99);
+        const a = (hour * 14.4 - 90) * deg;
+        return { x: heart.x + r * Math.cos(a), y: heart.y + r * Math.sin(a), size: mobile ? 38 : 66 };
+      }
+
+      // Places lilies in the bed, largest first. None crosses the dial or
+      // sits on the copy, and none covers another by more than `overlap`
+      // allows. They come larger toward the bed's outer edge and smaller by
+      // the dial, reaching full size `ramp` radii out from the clear ring.
+      // reach is how far a lily spreads from its centre, as a share of its
+      // size. Returned far to near, top to bottom.
+      function plant(L, { count, min, max, reach = 0.9, overlap = 0.62, ramp = 1.1, seed, avoid = [] }) {
+        const { width: W, height: H, heart, radius: R } = L;
+        const outline = bedOutline(L);
+        const clear = 1.08 * R;
+        const text = textLines(L.hero, L.phone ? 12 : 24);
+        const random = seeded(seed);
+        const xs = outline.map(([x]) => x);
+        const ys = outline.map(([, y]) => y);
+        const [x0, x1] = [Math.max(-50, Math.min(...xs)), Math.min(W + 50, Math.max(...xs))];
+        const [y0, y1] = [Math.max(-50, Math.min(...ys)), Math.min(H + 50, Math.max(...ys))];
+        const placed = [...(L.phone ? [] : [roundSixRim(L)]), ...avoid];
+        const kept = placed.length;
+        for (const pass of [1, 0.8, 0.64, 0.5, 0.4]) {
+          for (let t = 0; t < 2000 && placed.length < count + kept; t++) {
+            const x = x0 + random() * (x1 - x0);
+            const y = y0 + random() * (y1 - y0);
+            const jitter = 0.85 + random() * 0.3;
+            if (!inside(outline, x, y)) continue;
+            const d = Math.hypot(x - heart.x, y - heart.y);
+            const room = smooth(clear, clear + ramp * R, d);
+            const size = Math.min((min + (max - min) * room) * pass * jitter, (d - clear) / reach);
+            const r = reach * size;
+            if (size < min * 0.7) continue;
+            if (text.some((k) => x + r > k.l && x - r < k.r && y + r > k.t && y - r < k.b)) continue;
+            if (placed.some((p) => Math.hypot(p.x - x, p.y - y) < (p.size + size) * reach * overlap)) continue;
+            placed.push({ x, y, size, dx: (x - heart.x) / R, dy: (y - heart.y) / R, seed: 1 + Math.floor(random() * 997) });
+          }
+        }
+        return placed.slice(kept).sort((a, b) => a.y - b.y);
+      }
+
+      // How near the dial's heart any of an element's outlines come, as a
+      // share of the dial's radius.
+      function nearest(L, element) {
+        let min = Infinity;
+        for (const path of element.querySelectorAll("path")) {
+          const m = path.getCTM();
+          const total = path.getTotalLength();
+          for (let i = 0; i <= 8; i++) {
+            const p = path.getPointAtLength((total * i) / 8).matrixTransform(m);
+            min = Math.min(min, Math.hypot(p.x - L.heart.x, p.y - L.heart.y));
+          }
+        }
+        return min / L.radius;
+      }
+
+      // Draws a lily or sprig, then measures it: if any of it would cross
+      // the dial's outer ring (1.03 radii, with room for its sway), it
+      // shrinks toward its root (ax, ay) until it clears, or is left out.
+      function bloom(L, parent, ax, ay, size, paint) {
+        const wrap = draw("g", {}, parent);
+        paint(wrap);
+        if (Math.hypot(ax - L.heart.x, ay - L.heart.y) > 1.1 * L.radius + 1.6 * size) return wrap;
+        for (let k = 1, tries = 0; nearest(L, wrap) < 1.06; tries++) {
+          if (tries === 10) return wrap.remove();
+          k *= 0.9;
+          wrap.setAttribute("transform", `translate(${ax.toFixed(1)} ${ay.toFixed(1)}) scale(${k.toFixed(3)}) translate(${(-ax).toFixed(1)} ${(-ay).toFixed(1)})`);
+        }
+        return wrap;
+      }
+
+      // Every lily turns a little toward the dial's heart, as to a light.
+      const towardHeart = ({ dx, dy }, random) => ({
+        pitch: Math.max(-25, Math.min(55, 18 + dy * 22 + (random() - 0.5) * 16)),
+        yaw: Math.max(-48, Math.min(48, -dx * 26 + (random() - 0.5) * 20)),
+        spin: random() * 60,
+      });
+
+      // The bed, in shares of the dial's radius. Far lilies are small and
+      // dim, behind the strings; near ones are large, among them, and may
+      // tuck under their neighbours; sprigs of buds stand between.
+      const bed = {
+        far: { count: 30, min: 0.15, max: 0.34, reach: 0.8, overlap: 0.42 },
+        near: { count: 20, min: 0.3, max: 0.74, reach: 0.82, overlap: 0.54, ramp: 0.75 },
+        sprigs: { count: 8, min: 0.42, max: 0.66, reach: 0.6, overlap: 0.45 },
+        // Rose glass, besides one in five of the near lilies: the near lily
+        // nearest each spot the maintainer pointed to, from the heart. The
+        // large one at the bed's left end, one at the right edge level with
+        // the 5, one below it by the 8, one under the 10, and the corner.
+        pinkAt: [
+          [-1.57, 1.6],
+          [1.39, -0.46],
+          [1.3, 0.8],
+          [0.62, 1.4],
+          [1.33, 1.58],
+        ],
+      };
+
+      // Behind the strings: the far lilies and, on phones, round 6's dim
+      // lily at the left.
+      function lilyBack(L, g) {
+        if (L.phone) return phoneBack(L, g);
+        const { width: W, heart, radius: R, mobile } = L;
+        if (mobile) lily3d(g, W * 0.02, heart.y + R * 0.64, 54, { pitch: -18, yaw: 40, spin: 30, seed: 53, opacity: 0.6 });
+        const random = seeded(71);
+        const { far } = bed;
+        for (const p of plant(L, { ...far, count: mobile ? 3 : far.count, min: far.min * R, max: far.max * R, seed: 31 })) {
+          const turn = towardHeart(p, random);
+          const opacity = 0.42 + random() * 0.18;
+          bloom(L, g, p.x, p.y, p.size, (at) => lily3d(at, p.x, p.y, p.size, { ...turn, seed: p.seed, opacity, glitter: 10, twinkle: 0.2 }));
+        }
+      }
+
+      // Among the strings: the sprigs, the near lilies and, on phones,
+      // round 6's lily at the foot.
+      function lilyFront(L, g) {
+        if (L.phone) return phoneFront(L, g);
+        const { width: W, height: H, heart, radius: R, mobile } = L;
+        const random = seeded(73);
+        const { near, sprigs: tall } = bed;
+        const lilies = plant(L, { ...near, count: mobile ? 3 : near.count, min: near.min * R, max: near.max * R, seed: 41 });
+        const sprigs = plant(L, { ...tall, count: mobile ? 1 : tall.count, min: tall.min * R, max: tall.max * R, seed: 37, avoid: lilies });
+        for (const p of sprigs) {
+          const buds = random() < 0.6 ? 2 : 1;
+          bloom(L, g, p.x, p.y + p.size * 0.5, p.size, (at) => lilySprig(at, p.x, p.y + p.size * 0.5, p.size, Math.max(-30, Math.min(30, p.dx * 14)), { buds }));
+        }
+        const pink = new Set(lilies.filter((_, i) => i % 5 === 2));
+        for (const [dx, dy] of mobile ? [] : bed.pinkAt) {
+          const [x, y] = [heart.x + dx * R, heart.y + dy * R];
+          const away = (p) => Math.hypot(p.x - x, p.y - y);
+          const best = lilies.filter((p) => !pink.has(p)).sort((a, b) => away(a) - away(b))[0];
+          if (best && away(best) < 0.5 * R) pink.add(best);
+        }
+        for (const p of lilies) {
+          const turn = towardHeart(p, random);
+          const opacity = 0.86 + random() * 0.1;
+          bloom(L, g, p.x, p.y, p.size, (at) => lily3d(at, p.x, p.y, p.size, { ...turn, seed: p.seed, tint: pink.has(p) ? lilyRose : lilyGlass, opacity, sway: true, twinkle: 0.15, glitter: Math.round(12 + p.size / 4) }));
+        }
+        if (mobile) lily3d(g, W, H * 0.97, 76, { pitch: 30, yaw: -26, seed: 7, sway: true, twinkle: 0.15 });
+      }
+
+      // ------------------------------------------------------------------
+      // Round 2 A's keyboards laid like the reference's strings, in space,
+      // round round 2 B's lilies redrawn.
+      // ------------------------------------------------------------------
+
+      const r3Defs = `
+        <radialGradient id="r3-rose" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#f6c6e4"/><stop offset=".32" stop-color="#bb6688"/><stop offset=".72" stop-color="#7a4870"/><stop offset="1" stop-color="#3a2440"/></radialGradient>
+        <radialGradient id="r3-rose-in" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="100"><stop offset="0" stop-color="#ffe3f3"/><stop offset=".5" stop-color="#d68ab8"/><stop offset="1" stop-color="#8e4f7c"/></radialGradient>
+        <radialGradient id="r3-rose-glow"><stop offset="0" stop-color="#fff4fb" stop-opacity=".6"/><stop offset=".4" stop-color="#f0b4dc" stop-opacity=".28"/><stop offset="1" stop-color="#f0b4dc" stop-opacity="0"/></radialGradient>
+        <linearGradient id="r3-bud" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2a2f48"/><stop offset=".55" stop-color="#535b7e"/><stop offset="1" stop-color="#8d93bd"/></linearGradient>`;
+
+      function stringScene(routes) {
+        return {
+          sparkles: 0,
+          defs: r3Defs,
+          // The records' own ribbon gives way to the strings.
+          keys: () => ({ boxes: [], points: [{ x: 0, y: 0 }], keys: [] }),
+          corners(L, svg) {
+            nightSky(L);
+            L.camera = camera(L);
+            // On tablets every string runs under every lily, so the far
+            // lilies wait for front(); they never reach the dial.
+            L.liliesOver = L.tablet;
+            if (!L.liliesOver) lilyBack(L, draw("g", { class: "lilies-back" }, svg));
+            L.ribbons = routes(L).map((route) => ribbon3d(L.camera, route));
+            L.layers = layRibbons(L.ribbons);
+            paintRuns(draw("g", { class: "ribbons-back" }, svg), L.layers.back);
+            // The dial's face is faintly smoked glass, so what runs behind it
+            // reads as behind.
+            draw("circle", { cx: L.heart.x, cy: L.heart.y, r: L.radius * 1.03, fill: "#06060b", opacity: 0.42 }, svg);
+          },
+          front(L, svg) {
+            paintRuns(draw("g", { class: "ribbons-mid" }, svg), L.layers.mid);
+            if (L.liliesOver) {
+              paintRuns(draw("g", { class: "ribbons-near" }, svg), L.layers.near);
+              lilyBack(L, draw("g", { class: "lilies-back" }, svg));
+            }
+            lilyFront(L, draw("g", { class: "lilies-front" }, svg));
+            if (!L.liliesOver) paintRuns(draw("g", { class: "ribbons-near" }, svg), L.layers.near);
+            L.runs = L.ribbons.map((ribbon) => ({ light: keyLights(ribbon.keys, { trail: 10 }), count: ribbon.keys.length }));
+            const top = draw("g", { class: "r3-glints" }, svg);
+            const spots = crossings(L.ribbons, L).map(([x, y], i) => glint(top, x, y, L.mobile ? 10 : 14, { delay: -i * 2.3 }));
+            L.placers.push(() => hideOnCopy(L, spots));
+            nightGlints(L, top);
+          },
+          // A run plays along every string when a record lands, if none is
+          // already playing.
+          tick(L, now, arrived) {
+            if (L.reduce) return;
+            if (arrived && !L.run) L.run = now;
+            if (!L.run) return;
+            const t = (now - L.run) / 2200;
+            for (const { light, count } of L.runs) light(t > 1 ? null : t * (count + 10));
+            if (t > 1) L.run = 0;
+          },
+        };
+      }
+
+      // Crossing: four strings, laid nearly straight and flat. Two fall from
+      // far above and cross in an X just past the end of the heading, by its
+      // last letters. One comes down past the ends of the lede's lines toward
+      // us, bending gently to the bottom left; the other runs straight on and
+      // skirts the dial's left rim. A low one runs straight in from the left
+      // edge, under the buttons, and crosses the first on its way down. A
+      // high one rises from the left edge over the copy and crosses the X on
+      // its way to the top right corner, going further off as it goes.
+      const crossing = stringScene((L) => {
+        const { width: W, height: H, heart, radius: R, mobile, hero } = L;
+        if (L.phone) return phoneRoutes(L);
+        if (L.tablet) return tabletRoutes(L);
+        if (mobile) {
+          return [
+            { through: [[0.42 * W, -24, 760], [0.7 * W, 150, 380], [W + 30, 330, -40]], width: 15 },
+            { through: [[W + 24, 230, -20], [-24, 330, -110]], width: 15 },
+            { through: [[-20, 250, 420], [0.34 * W, -20, 560]], width: 11 },
+          ];
+        }
+        const { left: cl, name, head, lede, actions } = copyFrame(hero);
+        const x = [head.r + 28, head.t + 0.45 * (head.b - head.t)];
+        const top = -0.03 * H;
+        // The point on the line from p, at height y, leaning dx per unit down.
+        const toward = ([px, py], y, dx) => [px + dx * (y - py), y];
+        const rim = [heart.x - 0.97 * R, heart.y + 0.28 * R];
+        const bend = [actions.r + 70, actions.b + 145];
+        const under = [cl + 0.4 * (actions.r - cl), actions.b + 45];
+        const fall = 0.53;
+        const over = [cl, name.t - Math.min(107, 0.45 * name.t)];
+        const corner = [1.01 * W, -0.01 * H];
+        const rise = (corner[1] - over[1]) / (corner[0] - over[0]);
+        return [
+          // The X: one from the open sky, coming toward us...
+          { through: [[...toward(x, top, -0.3), 900], [...x, 200], [lede.r + 30, lede.t + 10, 40], [lede.r - 110, actions.b - 15, -80], [...bend, -200], [...toward(bend, Math.max(1.04 * H, bend[1] + 60), -1.1), -300]], width: 20 },
+          // ...and one that runs on straight through it and skirts the dial.
+          { through: [[...toward(x, top, (rim[0] - x[0]) / (rim[1] - x[1])), 700], [...x, 450], [...rim, 220], [heart.x - 0.42 * R, heart.y + 1.6 * R, -120]], width: 18 },
+          // Low and straight from the left edge, under the buttons.
+          { through: [[-0.01 * W, under[1] - fall * (under[0] + 0.01 * W), -100], [...under, -190], [under[0] + (1.04 * H - under[1]) / fall, 1.04 * H, -300]], width: 22 },
+          // High over the copy, straight to the top right corner.
+          { through: [[-0.01 * W, over[1] - rise * (over[0] + 0.01 * W), 150], [...over, 200], [...corner, 500]], width: 18 },
+        ];
+      });
+
+      // ------------------------------------------------------------------
+      // #69: tablets, 760 to 1279px wide, as they ship.
+      // ------------------------------------------------------------------
+
+      const variant = document.documentElement.dataset.v;
+      const ring = 1.03; // the dial's outer ring, in radii
+
+      // How far a point is from a box (0 inside it).
+      const away = (x, y, k) => Math.hypot(Math.max(k.l - x, 0, x - k.r), Math.max(k.t - y, 0, y - k.b));
+
+      // On a tablet the dial sits below and right of the copy: the largest
+      // that fits whole, 20px inside the hero's edges and 32px clear of every
+      // line of the copy, its heart below the paragraph (src/hero-layout.ts).
+      function tabletDial(hero, W, H) {
+        const f = copyFrame(hero);
+        const edge = 20;
+        const gap = 32;
+        const cap = Math.min(300, 0.3 * W);
+        const copy = [f.name, ...f.heading, f.lede, f.actions];
+        const prefer = [0.6 * W, (f.actions.b + H) / 2];
+        const spots = [];
+        for (let x = edge; x < W - edge; x += 6) {
+          for (let y = edge; y < H - edge; y += 6) {
+            if (y < f.lede.b) continue;
+            const room = Math.min(x - edge, W - edge - x, y - edge, H - edge - y, ...copy.map((k) => away(x, y, k) - gap)) / ring;
+            const r = Math.min(cap, room);
+            if (r > 0) spots.push({ x, y, r });
+          }
+        }
+        const most = Math.max(...spots.map((s) => s.r));
+        const from = (s) => Math.hypot(s.x - prefer[0], s.y - prefer[1]);
+        const best = spots.filter((s) => s.r >= most * 0.97).sort((a, b) => from(a) - from(b))[0] ?? { x: prefer[0], y: H - 60, r: 40 };
+        return { heart: { x: best.x, y: best.y }, radius: best.r };
+      }
+
+      // The lily bed on a tablet. plant() keeps it off the copy and the
+      // dial; this says where else it may go.
+      function tabletBed(L) {
+        const { width: W, height: H, heart, radius: R, hero } = L;
+        const f = copyFrame(hero);
+        const at = (a, r = 1.12) => [heart.x + r * R * Math.cos(a * deg), heart.y + r * R * Math.sin(a * deg)];
+        const arc = (from, to, r) => Array.from({ length: Math.floor((to - from) / 3) + 1 }, (_, i) => at(from + i * 3, r));
+        // Round the dial's sides and down to the foot, both sides.
+        const top = Math.min(heart.y - 0.6 * R, Math.max(f.actions.b + 24, heart.y - 1.2 * R));
+        return [[-60, top], [W + 60, Math.min(top, heart.y - 1.15 * R)], [W + 60, H + 60], [-60, H + 60]];
+      }
+
+      // The strings on a tablet, placed from the copy's edges and the dial.
+      function tabletRoutes(L) {
+        const { width: W, height: H, heart, radius: R, hero } = L;
+        const { x: hx, y: hy } = heart;
+        const f = copyFrame(hero);
+        const top = -0.03 * H;
+        // The point on the line from p, at height y, leaning dx per unit down.
+        const toward = ([px, py], y, dx) => [px + dx * (y - py), y];
+        // Along the maintainer's red lines; round 2 strikes the high
+        // string and straightens the one by the dial. Two strings are shared
+        // by portrait and landscape: the low one on the left, and one that
+        // runs straight from the right edge to the foot, past the dial's
+        // lower right, touching a circle 1.12R round the heart 28° below
+        // its right.
+        const low = { through: [[-0.01 * W, f.actions.b + 60, -100], [Math.max(0.12 * W, hx - 1.35 * R), 1.04 * H, -300]], width: 22 };
+        const slope = Math.tan(28 * deg); // across, per unit down
+        const touch = [hx + 1.12 * R * Math.cos(28 * deg), hy + 1.12 * R * Math.sin(28 * deg)];
+        const round = { through: [[W + 30, touch[1] - (W + 30 - touch[0]) / slope, 60], [touch[0] - slope * (H + 30 - touch[1]), H + 30, 60]], width: 18 };
+        if (H < W) {
+          // Landscape: the X crosses above the dial. One arm runs from the
+          // top, just over the end of the heading's first line, to the right
+          // edge above the dial; the other runs straight up from the foot,
+          // 45px right of the buttons, past the dial's upper left 1.12R from
+          // the heart, to the top edge. Where that comes within 40px of the
+          // copy, it leans toward the dial until it clears, and runs behind
+          // the dial's rim.
+          const over = [f.head.r, f.head.t - 16];
+          const text = textLines(hero, 0);
+          const foot = [f.actions.r + 45, H + 20];
+          const arm = (a) => {
+            const point = (s) => [foot[0] + Math.cos(a) * s, foot[1] + Math.sin(a) * s];
+            const end = Math.min((top - foot[1]) / Math.sin(a), Math.cos(a) > 0 ? (W + 20 - foot[0]) / Math.cos(a) : Infinity);
+            const skim = (hx - foot[0]) * Math.cos(a) + (hy - foot[1]) * Math.sin(a);
+            const clear = Math.min(...Array.from({ length: 81 }, (_, i) => point((end * i) / 80)).map(([x, y]) => Math.min(...text.map((k) => away(x, y, k)))));
+            return { through: [[...point(end), 800], [...point(skim), 250], [...foot, -200]], clear };
+          };
+          const d = Math.hypot(hx - foot[0], hy - foot[1]);
+          let a = Math.atan2(hy - foot[1], hx - foot[0]) - Math.asin(Math.min(1, (1.12 * R) / d));
+          for (const tangent = a; arm(a).clear < 40 && a < tangent + 30 * deg; ) a += 0.5 * deg;
+          return [
+            { through: [[over[0] - 1.8 * (over[1] - top), top, 600], [...over, 450], [W + 20, hy - 1.25 * R, 250]], width: 20 },
+            { through: arm(a).through, width: 18 },
+            low,
+            round,
+          ];
+        }
+        // Portrait: the X crosses in the margin past the paragraph's line
+        // ends, level with its last lines; it sits further out, and its arms
+        // lean further, the wider the margin.
+        const margin = W - f.lede.r;
+        const x = [f.lede.r + Math.max(36, 0.47 * (margin - 100)), f.lede.t + 0.65 * (f.lede.b - f.lede.t)];
+        const lean = Math.min(1.1, Math.max(0.2, 0.0029 * (margin - 55)));
+        // One arm falls from the top through the X to the right edge,
+        // leaning a little more below it.
+        const exit = x[1] + (W + 20 - x[0]) / (1.2 * lean);
+        const fall = exit < 1.04 * H ? [W + 20, exit] : [x[0] + 1.2 * lean * (1.04 * H - x[1]), 1.04 * H];
+        // The other rises to the right edge, and runs down through the X to
+        // the left edge, skimming the dial 1.2R above and left of its heart.
+        const d = Math.hypot(hx - x[0], hy - x[1]);
+        const a = Math.atan2(hy - x[1], hx - x[0]) + Math.asin(Math.min(1, (1.2 * R) / d));
+        const along = Math.sqrt(Math.max(0, d * d - 1.44 * R * R));
+        const skim = [x[0] + Math.cos(a) * along, x[1] + Math.sin(a) * along];
+        const left = (x[0] + 20) / -Math.cos(a);
+        return [
+          { through: [[x[0] - lean * (x[1] - top), top, 700], [...x, 300], [...fall, 0]], width: 20 },
+          { through: [[W + 20, x[1] - 0.9 * (W + 20 - x[0]), 500], [...x, 300], [...skim, 60], [-20, x[1] + Math.sin(a) * left, -120]], width: 18 },
+          low,
+          round,
+        ];
+      }
+
+      // ------------------------------------------------------------------
+      // #68: phones, under 760px wide, or under 500px high in landscape.
+      // The hero ends at the fold, and the dial takes what the copy leaves:
+      // the band above it in portrait, the room beside it in landscape.
+      // ------------------------------------------------------------------
+
+      const phoneQuery = "(max-width: 759.98px), (orientation: landscape) and (max-height: 499.98px)";
+      const landscapeQuery = "(orientation: landscape) and (max-height: 499.98px)";
+
+      // The dial, whole, and as large as leaves the lilies their bed. In
+      // portrait it sits in the band above the copy, its outer ring `edge`
+      // inside the hero's sides and top and at least `bed` above the name
+      // line; of any height to spare, two fifths go above it and three below,
+      // to the bed. a, Cradle, sets it in the middle, at most 0.28W in
+      // radius, so the bed has room on both sides, as on a tablet.
+      // b, Sweep, sets it against the right edge, at most 0.34W, and the bed
+      // sweeps in from the left edge and under it, as on desktop. In
+      // landscape it sits in the top right corner beside the copy, its foot
+      // in the bed.
+      function phoneDial(hero, W, H, landscape, variant) {
+        const f = copyFrame(hero);
+        const edge = 14;
+        if (landscape) {
+          const right = Math.max(f.name.r, f.lede.r, f.actions.r, ...f.heading.map((k) => k.r));
+          const r = Math.min(150, (H - 2 * edge - 56) / (2 * ring), (W - right - 24 - edge) / (2 * ring));
+          return { heart: { x: W - edge - ring * r, y: edge + ring * r }, radius: r };
+        }
+        const bed = 44;
+        const band = f.name.t;
+        const r = Math.max(40, Math.min(150, (variant === "a" ? 0.28 : 0.34) * W, (band - edge - bed) / (2 * ring)));
+        const spare = Math.max(0, band - edge - bed - 2 * ring * r);
+        const x = variant === "a" ? W / 2 : W - edge - ring * r;
+        return { heart: { x, y: edge + 0.4 * spare + ring * r }, radius: r };
+      }
+
+      // The maintainer's strings. In portrait: one along the top, in from
+      // the left edge just under the header and falling a little to the
+      // right edge, grazing the dial's top; one down the left, from the top
+      // edge a radius left of the heart to the left edge; and one low across
+      // the dial's foot, in front of it, from the right edge to the left edge
+      // just over the name line. The one that fell from the top through the
+      // dial to the right edge is gone. In landscape they frame the dial the
+      // same way, with the copy on the left in place of the band's foot.
+      function phoneRoutes(L) {
+        const { width: W, height: H, heart, radius: R, hero } = L;
+        const { x: hx, y: hy } = heart;
+        const f = copyFrame(hero);
+        if (L.landscape) {
+          const right = Math.max(f.name.r, f.lede.r, f.actions.r, ...f.heading.map((k) => k.r));
+          return [
+            // Along the top, from over the copy's end to the right edge,
+            // grazing the dial's top.
+            { through: [[right - 60, -20, 380], [W + 20, Math.max(16, hy - 0.86 * R), -40]], width: 13 },
+            // Down the dial's left, leaning as in portrait: from the top edge
+            // behind the dial's upper left to the foot, clear of the copy.
+            { through: [[hx - 0.45 * R, -20, 560], [Math.max(right + 24, hx - 1.25 * R), H + 20, 420]], width: 11 },
+            // Low across the dial's foot, in front, to the bottom edge.
+            { through: [[W + 24, hy + 0.3 * R, -20], [hx - 1.25 * R, H + 24, -110]], width: 15 },
+          ];
+        }
+        const band = f.name.t;
+        const graze = hy - 1.0 * R;
+        const topLeft = 14;
+        const topRight = topLeft + ((graze - topLeft) * (W + 40)) / (hx + 20);
+        return [
+          { through: [[-20, topLeft, 380], [W + 20, Math.max(topLeft, topRight), -40]], width: 14 },
+          { through: [[-20, Math.min(hy + 0.39 * R, band - 70), 420], [hx - 1.0 * R, -20, 560]], width: 11 },
+          { through: [[W + 24, hy + 0.23 * R, -20], [-24, band - 18, -110]], width: 15 },
+        ];
+      }
+
+      // The lily bed on a phone, planted as on desktop and tablets: far
+      // lilies small and dim behind the strings, near ones large among them,
+      // sprigs of buds between, larger away from the dial and smaller by it,
+      // none crossing it. This says where it may grow; plant() keeps it off
+      // the dial and the copy.
+      function phoneBed(L) {
+        const { width: W, height: H, heart, radius: R, hero } = L;
+        const { x: hx, y: hy } = heart;
+        const f = copyFrame(hero);
+        const at = (a, r = 1.12) => [hx + r * R * Math.cos(a * deg), hy + r * R * Math.sin(a * deg)];
+        const arc = (from, to) => Array.from({ length: Math.floor(Math.abs(to - from) / 3) + 1 }, (_, i) => at(from + Math.sign(to - from) * i * 3));
+        if (L.landscape) {
+          // Under the dial and round its left, to beside the buttons.
+          const left = f.actions.r + 20;
+          return [[W + 60, hy + 0.2 * R], ...arc(70, 160), [left, hy + 0.5 * R], [left, H + 60], [W + 60, H + 60]];
+        }
+        const foot = f.name.t + 40;
+        if (L.variant === "a") {
+          // Cradle: both sides of the dial from its middle, and under it,
+          // down to the name line.
+          const top = hy - 0.1 * R;
+          return [[-60, top], [W + 60, top], [W + 60, foot], [-60, foot]];
+        }
+        // Sweep: in from the left edge level with the dial's top, round its
+        // left side and under it, to the right edge below it.
+        const top = hy - 1.15 * R;
+        return [[-60, top], [hx - 0.72 * R, top], ...arc(238, 56), [W + 60, hy + 0.7 * R], [W + 60, foot], [-60, foot]];
+      }
+
+      // The bed, in shares of the dial's radius, as desktop's, with fewer
+      // lilies for the smaller ground, the near ones let crowd a little
+      // closer so they read as a bed.
+      const phoneLilies = {
+        far: { ...bed.far, count: 14 },
+        near: { ...bed.near, count: 14, overlap: 0.6 },
+        sprigs: { ...bed.sprigs, count: 3 },
+      };
+      const scaled = (kind, R) => ({ ...kind, min: kind.min * R, max: kind.max * R });
+
+      // Behind the strings: the far lilies.
+      function phoneBack(L, g) {
+        const random = seeded(71);
+        for (const p of plant(L, { ...scaled(phoneLilies.far, L.radius), seed: 31 })) {
+          const turn = towardHeart(p, random);
+          const opacity = 0.42 + random() * 0.18;
+          bloom(L, g, p.x, p.y, p.size, (at) => lily3d(at, p.x, p.y, p.size, { ...turn, seed: p.seed, opacity, glitter: 10, twinkle: 0.2 }));
+        }
+      }
+
+      // Among the strings: the sprigs and the near lilies. As on desktop,
+      // one in five of the near lilies is rose glass, and so is the largest
+      // on each side of the dial.
+      function phoneFront(L, g) {
+        const random = seeded(73);
+        const { x: hx } = L.heart;
+        const lilies = plant(L, { ...scaled(phoneLilies.near, L.radius), seed: 41 });
+        const sprigs = plant(L, { ...scaled(phoneLilies.sprigs, L.radius), seed: 37, avoid: lilies });
+        for (const p of sprigs) {
+          const buds = random() < 0.6 ? 2 : 1;
+          bloom(L, g, p.x, p.y + p.size * 0.5, p.size, (at) => lilySprig(at, p.x, p.y + p.size * 0.5, p.size, Math.max(-30, Math.min(30, p.dx * 14)), { buds }));
+        }
+        const pink = new Set(lilies.filter((_, i) => i % 5 === 2));
+        for (const side of [lilies.filter((p) => p.x < hx), lilies.filter((p) => p.x >= hx)]) {
+          const largest = side.reduce((best, p) => (p.size > (best?.size ?? 0) ? p : best), null);
+          if (largest) pink.add(largest);
+        }
+        for (const p of lilies) {
+          const turn = towardHeart(p, random);
+          const opacity = 0.86 + random() * 0.1;
+          bloom(L, g, p.x, p.y, p.size, (at) => lily3d(at, p.x, p.y, p.size, { ...turn, seed: p.seed, tint: pink.has(p) ? lilyRose : lilyGlass, opacity, sway: true, twinkle: 0.15, glitter: Math.round(12 + p.size / 4) }));
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // The scene (src/hero-dial.ts), with the strings and lilies
+      // ------------------------------------------------------------------
+
+      function drawHeroDial(svg, scene) {
+        const hero = svg.parentElement;
+        const reduce = window.matchMedia(reducedMotion).matches;
+        const start = performance.now();
+        let width = 0;
+        let height = 0;
+        let hands;
+        let glow;
+        let ring;
+        let core;
+        let records;
+        let L;
+        let pulse = 0;
+
+        function build() {
+          width = hero.clientWidth;
+          height = hero.clientHeight;
+          const phone = variant !== "now" && window.matchMedia(phoneQuery).matches;
+          const landscape = phone && window.matchMedia(landscapeQuery).matches;
+          const mobile = phone || width < 760;
+          const tablet = !mobile && width < 1280;
+          let heart = mobile ? { x: width * 0.7, y: 196 } : { x: width * 0.79, y: height * 0.52 };
+          let radius = (mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22)) * (scene.dialScale ?? 1);
+          if (phone) ({ heart, radius } = phoneDial(hero, width, height, landscape, variant));
+          else if (tablet) ({ heart, radius } = tabletDial(hero, width, height));
+          svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+          svg.innerHTML = `<defs>${baseDefs}${scene.defs ?? ""}</defs>`;
+          hero.querySelectorAll(".hero-sky").forEach((sky) => sky.remove());
+          L = { width, height, heart, radius, mobile, tablet, phone, landscape, variant, reduce, hero, svg, placers: [] };
+          hero.dataset.dial = JSON.stringify({ x: Math.round(heart.x), y: Math.round(heart.y), r: Math.round(radius) });
+          scene.corners?.(L, svg);
+          hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce, scene.heart);
+          records = drawHeroRecords(svg, { ...L, sparkles: scene.sparkles ?? 16, ...scene.records?.(L), keys: scene.keys && ((group, route) => scene.keys(L, group, route)) });
+          L.records = records;
+          glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
+          ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
+          core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
+          scene.front?.(L, svg);
+          place();
+          tick(start);
+        }
+        function place() {
+          records.place();
+          L.placers.forEach((placer) => placer());
+        }
+
+        function tick(now) {
+          const parts = Object.fromEntries(manilaTime.formatToParts(new Date()).map((part) => [part.type, Number(part.value)]));
+          const millis = reduce ? 0 : (Date.now() % 1000) / 1000;
+          const turn = (hand, degrees) => hand.setAttribute("transform", `rotate(${degrees.toFixed(2)})`);
+          turn(hands.hour, -90 + (parts.minute / 60) * (360 / 25));
+          turn(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
+          turn(hands.second, -90 + ((parts.second + millis) / 60) * 360);
+          const arrived = records.advance(now);
+          if (arrived) pulse = 1;
+          scene.tick?.(L, now, arrived, parts, millis);
+          const breathe = reduce ? 0 : (Math.sin(((now - start) / 1000) * 1.4) + 1) / 2;
+          // On the new phones the glow keeps to the dial's size.
+          const bright = L.phone ? Math.min(1, L.radius / 140) : 1;
+          glow.setAttribute("r", String(bright * (130 + breathe * 18 + pulse * 30)));
+          ring.setAttribute("r", String(10 + (1 - pulse) * 30));
+          ring.setAttribute("opacity", (pulse * 0.6).toFixed(2));
+          core.setAttribute("r", String(3.2 + pulse * 1.4));
+          hands.bloom.setAttribute("opacity", (0.85 + pulse * 0.15).toFixed(2));
+          pulse *= 0.96;
+        }
+
+        build();
+        let live = true;
+        document.fonts.ready.then(() => live && build());
+
+        let pending = 0;
+        const resize = new ResizeObserver(() => {
+          if (hero.clientWidth === width && hero.clientHeight === height) return;
+          if (reduce) return build();
+          cancelAnimationFrame(pending);
+          pending = requestAnimationFrame(() => {
+            pending = 0;
+            build();
+          });
+        });
+        resize.observe(hero);
+
+        let frame = 0;
+        const loop = (now) => {
+          tick(now);
+          frame = requestAnimationFrame(loop);
+        };
+        const visible = new IntersectionObserver(([entry]) => {
+          svg.classList.toggle("is-paused", !entry.isIntersecting);
+          if (reduce) return;
+          if (entry.isIntersecting && !frame) frame = requestAnimationFrame(loop);
+          else if (!entry.isIntersecting) {
+            cancelAnimationFrame(frame);
+            frame = 0;
+          }
+        });
+        visible.observe(hero);
+        if (reduce) window.setInterval(() => tick(performance.now()), 15_000);
+        return () => (live = false);
+      }
+
+      // ------------------------------------------------------------------
+      // The header's clock and menu (src/site-header.tsx)
+      // ------------------------------------------------------------------
+
+      const clockFormat = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+      const plainFormat = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Manila", hour: "numeric", minute: "2-digit" });
+      function setClock() {
+        const now = new Date();
+        const parts = Object.fromEntries(clockFormat.formatToParts(now).map((part) => [part.type, part.value]));
+        const hour = Number(parts.hour);
+        const clock = document.querySelector(".clock");
+        clock.querySelector("b").textContent = `${String(hour < 5 ? hour + 24 : hour).padStart(2, "0")}:${parts.minute}`;
+        clock.setAttribute("aria-label", `It's ${plainFormat.format(now).replace(/\s/g, " ")} in Manila`);
+      }
+      setClock();
+      window.setInterval(setClock, 15_000);
+      const menu = document.querySelector(".menu-button");
+      const nav = document.querySelector("#primary-nav");
+      menu.addEventListener("click", () => {
+        const open = nav.classList.toggle("open");
+        menu.setAttribute("aria-expanded", String(open));
+        menu.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      });
+
+      // The header's height, so the hero can end at the fold.
+      const header = document.querySelector(".site-header");
+      const headerHeight = () => document.documentElement.style.setProperty("--header-h", `${header.offsetHeight}px`);
+      headerHeight();
+      new ResizeObserver(headerHeight).observe(header);
+
+      // The switcher marks the variant shown.
+      for (const link of document.querySelectorAll(".proto-switch a")) {
+        if (link.dataset.v === variant) link.setAttribute("aria-current", "page");
+        if (link.hasAttribute("data-frames")) link.href = `frames.html?v=${variant}`;
+      }
+
+      drawHeroDial(document.querySelector(".hero-scene"), crossing);
+    </script>
+  </body>
+</html>

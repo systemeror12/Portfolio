@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero prototype: phones at five sizes</title>
+    <style>
+      /* PROTOTYPE for #68: one variant of the phone hero at the issue's four
+         sizes and the maintainer's iPhone, each in a frame of its own, at
+         full size where they fit. Not part of the design. */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 20px 20px 80px;
+        background: #18181b;
+        color: #e4e4e7;
+        font: 400 13px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      p {
+        margin: 0 0 18px;
+        color: #a1a1aa;
+      }
+      a {
+        color: inherit;
+      }
+      .sizes {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 24px;
+      }
+      figure {
+        margin: 0;
+      }
+      figcaption {
+        margin-bottom: 6px;
+        color: #a1a1aa;
+      }
+      .frame {
+        overflow: hidden;
+        border: 1px solid #3f3f46;
+        border-radius: 8px;
+      }
+      .frame iframe {
+        display: block;
+        border: 0;
+        transform-origin: 0 0;
+      }
+      .proto-switch {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+        border-radius: 10px;
+        background: #f4f4f5;
+        color: #27272a;
+        font: 500 12px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+      }
+      .proto-switch span {
+        padding: 0 6px 0 4px;
+        color: #52525b;
+      }
+      .proto-switch a {
+        padding: 7px 9px;
+        border-radius: 7px;
+        color: #27272a;
+        text-decoration: none;
+      }
+      .proto-switch a:hover {
+        background: #e4e4e7;
+      }
+      .proto-switch a[aria-current="page"] {
+        background: #27272a;
+        color: #fafafa;
+      }
+      :focus-visible {
+        outline: 2px solid #60a5fa;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">#68, the hero on phones</h1>
+    <p>Each frame is a real viewport at that size, scaled down only if the window is too small. <a id="alone" href="phone.html">Open this variant on its own</a> to see it at your window's size.</p>
+    <div class="sizes"></div>
+    <nav class="proto-switch" aria-label="Prototype variants">
+      <span>#68</span>
+      <a href="?v=now" data-v="now">Now</a>
+      <a href="?v=a" data-v="a">A</a>
+      <a href="?v=b" data-v="b">B</a>
+    </nav>
+    <script>
+      const names = { now: "Now (as it ships)", a: "A · Cradle", b: "B · Sweep" };
+      const v = new URLSearchParams(location.search).get("v");
+      const variant = v in names ? v : "a";
+      document.title = `${names[variant]}: hero on phones`;
+      document.querySelector("#title").textContent = `#68, the hero on phones: ${names[variant]}`;
+      document.querySelector("#alone").href = `phone.html?v=${variant}`;
+      for (const link of document.querySelectorAll(".proto-switch a")) {
+        if (link.dataset.v === variant) link.setAttribute("aria-current", "page");
+      }
+      const sizes = [
+        [360, 780, "small Android"],
+        [390, 844, "iPhone 14"],
+        [402, 874, "iPhone 17"],
+        [430, 932, "iPhone Pro Max"],
+        [844, 390, "landscape"],
+      ];
+      const holder = document.querySelector(".sizes");
+      const frames = sizes.map(([w, h, label]) => {
+        const figure = document.createElement("figure");
+        figure.innerHTML = `<figcaption>${w} × ${h} · ${label}</figcaption><div class="frame"><iframe title="${names[variant]} at ${w} by ${h}" src="phone.html?v=${variant}" width="${w}" height="${h}" loading="eager"></iframe></div>`;
+        holder.appendChild(figure);
+        return { w, h, box: figure.querySelector(".frame"), frame: figure.querySelector("iframe") };
+      });
+      // Scale every frame by the same amount, so their sizes stay
+      // comparable: the four portrait frames in a row at up to full size,
+      // the landscape one wrapping below them.
+      function fit() {
+        const room = holder.clientWidth;
+        const row = (room - 3 * 24 - 4 * 2) / (360 + 390 + 402 + 430);
+        const scale = Math.max(0.3, Math.min(1, row, (window.innerHeight - 110) / 932));
+        for (const { w, h, box, frame } of frames) {
+          frame.style.transform = `scale(${scale})`;
+          box.style.width = `${w * scale + 2}px`;
+          box.style.height = `${h * scale + 2}px`;
+        }
+      }
+      fit();
+      addEventListener("resize", fit);
+    </script>
+  </body>
+</html>
