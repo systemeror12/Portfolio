@@ -6,12 +6,12 @@ async function strings(page: Page) {
   await page.waitForTimeout(100);
   return page.evaluate(() => {
     const scene = document.querySelector(".hero-scene")!;
-    const layers = ["back", "mid", "near"].map((layer) => scene.querySelector(`:scope > .ribbons-${layer}`)!);
+    const layers = ["back", "mid", "near"].map((layer) => scene.querySelector(`.ribbons-${layer}`)!);
     const order = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
-    const dial = scene.querySelector(":scope > .dial")!;
-    const lilies = scene.querySelector(":scope > .lilies-front")!;
+    const dial = scene.querySelector(".dial")!;
+    const lilies = scene.querySelector(".lilies-front")!;
     const runs = [...scene.querySelectorAll("[data-string]")];
-    const face = scene.querySelector(":scope > .dial-face")!;
+    const face = scene.querySelector(".dial-face")!;
     return {
       strings: new Set(runs.map((run) => run.getAttribute("data-string"))).size,
       // Behind the dial; between the dial and the front lilies; in front of all.

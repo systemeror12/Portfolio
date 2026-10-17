@@ -38,7 +38,7 @@ test("the dial has 25 panes of glass, its numerals, rings, ticks, lily, and boss
   page,
 }) => {
   await page.goto("/");
-  const scene = page.locator(".hero > svg.hero-scene");
+  const scene = page.locator(".hero > .hero-scene");
   await expect(scene).toHaveAttribute("aria-hidden", "true");
 
   const fills = await scene
@@ -153,7 +153,8 @@ test("a resize redraws the scene once and leaves no second copy", async ({ page 
     counter.redraws = 0;
     new MutationObserver((records) => {
       for (const record of records) {
-        if ([...record.addedNodes].some((node) => node.nodeName === "defs")) counter.redraws++;
+        // Each redraw adds one layer holding the defs.
+        if ([...record.addedNodes].some((node) => node instanceof Element && node.querySelector("defs"))) counter.redraws++;
       }
     }).observe(scene, { childList: true });
   });
@@ -168,7 +169,7 @@ test("a resize redraws the scene once and leaves no second copy", async ({ page 
   await expect(scene.locator(".dial")).toHaveCount(1);
   await expect(scene.locator("defs")).toHaveCount(1);
   await expect(scene.locator(".dial-pane")).toHaveCount(25);
-  await expect(scene).toHaveAttribute("viewBox", /^0 0 1100 /);
+  await expect(scene.locator("> svg[data-layer=records]")).toHaveAttribute("viewBox", /^0 0 1100 /);
   await expect(scene.locator(".lilies-front")).toHaveCount(1);
   await expect(page.locator(".night-sky")).toHaveCount(1);
 });
