@@ -177,9 +177,27 @@ function dial(parent: Element, radius: number, reduce: boolean) {
   return { hour, minute, second, bloom };
 }
 
-// Draws the scene into svg, sized to its parent. Returns a cleanup function.
-export function drawHeroDial(svg: SVGSVGElement) {
-  const hero = svg.parentElement!;
+// The scene's depth bands, bottom to top, each drawn into a layer of its own:
+// an <svg> in the hero's coordinates, so a change inside one band repaints
+// only that band (ADR 0001, Layered scenes; the plans are on #81). On desktop
+// and phones the far lilies lie behind the strings and the near lilies among
+// them; on a tablet every string runs under every lily. #79 and #80 split
+// the moving parts into layers of their own.
+type Band = (typeof stacks)["desktop"][number];
+const stacks = {
+  desktop: ["back-lilies", "back-strings", "dial", "records", "glow", "mid-strings", "front-lilies", "near-strings", "glints"],
+  tablet: ["back-strings", "dial", "records", "glow", "mid-strings", "near-strings", "back-lilies", "front-lilies", "glints"],
+} as const;
+// How far a layer reaches past what it holds at the moment it is sized: the
+// near lilies sway 3° either way, and lines have width. The glow's reach is
+// its largest radius. Bands not listed fill the hero.
+const reach: Partial<Record<Band, number>> = { "back-lilies": 4, dial: 4, "front-lilies": 40 };
+const glowReach = 180;
+
+// Draws the scene into container, sized to its parent, as a stack of layers.
+// Returns a cleanup function.
+export function drawHeroDial(container: HTMLElement) {
+  const hero = container.parentElement!;
   const reduce = window.matchMedia(reducedMotion).matches;
   const start = performance.now();
   let width = 0;
@@ -194,6 +212,15 @@ export function drawHeroDial(svg: SVGSVGElement) {
   // When the loop last ran a frame; unset until it runs, and while it's paused.
   let last: number | undefined;
 
+  // Sizes a layer to the box l, t, r, b, kept within the hero and to whole
+  // pixels, so its drawing lands on the same pixels as in the hero.
+  function bound(layer: SVGSVGElement, l: number, t: number, r: number, b: number) {
+    [l, t] = [Math.max(0, Math.floor(l)), Math.max(0, Math.floor(t))];
+    [r, b] = [Math.max(l, Math.min(width, Math.ceil(r))), Math.max(t, Math.min(height, Math.ceil(b)))];
+    layer.setAttribute("viewBox", `${l} ${t} ${r - l} ${b - t}`);
+    Object.assign(layer.style, { left: `${l}px`, top: `${t}px`, width: `${r - l}px`, height: `${b - t}px` });
+  }
+
   function build() {
     width = hero.clientWidth;
     height = hero.clientHeight;
@@ -203,35 +230,44 @@ export function drawHeroDial(svg: SVGSVGElement) {
     let radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
     if (tablet) ({ heart, radius } = tabletDial(hero, width, height));
     const layout: HeroLayout = { width, height, heart, radius, mobile, tablet, reduce, hero };
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    svg.innerHTML = defs;
+    // Every layer starts the size of the hero, so the drawing code measures
+    // in the hero's coordinates, and is fitted to its contents once drawn.
+    container.replaceChildren();
+    const layers = Object.fromEntries(
+      stacks[tablet ? "tablet" : "desktop"].map((band) => [
+        band,
+        draw("svg", { class: "hero-layer", "data-layer": band, "aria-hidden": "true", viewBox: `0 0 ${width} ${height}` }, container),
+      ]),
+    ) as Record<Band, SVGSVGElement>;
+    container.firstElementChild!.innerHTML = defs;
     // Far lilies and strings behind the dial, whose face is faintly smoked
-    // glass so what runs behind it reads as behind. On a tablet the far
-    // lilies wait until the strings are all down.
-    if (!tablet) drawBackLilies(svg, layout);
+    // glass so what runs behind it reads as behind.
+    drawBackLilies(layers["back-lilies"], layout);
     const strings = drawStrings(layout);
-    strings.paint(svg, "back");
-    draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, svg);
-    hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce);
-    records = drawHeroRecords(svg, layout);
-    glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
-    ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
-    core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
-    // Nearer strings among the near lilies, and glints over all. On a tablet
-    // every string runs under every lily.
-    strings.paint(svg, "mid");
-    if (tablet) {
-      strings.paint(svg, "near");
-      drawBackLilies(svg, layout);
-      drawFrontLilies(svg, layout);
-    } else {
-      drawFrontLilies(svg, layout);
-      strings.paint(svg, "near");
-    }
-    const glints = strings.finish(svg);
+    strings.paint(layers["back-strings"], "back");
+    draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, layers.dial);
+    hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, layers.dial), radius, reduce);
+    records = drawHeroRecords(layers.records, layout);
+    glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, layers.glow);
+    ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, layers.glow);
+    core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, layers.glow);
+    // Nearer strings among the near lilies, and glints over all.
+    strings.paint(layers["mid-strings"], "mid");
+    drawFrontLilies(layers["front-lilies"], layout);
+    strings.paint(layers["near-strings"], "near");
+    const glints = strings.finish(layers.glints);
     play = glints.play;
-    for (const place of [glints.place, drawGlints(svg, layout)]) place();
+    for (const place of [glints.place, drawGlints(layers.glints, layout)]) place();
     tick(start);
+    for (const [band, layer] of Object.entries(layers) as [Band, SVGSVGElement][]) {
+      const pad = reach[band];
+      if (band === "glow") bound(layer, heart.x - glowReach, heart.y - glowReach, heart.x + glowReach, heart.y + glowReach);
+      else if (pad === undefined) bound(layer, 0, 0, width, height);
+      else {
+        const { x, y, width: w, height: h } = layer.getBBox();
+        bound(layer, x - pad, y - pad, x + w + pad, y + h + pad);
+      }
+    }
   }
 
   // The dial keeps Manila minutes and seconds; the hour hand stays near 25,
@@ -290,7 +326,7 @@ export function drawHeroDial(svg: SVGSVGElement) {
     frame = requestAnimationFrame(loop);
   };
   const visible = new IntersectionObserver(([entry]) => {
-    svg.classList.toggle("is-paused", !entry.isIntersecting);
+    container.classList.toggle("is-paused", !entry.isIntersecting);
     if (reduce) return;
     if (entry.isIntersecting && !frame) frame = requestAnimationFrame(loop);
     else if (!entry.isIntersecting) {
@@ -309,6 +345,6 @@ export function drawHeroDial(svg: SVGSVGElement) {
     cancelAnimationFrame(pending);
     cancelAnimationFrame(frame);
     window.clearInterval(timer);
-    svg.replaceChildren();
+    container.replaceChildren();
   };
 }

@@ -5,13 +5,17 @@
   display: grid;
   align-items: center;
 }
-/* The drawn scene fills the hero, over the page's night sky. Glass shimmers,
-   stars twinkle, glints breathe, and lilies sway, only while on screen. */
+/* The drawn scene fills the hero, over the page's night sky, as a stack of
+   layers each placed by the scene. Glass shimmers, stars twinkle, glints
+   breathe, and lilies sway, only while on screen. */
 .hero-scene {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+.hero-scene > svg {
+  position: absolute;
 }
 .hero-scene .glass {
   animation: hero-shimmer 7s ease-in-out infinite;

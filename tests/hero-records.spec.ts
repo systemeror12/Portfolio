@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("three staves carry notes and four threads carry dots to the heart", async ({ page }) => {
   await page.goto("/");
-  const scene = page.locator(".hero > svg.hero-scene");
+  const scene = page.locator(".hero > .hero-scene");
   await expect(scene).toHaveAttribute("aria-hidden", "true");
   await expect(scene.locator(".record-staff")).toHaveCount(15);
   await expect(scene.locator(".record-note")).toHaveCount(6);
@@ -47,7 +47,7 @@ test("under reduced motion the notes and dots are hidden and nothing moves", asy
   const shapes = () =>
     scene.locator(".record-staff, .record-thread").evaluateAll((paths) => paths.map((path) => path.getAttribute("d")));
   const before = await shapes();
-  const running = await scene.evaluate((svg) => svg.getAnimations({ subtree: true }).length);
+  const running = await scene.evaluate((scene) => scene.getAnimations({ subtree: true }).length);
   expect(running).toBe(0);
   await page.waitForTimeout(1000);
   expect(await shapes()).toEqual(before);
@@ -57,8 +57,8 @@ test("off screen the records hold still", async ({ page }) => {
   await page.goto("/");
   const scene = page.locator(".hero-scene");
   const shapes = () =>
-    scene.evaluate((svg) =>
-      [...svg.querySelectorAll(".record-staff, .record-thread, .record-note, .record-dot")].map(
+    scene.evaluate((scene) =>
+      [...scene.querySelectorAll(".record-staff, .record-thread, .record-note, .record-dot")].map(
         (element) => element.getAttribute("d") ?? element.getAttribute("transform") ?? element.getAttribute("cx"),
       ),
     );

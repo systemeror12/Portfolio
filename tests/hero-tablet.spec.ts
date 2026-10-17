@@ -9,7 +9,7 @@ async function scene(page: Page) {
   await page.waitForTimeout(100);
   return page.evaluate(() => {
     const hero = document.querySelector(".hero")!;
-    const svg = document.querySelector<SVGSVGElement>(".hero-scene")!;
+    const svg = document.querySelector(".hero-scene")!;
     const origin = hero.getBoundingClientRect();
     const dial = svg.querySelector(".dial")!.getAttribute("transform")!;
     const [x, y] = /translate\(([\d.]+) ([\d.]+)\)/.exec(dial)!.slice(1).map(Number);
