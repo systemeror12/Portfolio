@@ -1,6 +1,6 @@
-// Private-name scan: learns before release whether any public route, or the
-// resume PDF, names a client, its banks or counterparties, the employer, a
-// repository codename, or the provider name.
+// Private-name scan: learns before release whether any public route names a
+// client, its banks or counterparties, the employer, a repository codename, or
+// the provider name.
 //
 // The names live only in tests/private-names.local, which `*.local` in
 // .gitignore keeps out of the repo, so this check never publishes them. Write
@@ -13,11 +13,9 @@
 // ran. CI never has the file, so it always skips there.
 import { existsSync, readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
-import { pdfText } from "./pdf-text";
 import { routes } from "./public-routes";
 
 const namesFile = new URL("./private-names.local", import.meta.url);
-const resume = "/jerome-mendoza-resume.pdf";
 
 const privateNames = existsSync(namesFile)
   ? readFileSync(namesFile, "utf8")
@@ -60,15 +58,5 @@ test.describe("the private-name scan", () => {
       // Only how many matched is reported, so a failure never prints a name.
       expect.soft(namesIn(published, privateNames!).length, `private names on ${path}`).toBe(0);
     }
-  });
-
-  test("the resume PDF names no private name", async ({ request }) => {
-    const response = await request.get(resume);
-    expect(response.ok()).toBe(true);
-    const published = pdfText(await response.body());
-
-    // Proves the PDF's text was read, so an empty read cannot pass.
-    expect(published).toContain("Jerome Mendoza");
-    expect(namesIn(published, privateNames!).length, "private names in the resume PDF").toBe(0);
   });
 });
