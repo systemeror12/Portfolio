@@ -85,7 +85,7 @@ Customers could pay through the client's required Regional Payment Provider dire
 _Avoid_: Increased conversions, faster payments
 
 **Excluded Project**:
-The cancelled palletization system, which must not be presented as a delivered public case study or completed client outcome.
+The cancelled palletization system, which must not be presented as a delivered public case study or completed client outcome. Jerome built it before the client cancelled, so the Resume may list it as cancelled work.
 _Avoid_: Inventory case study, delivered palletization system
 
 **Multi-Company HRIS**:
@@ -239,3 +239,7 @@ _Avoid_: Personal Projects, professional case studies
 **In Progress**:
 The homepage section, between the Work section and After Hours, for professional Project Evidence that is not yet live: the Brokerage ERP Rebuild first, then the Training Registration Platform. Each piece states what Jerome owns and the line it holds instead of a Verified Result.
 _Avoid_: Case study, delivered systems, Work section pane
+
+**Resume**:
+Jerome's private resume, kept outside this repository and shared through job boards and email. It may name the employer, but clients stay anonymized as on the site. The site links no resume.
+_Avoid_: Site resume download, portfolio PDF
