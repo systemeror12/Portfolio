@@ -33,7 +33,7 @@ const heart = (page: Page) =>
       ring: Number(ring.getAttribute("r")),
       ringOpacity: Number(ring.getAttribute("opacity")),
       core: Number(ring.nextElementSibling!.getAttribute("r")),
-      bloom: Number(scene.querySelector(".dial > g:first-child")!.getAttribute("opacity")),
+      bloom: Number(scene.querySelector(".dial-heart > g")!.getAttribute("opacity")),
     };
   });
 
