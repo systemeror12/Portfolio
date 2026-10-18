@@ -5,7 +5,11 @@
 // Measure, against a local preview (`npm run build && npx vite preview`) or
 // the deployed site, keeping stdout as the result file:
 //   node scripts/measure-hero.mjs <url> [--label main] [--viewports desktop-1920,...]
-//     [--throttles 1,4] [--repeats 3] [--angle gl-egl] | tee main.jsonl
+//     [--throttles 1,4] [--repeats 3] [--angle gl-egl] [--hero-no-css] | tee main.jsonl
+// --hero-no-css pauses the hero's CSS animations, as #76's hero-no-css run
+// did, so only the animation loop moves. --hero-static also stops the loop,
+// as #76's hero-static run did, so nothing in the hero moves: what is left
+// is the cost of showing the still scene. Its runs need no string run.
 // Measure Chrome on an Android phone, at its own viewport, after
 // `adb forward tcp:9222 localabstract:chrome_devtools_remote`:
 //   node scripts/measure-hero.mjs <url> --cdp http://127.0.0.1:9222 | tee phone.jsonl
@@ -28,6 +32,8 @@ const { values: options, positionals } = parseArgs({
     angle: { type: "string", default: "gl-egl" },
     cdp: { type: "string" },
     compare: { type: "boolean", default: false },
+    "hero-no-css": { type: "boolean", default: false },
+    "hero-static": { type: "boolean", default: false },
   },
 });
 
@@ -53,6 +59,17 @@ const snippet = readFileSync(new URL("./measure-hero-snippet.js", import.meta.ur
 const lastLine = /\)\(\d+\);\s*$/;
 if (!lastLine.test(snippet)) throw new Error("measure-hero-snippet.js must end with `})(<refresh rate>);`.");
 const sampleAt = (hz) => snippet.replace(lastLine, `)(${hz});`);
+const pauseCss = options["hero-no-css"] || options["hero-static"];
+// For --hero-static: the page's requestAnimationFrame drops every callback
+// once __blockPageRaf is set, so the hero's loop stops; the snippet samples
+// with the browser's own, kept as __raf.
+const blockableRaf = () => {
+  const raf = window.requestAnimationFrame.bind(window);
+  window.__raf = raf;
+  window.requestAnimationFrame = (callback) => (window.__blockPageRaf ? 0 : raf(callback));
+};
+const sampleWithOwnRaf = (hz) =>
+  `(() => { const requestAnimationFrame = window.__raf; return (\n${sampleAt(hz).trim().replace(/;$/, "")}\n); })()`;
 
 // Per-second cost of each pipeline stage, from a trace of the page's
 // renderer and the GPU process.
@@ -145,17 +162,22 @@ async function run(browser, page, url, throttle) {
   await page.goto("about:blank");
   const hz = await refreshRate(page);
   const cdp = await page.context().newCDPSession(page);
+  if (options["hero-static"]) await page.addInitScript(blockableRaf);
   await page.goto(url, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   if (throttle > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: throttle });
   await page.evaluate(() => window.scrollTo(0, 0));
+  if (pauseCss) {
+    await page.addStyleTag({ content: ".hero-scene, .hero-scene * { animation-play-state: paused !important; }" });
+  }
   const screen = await page.evaluate(() => ({
     width: innerWidth,
     height: innerHeight,
     dpr: devicePixelRatio,
   }));
 
-  const sample = await page.evaluate(sampleAt(hz));
+  if (options["hero-static"]) await page.evaluate(() => (window.__blockPageRaf = true));
+  const sample = await page.evaluate(options["hero-static"] ? sampleWithOwnRaf(hz) : sampleAt(hz));
   await browser.startTracing(page, { categories });
   await page.waitForTimeout(TRACE_MS);
   const trace = JSON.parse((await browser.stopTracing()).toString());
@@ -165,7 +187,7 @@ async function run(browser, page, url, throttle) {
 
   const invalid = [];
   if (!gpu.compositing?.startsWith("enabled")) invalid.push(`compositing is ${gpu.compositing}, not hardware`);
-  if (!sample.stringRuns) invalid.push("no string run started in the window");
+  if (!sample.stringRuns && !options["hero-static"]) invalid.push("no string run started in the window");
   const misses = [...sample.misses];
   if (throttle === 1 && !(cost["gpu-main"] < MAX_GPU_MAIN))
     misses.push(`CrGpuMain ${cost["gpu-main"] ?? "not traced"} ms/s ≥ ${MAX_GPU_MAIN}`);
@@ -214,7 +236,7 @@ async function measure(url) {
           result = { valid: false, invalid: [e.message.split("\n")[0]], pass: false };
         }
         await close();
-        result = { label: options.label, viewport: name, throttle, run: i, ...result };
+        result = { label: options.label, heroNoCss: pauseCss, heroStatic: options["hero-static"], viewport: name, throttle, run: i, ...result };
         console.log(JSON.stringify(result));
         results.push(result);
       }
