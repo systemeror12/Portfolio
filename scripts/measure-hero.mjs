@@ -16,6 +16,12 @@
 // Compare a branch's result file with main's:
 //   node scripts/measure-hero.mjs --compare main.jsonl branch.jsonl
 //
+// Since #80 the hero's animation loop draws in a worker (ADR 0002). A run
+// then also measures the loop's own pace and the work each of its frames
+// took (loop), and D1 holds the loop to the same mean and p95. The CPU
+// throttle reaches only the main thread, so the loop throttles itself by as
+// much.
+//
 // Each run prints one JSON line; each viewport × throttle then prints a
 // pass/fail line. The exit code is 1 if anything failed or was invalid.
 import { readFileSync } from "node:fs";
@@ -163,6 +169,12 @@ async function run(browser, page, url, throttle) {
   const hz = await refreshRate(page);
   const cdp = await page.context().newCDPSession(page);
   if (options["hero-static"]) await page.addInitScript(blockableRaf);
+  // The CPU throttle reaches only the page's main thread. Since #80 the
+  // hero's loop runs in a worker, so it throttles itself by as much (ADR
+  // 0002); --hero-static keeps it on the main thread, where blocking the
+  // page's frames stops it.
+  if (throttle > 1) await page.addInitScript((rate) => (window.heroLoopSlowdown = rate), throttle);
+  if (options["hero-static"]) await page.addInitScript(() => (window.heroLoopOnMain = true));
   await page.goto(url, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   if (throttle > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: throttle });
@@ -200,6 +212,7 @@ async function run(browser, page, url, throttle) {
     worst: sample.worst,
     gpuMainMsPerSec: cost["gpu-main"] ?? null,
     stringRuns: sample.stringRuns,
+    ...(sample.loop ? { loop: sample.loop } : {}),
     gpu,
     costMsPerSec: cost,
     valid: !invalid.length,

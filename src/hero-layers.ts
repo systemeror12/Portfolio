@@ -190,16 +190,3 @@ export function foldOpacity(root: Element) {
     shape.removeAttribute("opacity");
   }
 }
-
-// Pins group's paint to box, in its own coordinates: a dot at each corner,
-// which draws nothing, keeps the group's bounds the same however its paths
-// change. When those bounds change, Chromium sorts every chunk of every layer
-// again, as it does for a changed transform (#80).
-export function pin(group: SVGGElement, { l, t, r, b }: Box) {
-  const dots = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  dots.setAttribute("class", "hero-pin");
-  dots.setAttribute("d", `M${l},${t}h0.1M${r},${b}h0.1`);
-  dots.setAttribute("stroke", "#000");
-  dots.setAttribute("stroke-opacity", "0");
-  group.prepend(dots);
-}

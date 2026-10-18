@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { loopState } from "./hero-loop";
 
 // The strings' runs, by layer, and what each layer sits between.
 async function strings(page: Page) {
@@ -89,27 +90,17 @@ test("on phones three strings stay above the copy", async ({ page }) => {
 
 test("when a record lands, a pink run plays along the strings", async ({ page }) => {
   await page.goto("/");
-  const lit = () =>
-    page.evaluate(
-      () =>
-        [...document.querySelectorAll(".hero-scene .key-lamps path:not(.hero-pin)")].filter(
-          (lamp) => Number(lamp.getAttribute("fill-opacity")) > 0,
-        ).length,
-    );
-  await expect.poll(lit, { timeout: 15_000 }).toBeGreaterThan(0);
-  await expect(page.locator(".hero-scene .key-lamps path:not(.hero-pin)").first()).toHaveAttribute("fill", "#f0b4dc");
+  // The loop lights the lamps on canvas (ADR 0002), and the lamps' layers
+  // show while the run plays.
+  await expect.poll(async () => (await loopState(page)).lamps, { timeout: 15_000 }).toBeGreaterThan(0);
+  await expect(page.locator(".hero-scene > [data-band$=lamps]").first()).toBeVisible();
 });
 
 test("under reduced motion no run plays", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.clock.install();
   await page.goto("/");
-  await page.clock.runFor(20_000);
-  const lit = await page.evaluate(
-    () =>
-      [...document.querySelectorAll(".hero-scene .key-lamps path:not(.hero-pin)")].filter(
-        (lamp) => Number(lamp.getAttribute("fill-opacity")) > 0,
-      ).length,
-  );
-  expect(lit).toBe(0);
+  await page.waitForTimeout(3000);
+  const { lamps, run } = await loopState(page);
+  expect({ lamps, run }).toEqual({ lamps: 0, run: false });
+  for (const layer of await page.locator(".hero-scene > [data-band$=lamps]").all()) await expect(layer).toBeHidden();
 });

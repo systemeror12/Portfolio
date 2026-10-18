@@ -1,11 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
+import { loopOnMain, loopState } from "./hero-loop";
 
 // The hero's scene is a stack of layers, one <svg> per depth band (ADR 0001,
 // Layered scenes), within the budget #81 sets. Each layer carries its kind:
 // what the animation loop moves is in layers that repaint, what CSS moves is
 // in layers the compositor moves whole, and nothing in a still layer
 // changes. A band the compositor moves is a run of layers, one per part.
-// The heart's lily (bloom) is faded whole by the loop, on the compositor.
+// The heart's lily (bloom) is faded whole, on the compositor. What the loop
+// moves every frame is drawn on canvases (ADR 0002).
 const desktop = [
   ["back-lilies", "still"],
   ["back-twinkles", "compositor"],
@@ -15,6 +17,7 @@ const desktop = [
   ["bloom", "compositor"],
   ["shimmer", "compositor"],
   ["dial", "still"],
+  ["hands", "repaints"],
   ["clockwork", "repaints"],
   ["mid-strings", "still"],
   ["mid-lamps", "repaints"],
@@ -31,6 +34,7 @@ const tablet = [
   ["bloom", "compositor"],
   ["shimmer", "compositor"],
   ["dial", "still"],
+  ["hands", "repaints"],
   ["clockwork", "repaints"],
   ["front-strings", "still"],
   ["front-lamps", "repaints"],
@@ -40,6 +44,9 @@ const tablet = [
   ["near-lilies", "compositor"],
   ["glints", "compositor"],
 ];
+
+// The bands the loop draws on canvas.
+const canvases = new Set(["clockwork", "back-lamps", "mid-lamps", "near-lamps", "front-lamps"]);
 
 // Every child of the scene, with its band and kind, and its box as a share
 // of the hero.
@@ -81,7 +88,7 @@ for (const [width, height, order] of [
     // Each layer is composited on its own, so a change repaints only it. A
     // swaying lily's layer is an HTML wrapper.
     for (const layer of stack) {
-      const tag = layer.band === "near-lilies" ? "DIV" : "svg";
+      const tag = layer.band === "near-lilies" ? "DIV" : canvases.has(layer.band!) ? "CANVAS" : "svg";
       const willChange = layer.band === "bloom" ? "transform, opacity" : "transform";
       expect(layer).toMatchObject({ tag, hidden: "true", willChange });
     }
@@ -106,6 +113,7 @@ test.describe("on a tablet at 1180×820 @2x", () => {
   test.use({ viewport: { width: 1180, height: 820 }, deviceScaleFactor: 2 });
 
   test("while a run plays the layers stay within #81's budget: 160 layers, 8 hero-areas", async ({ page }) => {
+    await page.addInitScript(loopOnMain);
     await page.clock.install();
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
@@ -132,34 +140,14 @@ test.describe("on a tablet at 1180×820 @2x", () => {
   });
 });
 
-test("the second hand and the lamps keep their bounds while they move, so no frame lays out the layers again", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.clock.install();
-  await page.goto("/");
-  await page.evaluate(() => document.fonts.ready);
-  await untilRun(page);
-  const bounds = () =>
-    page.evaluate(() =>
-      [...document.querySelectorAll<SVGGElement>(".hero-scene :is(.dial-second-hand, .key-lamps)")].map((group) => {
-        const { x, y, width, height } = group.getBBox();
-        return [x, y, width, height].map((n) => n.toFixed(1)).join(" ");
-      }),
-    );
-  const before = await bounds();
-  expect(before.length).toBeGreaterThan(1);
-  for (let k = 0; k < 5; k++) {
-    await page.clock.runFor(200);
-    expect(await bounds()).toEqual(before);
-  }
-});
-
 for (const [width, height] of [
   [1440, 900],
   [1180, 820],
 ] as const) {
   test(`at ${width}×${height}, over 15 s with a string run, nothing in a still layer changes or animates`, async ({ page }) => {
+    // Real time, with the loop in its worker, as a reader sees it.
+    test.setTimeout(45_000);
     await page.setViewportSize({ width, height });
-    await page.clock.install();
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     await page.evaluate(() => {
@@ -182,7 +170,7 @@ for (const [width, height] of [
         attributeFilter: ["style"],
       });
     });
-    await page.clock.runFor(15_000);
+    await page.waitForTimeout(15_000);
     const seen = await page.evaluate(() => {
       const { changes, runs } = window as unknown as { changes: string[]; runs: number };
       const scene = document.querySelector(".hero-scene")!;
@@ -273,7 +261,7 @@ test("under reduced motion nothing in the hero animates", async ({ page }) => {
   expect(await heroAnimations(page)).toEqual([]);
 });
 
-test("a resize while the loop runs leaves it writing to the new drawing", async ({ page }) => {
+test("a resize while the loop runs leaves it drawing the new layout", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
@@ -281,24 +269,23 @@ test("a resize while the loop runs leaves it writing to the new drawing", async 
     (window as unknown as { old: Element[] }).old = [...document.querySelector(".hero-scene")!.children];
   });
   await page.setViewportSize({ width: 1100, height: 800 });
-  await expect(page.locator(".hero-scene > [data-band=clockwork]")).toHaveAttribute("viewBox", /^0 0 1100 /);
-  // Every write the loop makes over half a second, to the old layers and the new.
-  const writes = await page.evaluate(
+  await expect(page.locator(".hero-scene > [data-band=dial]")).not.toHaveCount(0);
+  await expect.poll(async () => (await loopState(page)).size?.width).toBe(1100);
+  // Nothing is written to the old layers, which have all gone.
+  const old = await page.evaluate(
     () =>
-      new Promise<{ old: number; new: number; attached: number }>((resolve) => {
+      new Promise<{ writes: number; attached: number }>((resolve) => {
         const { old } = window as unknown as { old: Element[] };
-        const writes = { old: 0, new: 0, attached: old.filter((layer) => layer.isConnected).length };
-        const watch = (layers: Element[], key: "old" | "new") => {
-          const observer = new MutationObserver((records) => (writes[key] += records.length));
-          for (const layer of layers) observer.observe(layer, { subtree: true, attributes: true, childList: true });
-        };
-        watch(old, "old");
-        watch([...document.querySelector(".hero-scene")!.children], "new");
-        setTimeout(() => resolve(writes), 500);
+        const seen = { writes: 0, attached: old.filter((layer) => layer.isConnected).length };
+        const observer = new MutationObserver((records) => (seen.writes += records.length));
+        for (const layer of old) observer.observe(layer, { subtree: true, attributes: true, childList: true });
+        setTimeout(() => resolve(seen), 500);
       }),
   );
-  expect(writes).toMatchObject({ old: 0, attached: 0 });
-  expect(writes.new).toBeGreaterThan(0);
+  expect(old).toEqual({ writes: 0, attached: 0 });
+  // And the loop goes on drawing.
+  const drawn = (await loopState(page)).frames;
+  await expect.poll(async () => (await loopState(page)).frames).toBeGreaterThan(drawn + 10);
 });
 
 // Keeps the observers watching the hero, until they are disconnected.
@@ -316,14 +303,30 @@ const trackObservers = () => {
     };
   }
   (window as unknown as { heroObservers: Set<object> }).heroObservers = live;
+  // And the loop's worker, until it is ended.
+  const workers = new Set<Worker>();
+  const { terminate } = Worker.prototype;
+  window.Worker = class extends Worker {
+    constructor(...args: ConstructorParameters<typeof Worker>) {
+      super(...args);
+      workers.add(this);
+    }
+  };
+  Worker.prototype.terminate = function (this: Worker) {
+    workers.delete(this);
+    return terminate.call(this);
+  };
+  (window as unknown as { heroWorkers: Set<Worker> }).heroWorkers = workers;
 };
 
-test("leaving the homepage removes every layer and disconnects every observer", async ({ page }) => {
+test("leaving the homepage removes every layer, disconnects every observer, and ends the loop's worker", async ({ page }) => {
   await page.addInitScript(trackObservers);
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
   const watching = () => page.evaluate(() => (window as unknown as { heroObservers: Set<object> }).heroObservers.size);
   expect(await watching()).toBe(2);
+  const working = () => page.evaluate(() => (window as unknown as { heroWorkers: Set<Worker> }).heroWorkers.size);
+  expect(await working()).toBe(1);
   await page.evaluate(() => {
     (window as unknown as { scene: Element }).scene = document.querySelector(".hero-scene")!;
     window.history.pushState({}, "", "/work/multi-company-hris");
@@ -332,4 +335,5 @@ test("leaving the homepage removes every layer and disconnects every observer", 
   await expect(page.locator(".hero")).toHaveCount(0);
   expect(await page.evaluate(() => (window as unknown as { scene: Element }).scene.childElementCount)).toBe(0);
   expect(await watching()).toBe(0);
+  expect(await working()).toBe(0);
 });
