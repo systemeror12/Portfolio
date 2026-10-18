@@ -14,8 +14,12 @@
   width: 100%;
   height: 100%;
 }
+/* Each layer is composited on its own, so a change inside it repaints only
+   it. Without will-change the browser may paint every layer into one, and a
+   moving hand repaints the whole scene again (#76). */
 .hero-scene > svg {
   position: absolute;
+  will-change: transform;
 }
 .hero-scene .glass {
   animation: hero-shimmer 7s ease-in-out infinite;

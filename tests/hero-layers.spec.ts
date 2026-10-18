@@ -45,6 +45,7 @@ async function layers(page: Page) {
         tag: layer.tagName,
         band: layer.getAttribute("data-band"),
         kind: layer.getAttribute("data-layer"),
+        willChange: getComputedStyle(layer).willChange,
         hidden: layer.getAttribute("aria-hidden"),
         area: (box.width * box.height) / (hero.width * hero.height),
       };
@@ -66,7 +67,8 @@ for (const [width, height, order] of [
     await expect(page.locator(".hero > .hero-scene")).toHaveAttribute("aria-hidden", "true");
     const stack = await layers(page);
     expect(stack.map((layer) => [layer.band, layer.kind])).toEqual(order);
-    for (const layer of stack) expect(layer).toMatchObject({ tag: "svg", hidden: "true" });
+    // Each layer is composited on its own, so a change repaints only it.
+    for (const layer of stack) expect(layer).toMatchObject({ tag: "svg", hidden: "true", willChange: "transform" });
   });
 }
 
