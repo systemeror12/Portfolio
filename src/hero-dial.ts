@@ -3,6 +3,7 @@ import { tabletDial, type HeroLayout } from "./hero-layout";
 import { drawBackLilies, drawFrontLilies } from "./hero-lilies";
 import { drawHeroRecords } from "./hero-records";
 import { drawGlints, skyDefs } from "./hero-sky";
+import { fit, liftGlints, liftLilies, liftPanes, liftPhases } from "./hero-layers";
 import { drawStrings } from "./hero-strings";
 import { hourHand, minuteHand } from "./iron-hands";
 import { seeded } from "./space";
@@ -112,6 +113,7 @@ function dial(parent: Element, radius: number) {
       {
         d: `M${x0},${y0} L${x1},${y1} A${r2},${r2} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x0},${y0} Z`,
         class: k % 3 ? "dial-pane" : "dial-pane glass",
+        "data-pane": k,
         fill,
         opacity: 0.78,
         stroke: "#9b8794",
@@ -187,18 +189,26 @@ function clockHands(parent: Element, radius: number, reduce: boolean) {
 // strings share a layer. What the animation loop moves has layers of its
 // own: the heart (the dial's smoked face and its lily), the clockwork (the
 // hands, the records, and the glow), and each depth's lamps over its keys.
+// What CSS moves is lifted into layers the compositor moves (hero-layers.ts):
+// the far lilies' twinkles, a layer per phase; the dial's glass, a layer per
+// pane; the near lilies, a wrapper each with a layer per twinkle; and a layer
+// per glint. The glass goes under the rest of the dial rather than over it
+// (#81 has it over), as over it would cover each pane's facet and numeral.
 type Band = (typeof stacks)[keyof typeof stacks][number];
 const stacks = {
   desktop: [
     "back-lilies",
+    "back-twinkles",
     "back-strings",
     "back-lamps",
     "heart",
+    "shimmer",
     "dial",
     "clockwork",
     "mid-strings",
     "mid-lamps",
-    "front-lilies",
+    "sprigs",
+    "near-lilies",
     "near-strings",
     "near-lamps",
     "glints",
@@ -207,23 +217,25 @@ const stacks = {
     "back-strings",
     "back-lamps",
     "heart",
+    "shimmer",
     "dial",
     "clockwork",
     "front-strings",
     "front-lamps",
     "back-lilies",
-    "front-lilies",
+    "back-twinkles",
+    "sprigs",
+    "near-lilies",
     "glints",
   ],
 } as const;
 // Each layer's kind, as data-layer: nothing in a still layer changes once
-// drawn; the rest repaint. The lilies, the dial and the glints repaint with
-// their CSS animations until #80 gives those layers of their own.
-const still = new Set<Band>(["back-strings", "mid-strings", "near-strings", "front-strings"]);
-// How far a layer reaches past what it holds at the moment it is sized: the
-// near lilies sway 3° either way, and lines have width. Bands not listed fill
-// the hero.
-const reach: Partial<Record<Band, number>> = { "back-lilies": 4, heart: 4, dial: 4, "front-lilies": 40 };
+// drawn; the compositor moves the lifted layers whole; the rest repaint.
+const still = new Set<Band>(["back-lilies", "back-strings", "dial", "mid-strings", "sprigs", "near-strings", "front-strings"]);
+const lifted = new Set<Band>(["back-twinkles", "shimmer", "near-lilies", "glints"]);
+// How far a layer reaches past what it holds, as lines have width. Bands not
+// listed fill the hero.
+const reach: Partial<Record<Band, number>> = { "back-lilies": 4, heart: 4, dial: 4, sprigs: 4 };
 
 // Draws the scene into container, sized to its parent, as a stack of layers.
 // Returns a cleanup function.
@@ -249,8 +261,7 @@ export function drawHeroDial(container: HTMLElement) {
   function bound(layer: SVGSVGElement, l: number, t: number, r: number, b: number) {
     [l, t] = [Math.max(0, Math.floor(l)), Math.max(0, Math.floor(t))];
     [r, b] = [Math.max(l, Math.min(width, Math.ceil(r))), Math.max(t, Math.min(height, Math.ceil(b)))];
-    layer.setAttribute("viewBox", `${l} ${t} ${r - l} ${b - t}`);
-    Object.assign(layer.style, { left: `${l}px`, top: `${t}px`, width: `${r - l}px`, height: `${b - t}px` });
+    fit(layer, { l, t, r, b });
   }
 
   function build() {
@@ -273,14 +284,14 @@ export function drawHeroDial(container: HTMLElement) {
           {
             class: "hero-layer",
             "data-band": band,
-            "data-layer": still.has(band) ? "still" : "repaints",
+            "data-layer": still.has(band) ? "still" : lifted.has(band) ? "compositor" : "repaints",
             "aria-hidden": "true",
-            viewBox: `0 0 ${width} ${height}`,
           },
           container,
         ),
       ]),
     ) as Record<Band, SVGSVGElement>;
+    for (const layer of Object.values(layers)) bound(layer, 0, 0, width, height);
     container.firstElementChild!.innerHTML = defs;
     // Far lilies and strings behind the dial, whose face is faintly smoked
     // glass so what runs behind it reads as behind.
@@ -301,13 +312,28 @@ export function drawHeroDial(container: HTMLElement) {
     const mid = tablet ? "front" : "mid";
     const near = tablet ? "front" : "near";
     strings.paint(layers[`${mid}-strings`], layers[`${mid}-lamps`], "mid");
-    drawFrontLilies(layers["front-lilies"], layout);
+    drawFrontLilies(layers.sprigs, layout);
     strings.paint(layers[`${near}-strings`], layers[`${near}-lamps`], "near");
     const glints = strings.finish(layers.glints);
     play = glints.play;
-    for (const place of [glints.place, drawGlints(layers.glints, layout)]) place();
+    const places = [glints.place, drawGlints(layers.glints, layout)];
+    // Each part CSS moves takes the place of its band's layer, in a layer of
+    // its own; a glint on the copy stays hidden, layer and all.
+    const parts: Partial<Record<Band, (HTMLElement | SVGSVGElement)[]>> = {
+      "back-twinkles": liftPhases(layers["back-lilies"]),
+      shimmer: liftPanes(layers.dial),
+      "near-lilies": liftLilies(layers.sprigs),
+      glints: liftGlints(layers.glints),
+    };
+    for (const place of places) place();
+    for (const glint of parts.glints!) glint.style.display = glint.querySelector("[display=none]") ? "none" : "";
+    for (const [band, elements] of Object.entries(parts) as [Band, (HTMLElement | SVGSVGElement)[]][]) {
+      for (const element of elements) element.dataset.band = band;
+      layers[band].replaceWith(...elements);
+    }
     tick(start);
     for (const [band, layer] of Object.entries(layers) as [Band, SVGSVGElement][]) {
+      if (lifted.has(band)) continue;
       const pad = reach[band];
       if (pad === undefined) bound(layer, 0, 0, width, height);
       else {

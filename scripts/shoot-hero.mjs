@@ -54,7 +54,7 @@ function pauseAt(ms) {
     animation.pause();
     const { delay, duration } = animation.effect.getTiming();
     const target = animation.effect.target;
-    animation.currentTime = target.closest(".lily-far") ? ((delay % duration) + duration) % duration : ms;
+    animation.currentTime = target.closest(".lily-far, [data-band=back-twinkles]") ? ((delay % duration) + duration) % duration : ms;
     const { transform, opacity } = getComputedStyle(target);
     held.push([target, transform, opacity]);
   }

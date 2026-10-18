@@ -40,9 +40,15 @@ test("the dial has 25 panes of glass, its numerals, rings, ticks, lily, and boss
   const scene = page.locator(".hero > .hero-scene");
   await expect(scene).toHaveAttribute("aria-hidden", "true");
 
+  // The glass panes shimmer in layers of their own, so panes are read in
+  // the order of their hours.
   const fills = await scene
     .locator(".dial-pane")
-    .evaluateAll((panes) => panes.map((pane) => pane.getAttribute("fill")));
+    .evaluateAll((panes) =>
+      panes
+        .sort((a, b) => Number(a.getAttribute("data-pane")) - Number(b.getAttribute("data-pane")))
+        .map((pane) => pane.getAttribute("fill")),
+    );
   expect(fills).toHaveLength(25);
   fills.forEach((fill, k) => {
     if (k === 0) expect(fill).toBe("#7a4870");

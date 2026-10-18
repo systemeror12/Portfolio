@@ -7,7 +7,8 @@
 }
 /* The drawn scene fills the hero, over the page's night sky, as a stack of
    layers each placed by the scene. Glass shimmers, stars twinkle, glints
-   breathe, and lilies sway, only while on screen. */
+   breathe, and lilies sway, only while on screen, each in a layer of its
+   own that the compositor moves (ADR 0001, Layered scenes). */
 .hero-scene {
   position: absolute;
   inset: 0;
@@ -16,28 +17,32 @@
 }
 /* Each layer is composited on its own, so a change inside it repaints only
    it. Without will-change the browser may paint every layer into one, and a
-   moving hand repaints the whole scene again (#76). */
-.hero-scene > svg {
+   moving hand repaints the whole scene again (#76). A swaying lily's
+   drawing paints into its wrapper's layer; each of its twinkles has its
+   own. */
+.hero-scene > * {
   position: absolute;
   will-change: transform;
 }
-.hero-scene .glass {
+.hero-lily > svg {
+  position: absolute;
+}
+.hero-lily > .hero-twinkle {
+  will-change: opacity;
+}
+.hero-pane {
   animation: hero-shimmer 7s ease-in-out infinite;
 }
-.hero-scene .twinkle {
+.hero-twinkle {
   animation: star-twinkle 5s ease-in-out infinite;
 }
-.hero-scene .glint {
+.hero-glint {
   animation: glint-breathe 7s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
 }
-.hero-scene .lily-sway {
+.hero-lily {
   animation: lily-sway 11s ease-in-out infinite alternate;
-  transform-box: fill-box;
-  transform-origin: center;
 }
-.hero-scene.is-paused :is(.glass, .twinkle, .glint, .lily-sway) {
+.hero-scene.is-paused :is(.hero-pane, .hero-twinkle, .hero-glint, .hero-lily) {
   animation-play-state: paused;
 }
 @keyframes hero-shimmer {
