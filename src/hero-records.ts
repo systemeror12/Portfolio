@@ -60,9 +60,11 @@ export function drawHeroRecords(svg: SVGSVGElement, layout: HeroLayout) {
     );
     const marks: SVGGraphicsElement[] = staff
       ? [0, 1].map(() => {
+          // Drawn where it is, frame by frame, rather than moved: a moving
+          // transform makes the browser sort the whole hero's layers again.
           const note = draw("g", { class: "record-note" }, group);
-          draw("ellipse", { rx: 4.6, ry: 3.2, transform: "rotate(-22)", fill: "#ece8f4" }, note);
-          draw("path", { d: "M4 -1 V-17", stroke: "#ece8f4", "stroke-width": 1.2 }, note);
+          draw("path", { fill: "#ece8f4" }, note);
+          draw("path", { stroke: "#ece8f4" }, note);
           return note;
         })
       : [draw("circle", { class: "record-dot", r: 2.2, fill: "#ece8f4" }, group)];
@@ -79,6 +81,20 @@ export function drawHeroRecords(svg: SVGSVGElement, layout: HeroLayout) {
       [th.x, th.x + dx * 0.35 + Math.sin(t * 0.35 + th.seed) * 22 * sway, th.x + dx * 0.72 + Math.cos(t * 0.25 + th.seed) * 18 * sway, heart.x],
       [th.y, th.y + dy * 0.1 + Math.cos(t * 0.3 + th.seed) * 26 * sway - 40, heart.y - dy * 0.08 + Math.sin(t * 0.4 + th.seed) * 16 * sway, heart.y],
     ];
+  }
+
+  // A note at x, y, scaled by s: its head, an ellipse tilted 22°, and its
+  // stem, as translate(x y) scale(s) would place them.
+  const tilt = (-22 * Math.PI) / 180;
+  function note(mark: SVGGraphicsElement, x: number, y: number, s: number) {
+    const [head, stem] = mark.children;
+    const [rx, ry] = [4.6 * s, 3.2 * s];
+    const [dx, dy] = [rx * Math.cos(tilt), rx * Math.sin(tilt)];
+    const arc = `A${rx.toFixed(2)},${ry.toFixed(2)} -22 1 0`;
+    const [x1, y1, x2, y2] = [x + dx, y + dy, x - dx, y - dy].map((v) => v.toFixed(2));
+    head.setAttribute("d", `M${x1},${y1} ${arc} ${x2},${y2} ${arc} ${x1},${y1}Z`);
+    stem.setAttribute("d", `M${(x + 4 * s).toFixed(2)},${(y - s).toFixed(2)} V${(y - 17 * s).toFixed(2)}`);
+    stem.setAttribute("stroke-width", (1.2 * s).toFixed(2));
   }
 
   function advance(now: number) {
@@ -107,8 +123,9 @@ export function drawHeroRecords(svg: SVGSVGElement, layout: HeroLayout) {
         th.progress[k] = p;
         const e = p * p * (3 - 2 * p);
         const pt = along(path, e);
+        // Fades by fill and stroke, not opacity, for the same reason.
         const opacity = Math.min(1, p * 6, (1 - p) * 8).toFixed(2);
-        mark.setAttribute("opacity", opacity);
+        mark.setAttribute("fill-opacity", opacity);
         if (mark instanceof SVGCircleElement) {
           mark.setAttribute("cx", pt.x.toFixed(1));
           mark.setAttribute("cy", pt.y.toFixed(1));
@@ -116,10 +133,8 @@ export function drawHeroRecords(svg: SVGSVGElement, layout: HeroLayout) {
         }
         // Notes ride the staff's outer lines, closing in as it narrows.
         const o = (k ? 1 : -1) * (k + 1) * 0.5 * spacing * (1 - e) ** 0.8;
-        mark.setAttribute(
-          "transform",
-          `translate(${(pt.x + pt.nx * o).toFixed(1)} ${(pt.y + pt.ny * o).toFixed(1)}) scale(${(0.6 + 0.4 * (1 - e)).toFixed(2)})`,
-        );
+        mark.setAttribute("stroke-opacity", opacity);
+        note(mark, pt.x + pt.nx * o, pt.y + pt.ny * o, 0.6 + 0.4 * (1 - e));
       });
     }
     return arrived;

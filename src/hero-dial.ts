@@ -3,7 +3,7 @@ import { tabletDial, type HeroLayout } from "./hero-layout";
 import { drawBackLilies, drawFrontLilies } from "./hero-lilies";
 import { drawHeroRecords } from "./hero-records";
 import { drawGlints, skyDefs } from "./hero-sky";
-import { fit, liftGlints, liftLilies, liftPanes, liftPhases } from "./hero-layers";
+import { fit, foldOpacity, liftGlints, liftLilies, liftPanes, liftPhases, pin } from "./hero-layers";
 import { drawStrings } from "./hero-strings";
 import { hourHand, minuteHand } from "./iron-hands";
 import { seeded } from "./space";
@@ -38,7 +38,7 @@ const petalShade = "M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C2,-70 1,-
 // the heart. Its seed makes it the same on every load.
 function heartLily(parent: Element, scale: number) {
   const random = seeded(5);
-  const group = draw("g", { transform: `scale(${scale})`, opacity: 0.85 }, parent);
+  const group = draw("g", { transform: `scale(${scale})` }, parent);
   const line = { fill: "none", stroke: "#9b8794", "vector-effect": "non-scaling-stroke" };
   const ring = (count: number, size: number, fill: string, turn: number, veins: boolean) => {
     for (let i = 0; i < count; i++) {
@@ -172,13 +172,16 @@ function dial(parent: Element, radius: number) {
 function clockHands(parent: Element, radius: number, reduce: boolean) {
   const hour = hourHand(parent, radius * 0.56);
   const minute = minuteHand(parent, radius * 0.72);
+  // The second hand moves every frame, so it is drawn by its ends rather than
+  // turned: a turning transform makes the browser sort every layer of the
+  // hero again, every frame (#80).
   const second = draw("g", reduce ? { class: "dial-second-hand", display: "none" } : { class: "dial-second-hand" }, parent);
-  draw("path", { d: `M${-radius * 0.1},0 L${radius * 0.76},0`, stroke: "#f0b4dc", "stroke-width": 0.9, opacity: 0.8 }, second);
+  draw("path", { stroke: "#f0b4dc", "stroke-width": 0.9, "stroke-opacity": 0.8 }, second);
   // The bronze boss, with a thin ring.
   draw("circle", { class: "dial-boss", r: 7, fill: "#9b8794" }, parent);
   draw("circle", { r: 10, fill: "none", stroke: "#9b8794", "stroke-width": 0.9, opacity: 0.8 }, parent);
   draw("circle", { r: 2.5, fill: "#06060b" }, parent);
-  return { hour, minute, second };
+  return { hour, minute, second: second.firstElementChild as SVGPathElement };
 }
 
 // The scene's depth bands, bottom to top, each drawn into a layer of its own:
@@ -202,6 +205,7 @@ const stacks = {
     "back-strings",
     "back-lamps",
     "heart",
+    "bloom",
     "shimmer",
     "dial",
     "clockwork",
@@ -217,6 +221,7 @@ const stacks = {
     "back-strings",
     "back-lamps",
     "heart",
+    "bloom",
     "shimmer",
     "dial",
     "clockwork",
@@ -230,12 +235,24 @@ const stacks = {
   ],
 } as const;
 // Each layer's kind, as data-layer: nothing in a still layer changes once
-// drawn; the compositor moves the lifted layers whole; the rest repaint.
-const still = new Set<Band>(["back-lilies", "back-strings", "dial", "mid-strings", "sprigs", "near-strings", "front-strings"]);
+// drawn; the compositor moves the lifted layers whole, and fades the heart's
+// lily (bloom) as the loop sets its opacity; the rest repaint.
+const still = new Set<Band>(["back-lilies", "back-strings", "heart", "dial", "mid-strings", "sprigs", "near-strings", "front-strings"]);
 const lifted = new Set<Band>(["back-twinkles", "shimmer", "near-lilies", "glints"]);
+const moved = new Set<Band>([...lifted, "bloom"]);
 // How far a layer reaches past what it holds, as lines have width. Bands not
 // listed fill the hero.
-const reach: Partial<Record<Band, number>> = { "back-lilies": 4, heart: 4, dial: 4, sprigs: 4 };
+const reach: Partial<Record<Band, number>> = {
+  "back-lilies": 4,
+  "back-strings": 4,
+  heart: 4,
+  bloom: 4,
+  dial: 4,
+  "mid-strings": 4,
+  sprigs: 4,
+  "near-strings": 4,
+  "front-strings": 4,
+};
 
 // Draws the scene into container, sized to its parent, as a stack of layers.
 // Returns a cleanup function.
@@ -246,7 +263,9 @@ export function drawHeroDial(container: HTMLElement) {
   let width = 0;
   let height = 0;
   let hands: ReturnType<typeof clockHands>;
-  let bloom: SVGGElement;
+  let bloom: SVGSVGElement;
+  let radius = 0;
+  let glowing = "";
   let glow: SVGCircleElement;
   let ring: SVGCircleElement;
   let core: SVGCircleElement;
@@ -270,7 +289,7 @@ export function drawHeroDial(container: HTMLElement) {
     const mobile = width < 760;
     const tablet = !mobile && width < 1280;
     let heart = mobile ? { x: width * 0.7, y: 196 } : { x: width * 0.79, y: height * 0.52 };
-    let radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
+    radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
     if (tablet) ({ heart, radius } = tabletDial(hero, width, height));
     const layout: HeroLayout = { width, height, heart, radius, mobile, tablet, reduce, hero };
     // Every layer starts the size of the hero, so the drawing code measures
@@ -284,7 +303,7 @@ export function drawHeroDial(container: HTMLElement) {
           {
             class: "hero-layer",
             "data-band": band,
-            "data-layer": still.has(band) ? "still" : lifted.has(band) ? "compositor" : "repaints",
+            "data-layer": still.has(band) ? "still" : moved.has(band) ? "compositor" : "repaints",
             "aria-hidden": "true",
           },
           container,
@@ -301,7 +320,9 @@ export function drawHeroDial(container: HTMLElement) {
     // The dial over its heart, and the hands, records and glow over both.
     const centre = `translate(${heart.x} ${heart.y})`;
     draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, layers.heart);
-    bloom = heartLily(draw("g", { class: "dial-heart", transform: centre }, layers.heart), radius * 0.0048);
+    heartLily(draw("g", { class: "dial-heart", transform: centre }, layers.bloom), radius * 0.0048);
+    bloom = layers.bloom;
+    glowing = "";
     dial(draw("g", { class: "dial", transform: centre }, layers.dial), radius);
     hands = clockHands(draw("g", { class: "dial-hands", transform: centre }, layers.clockwork), radius, reduce);
     records = drawHeroRecords(layers.clockwork, layout);
@@ -331,6 +352,9 @@ export function drawHeroDial(container: HTMLElement) {
       for (const element of elements) element.dataset.band = band;
       layers[band].replaceWith(...elements);
     }
+    // A shape's own opacity would make it a paint chunk of its own; what
+    // doesn't move draws it in its fill or stroke instead (#80).
+    for (const layer of container.querySelectorAll("[data-layer=still], [data-layer=compositor]")) foldOpacity(layer);
     tick(start);
     for (const [band, layer] of Object.entries(layers) as [Band, SVGSVGElement][]) {
       if (lifted.has(band)) continue;
@@ -341,6 +365,9 @@ export function drawHeroDial(container: HTMLElement) {
         bound(layer, x - pad, y - pad, x + w + pad, y + h + pad);
       }
     }
+    // The second hand is pinned to the round it sweeps (#80).
+    const sweep = Math.ceil(radius * 0.76) + 2;
+    pin(hands.second.parentElement as unknown as SVGGElement, { l: -sweep, t: -sweep, r: sweep, b: sweep });
   }
 
   // The dial keeps Manila minutes and seconds; the hour hand stays near 25,
@@ -351,10 +378,17 @@ export function drawHeroDial(container: HTMLElement) {
       manilaTime.formatToParts(new Date()).map((part) => [part.type, Number(part.value)]),
     );
     const millis = reduce ? 0 : (Date.now() % 1000) / 1000;
-    const turn = (hand: SVGGElement, degrees: number) => hand.setAttribute("transform", `rotate(${degrees.toFixed(2)})`);
+    // Each hand is written only when it moves, and the second hand by its
+    // ends, so a frame changes no transform (#80).
+    const turn = (hand: SVGGElement, degrees: number) => {
+      const value = `rotate(${degrees.toFixed(2)})`;
+      if (hand.getAttribute("transform") !== value) hand.setAttribute("transform", value);
+    };
     turn(hands.hour, -90 + (parts.minute / 60) * (360 / 25));
     turn(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
-    turn(hands.second, -90 + ((parts.second + millis) / 60) * 360);
+    const a = ((-90 + ((parts.second + millis) / 60) * 360) * Math.PI) / 180;
+    const at = (r: number) => `${(Math.cos(a) * r).toFixed(2)},${(Math.sin(a) * r).toFixed(2)}`;
+    hands.second.setAttribute("d", `M${at(-radius * 0.1)} L${at(radius * 0.76)}`);
     // Each record that reaches the heart pulses it and lights the lily a
     // little, and sets a run playing along the strings. A frame after a pause
     // takes no arrival it didn't see, so the heart doesn't flash as the hero
@@ -366,9 +400,10 @@ export function drawHeroDial(container: HTMLElement) {
     const breathe = reduce ? 0 : (Math.sin(((now - start) / 1000) * 1.4) + 1) / 2;
     glow.setAttribute("r", String(130 + breathe * 18 + pulse * 30));
     ring.setAttribute("r", String(10 + (1 - pulse) * 30));
-    ring.setAttribute("opacity", (pulse * 0.6).toFixed(2));
+    ring.setAttribute("stroke-opacity", (pulse * 0.6).toFixed(2));
     core.setAttribute("r", String(3.2 + pulse * 1.4));
-    bloom.setAttribute("opacity", (0.85 + pulse * 0.15).toFixed(2));
+    const lit = (0.85 + pulse * 0.15).toFixed(2);
+    if (lit !== glowing) bloom.style.opacity = glowing = lit;
   }
 
   build();

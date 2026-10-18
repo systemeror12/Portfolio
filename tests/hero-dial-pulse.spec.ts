@@ -31,9 +31,9 @@ const heart = (page: Page) =>
       // The glow lies just under the ring, and the core just over it.
       glow: Number(ring.previousElementSibling!.getAttribute("r")),
       ring: Number(ring.getAttribute("r")),
-      ringOpacity: Number(ring.getAttribute("opacity")),
+      ringOpacity: Number(ring.getAttribute("stroke-opacity")),
       core: Number(ring.nextElementSibling!.getAttribute("r")),
-      bloom: Number(scene.querySelector(".dial-heart > g")!.getAttribute("opacity")),
+      bloom: Number(scene.querySelector<SVGSVGElement>("[data-band=bloom]")!.style.opacity),
     };
   });
 

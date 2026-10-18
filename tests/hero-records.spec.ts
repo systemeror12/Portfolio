@@ -32,7 +32,7 @@ test("each arrival pulses the heart", async ({ page }) => {
   await page.goto("/");
   const ring = page.locator(".hero-scene .heart-ring");
   await expect
-    .poll(() => ring.getAttribute("opacity").then(Number), { timeout: 15_000 })
+    .poll(() => ring.getAttribute("stroke-opacity").then(Number), { timeout: 15_000 })
     .toBeGreaterThan(0.3);
 });
 

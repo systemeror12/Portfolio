@@ -18,7 +18,7 @@ async function strings(page: Page) {
       layered: order(layers[0], dial) && order(dial, layers[1]) && order(layers[1], lilies) && order(lilies, layers[2]),
       face: {
         fill: face.getAttribute("fill"),
-        opacity: Number(face.getAttribute("opacity")),
+        opacity: Number(face.getAttribute("fill-opacity")),
         r: Number(face.getAttribute("r")),
         behindDial: order(face, dial),
       },
@@ -92,12 +92,12 @@ test("when a record lands, a pink run plays along the strings", async ({ page })
   const lit = () =>
     page.evaluate(
       () =>
-        [...document.querySelectorAll(".hero-scene .key-lamps path")].filter(
-          (lamp) => Number(lamp.getAttribute("opacity")) > 0,
+        [...document.querySelectorAll(".hero-scene .key-lamps path:not(.hero-pin)")].filter(
+          (lamp) => Number(lamp.getAttribute("fill-opacity")) > 0,
         ).length,
     );
   await expect.poll(lit, { timeout: 15_000 }).toBeGreaterThan(0);
-  await expect(page.locator(".hero-scene .key-lamps path").first()).toHaveAttribute("fill", "#f0b4dc");
+  await expect(page.locator(".hero-scene .key-lamps path:not(.hero-pin)").first()).toHaveAttribute("fill", "#f0b4dc");
 });
 
 test("under reduced motion no run plays", async ({ page }) => {
@@ -107,8 +107,8 @@ test("under reduced motion no run plays", async ({ page }) => {
   await page.clock.runFor(20_000);
   const lit = await page.evaluate(
     () =>
-      [...document.querySelectorAll(".hero-scene .key-lamps path")].filter(
-        (lamp) => Number(lamp.getAttribute("opacity")) > 0,
+      [...document.querySelectorAll(".hero-scene .key-lamps path:not(.hero-pin)")].filter(
+        (lamp) => Number(lamp.getAttribute("fill-opacity")) > 0,
       ).length,
   );
   expect(lit).toBe(0);

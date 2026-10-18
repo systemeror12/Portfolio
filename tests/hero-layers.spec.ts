@@ -5,12 +5,14 @@ import { expect, test, type Page } from "@playwright/test";
 // what the animation loop moves is in layers that repaint, what CSS moves is
 // in layers the compositor moves whole, and nothing in a still layer
 // changes. A band the compositor moves is a run of layers, one per part.
+// The heart's lily (bloom) is faded whole by the loop, on the compositor.
 const desktop = [
   ["back-lilies", "still"],
   ["back-twinkles", "compositor"],
   ["back-strings", "still"],
   ["back-lamps", "repaints"],
-  ["heart", "repaints"],
+  ["heart", "still"],
+  ["bloom", "compositor"],
   ["shimmer", "compositor"],
   ["dial", "still"],
   ["clockwork", "repaints"],
@@ -25,7 +27,8 @@ const desktop = [
 const tablet = [
   ["back-strings", "still"],
   ["back-lamps", "repaints"],
-  ["heart", "repaints"],
+  ["heart", "still"],
+  ["bloom", "compositor"],
   ["shimmer", "compositor"],
   ["dial", "still"],
   ["clockwork", "repaints"],
@@ -79,7 +82,8 @@ for (const [width, height, order] of [
     // swaying lily's layer is an HTML wrapper.
     for (const layer of stack) {
       const tag = layer.band === "near-lilies" ? "DIV" : "svg";
-      expect(layer).toMatchObject({ tag, hidden: "true", willChange: "transform" });
+      const willChange = layer.band === "bloom" ? "transform, opacity" : "transform";
+      expect(layer).toMatchObject({ tag, hidden: "true", willChange });
     }
     // #82: a layer per glass pane, per glint, per swaying lily, and per phase
     // of the far lilies' twinkles.
@@ -107,7 +111,7 @@ test.describe("on a tablet at 1180×820 @2x", () => {
     await page.evaluate(() => document.fonts.ready);
     await untilRun(page);
     // Every layer the browser composites: each of the scene's, and each
-    // twinkle's in a swaying lily. A lily's drawing paints into its wrapper's.
+    // pace's of twinkles in a swaying lily. A lily's drawing paints into its wrapper's.
     const budget = await page.evaluate(() => {
       const scene = document.querySelector(".hero > .hero-scene")!;
       const hero = scene.parentElement!.getBoundingClientRect();
@@ -126,6 +130,27 @@ test.describe("on a tablet at 1180×820 @2x", () => {
     expect(budget.count).toBeLessThanOrEqual(160);
     expect(budget.area).toBeLessThanOrEqual(8);
   });
+});
+
+test("the second hand and the lamps keep their bounds while they move, so no frame lays out the layers again", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.clock.install();
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  await untilRun(page);
+  const bounds = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll<SVGGElement>(".hero-scene :is(.dial-second-hand, .key-lamps)")].map((group) => {
+        const { x, y, width, height } = group.getBBox();
+        return [x, y, width, height].map((n) => n.toFixed(1)).join(" ");
+      }),
+    );
+  const before = await bounds();
+  expect(before.length).toBeGreaterThan(1);
+  for (let k = 0; k < 5; k++) {
+    await page.clock.runFor(200);
+    expect(await bounds()).toEqual(before);
+  }
 });
 
 for (const [width, height] of [
@@ -178,6 +203,33 @@ for (const [width, height] of [
     expect(seen.animated).toEqual([]);
   });
 }
+
+test("a swaying lily's twinkles share three paces, each twinkle keeping its own opacity", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  const lilies = await page.locator(".hero-scene .hero-lily").evaluateAll((lilies) =>
+    lilies.map((lily) => {
+      const paces = [...lily.querySelectorAll<SVGSVGElement>(":scope > .hero-twinkle")];
+      return {
+        delays: paces.map((pace) => pace.style.animationDelay),
+        // Each twinkle's opacity is its own, on its fill, not its pace's.
+        paceOpacity: paces.map((pace) => pace.style.opacity),
+        twinkles: paces.flatMap((pace) => [...pace.querySelectorAll(".twinkle")]).length,
+        own: [...lily.querySelectorAll(".twinkle")].map((twinkle) => Number(twinkle.getAttribute("fill-opacity"))),
+      };
+    }),
+  );
+  expect(lilies.length).toBeGreaterThan(0);
+  for (const lily of lilies) {
+    expect(lily.delays).toEqual(["0s", "-1.66667s", "-3.33333s"].slice(0, lily.twinkles));
+    expect(new Set(lily.paceOpacity)).toEqual(new Set([""]));
+    for (const opacity of lily.own) {
+      expect(opacity).toBeGreaterThanOrEqual(0.25);
+      expect(opacity).toBeLessThanOrEqual(0.85);
+    }
+  }
+});
 
 // Every CSS animation in the hero, by its layer's band, and whether it runs.
 const heroAnimations = (page: Page) =>

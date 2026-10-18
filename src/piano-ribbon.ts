@@ -1,4 +1,5 @@
 import { add, cross, dot, mix3, mul, smooth, span, sub, unit, type Flat, type Vec } from "./space";
+import { pin } from "./hero-layers";
 import { draw } from "./svg";
 
 // Keyboard ribbons laid like strings in space: each runs through screen points
@@ -183,6 +184,9 @@ export function paintRuns(group: Element, runs: Run[], lamps: Element) {
       },
       g,
     );
+    // The lamps light only these keys, so pin them to the keys' box (#80).
+    const { x, y, width, height } = g.getBBox();
+    pin(lit, { l: Math.floor(x - 1), t: Math.floor(y - 1), r: Math.ceil(x + width + 1), b: Math.ceil(y + height + 1) });
     for (const key of keys) key.lamps = lit;
   }
 }
@@ -203,7 +207,7 @@ export function keyLights(keys: Key[], { trail = 9, color = "#f0b4dc" } = {}) {
     return key.d + (covers ? key.blacks[0] : "") + key.blacks[1];
   });
   const lamps = Array.from({ length: trail }, () =>
-    draw("path", { fill: color, "fill-rule": "evenodd", opacity: 0 }, keys[0].lamps!),
+    draw("path", { fill: color, "fill-rule": "evenodd", "fill-opacity": 0 }, keys[0].lamps!),
   );
   let last: number | null = null;
   return (head: number | null) => {
@@ -212,10 +216,10 @@ export function keyLights(keys: Key[], { trail = 9, color = "#f0b4dc" } = {}) {
     last = i;
     lamps.forEach((lamp, j) => {
       const key = i === null ? null : keys[i - j];
-      if (!key || !key.face) return lamp.setAttribute("opacity", "0");
+      if (!key || !key.face) return lamp.setAttribute("fill-opacity", "0");
       if (lamp.parentNode !== key.lamps) key.lamps!.appendChild(lamp);
       lamp.setAttribute("d", lit[i! - j]);
-      lamp.setAttribute("opacity", ((1 - j / trail) ** 1.5 * (0.35 + 0.65 * Math.min(1, key.face))).toFixed(2));
+      lamp.setAttribute("fill-opacity", ((1 - j / trail) ** 1.5 * (0.35 + 0.65 * Math.min(1, key.face))).toFixed(2));
     });
   };
 }

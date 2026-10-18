@@ -21,6 +21,16 @@ const angle = (page: Page, selector: string) =>
     .getAttribute("transform")
     .then((transform) => Number(/rotate\((-?[\d.]+)\)/.exec(transform!)![1]));
 
+// The second hand is drawn by its ends, so its angle is its tip's.
+const sweep = (page: Page) =>
+  page
+    .locator(".hero-scene .dial-second-hand > path:not(.hero-pin)")
+    .getAttribute("d")
+    .then((d) => {
+      const [, x, y] = /L(-?[\d.]+),(-?[\d.]+)/.exec(d!)!.map(Number);
+      return (Math.atan2(y, x) * 180) / Math.PI;
+    });
+
 // The heart and the dial's radius, in page coordinates.
 async function dialGeometry(page: Page) {
   return page.evaluate(() => {
@@ -85,7 +95,7 @@ test("the hands keep Manila time, and the hour hand rests near 25", async ({ pag
     await page.goto("/");
     expect(await angle(page, ".iron-hand-hour")).toBeCloseTo(hour, 1);
     expect(await angle(page, ".iron-hand-minute")).toBeCloseTo(minute, 1);
-    expect(await angle(page, ".dial-second-hand")).toBeCloseTo(second, 1);
+    expect(await sweep(page)).toBeCloseTo(second, 1);
     expect(hour).toBeGreaterThanOrEqual(-90);
     expect(hour).toBeLessThan(-90 + 14.4);
   }

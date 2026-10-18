@@ -26,7 +26,8 @@
   const LAMPS = 'path[fill="#f0b4dc"]';
   const hero = document.querySelector(".hero");
   if (!hero) throw new Error("No .hero on this page: open the homepage first.");
-  const isLit = (lamp) => Number(lamp.getAttribute("opacity")) > 0;
+  // A lamp's strength is its fill-opacity, or on builds before #80 its opacity.
+  const isLit = (lamp) => Number(lamp.getAttribute("fill-opacity") ?? lamp.getAttribute("opacity")) > 0;
   const lit = new Set([...hero.querySelectorAll(LAMPS)].filter(isLit));
   let lastStart = lit.size ? performance.now() : -Infinity;
   const runs = [];
@@ -42,7 +43,7 @@
       if (wasDark && lit.size && now - lastStart > 2000) runs.push((lastStart = now));
     }
   });
-  lamps.observe(hero, { subtree: true, attributes: true, attributeFilter: ["opacity"] });
+  lamps.observe(hero, { subtree: true, attributes: true, attributeFilter: ["opacity", "fill-opacity"] });
 
   await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
   const times = await new Promise((resolve) => {

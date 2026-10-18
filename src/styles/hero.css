@@ -24,6 +24,11 @@
   position: absolute;
   will-change: transform;
 }
+/* The loop fades the heart's lily by its layer's opacity, which the
+   compositor applies with no repaint. */
+.hero-scene > [data-band="bloom"] {
+  will-change: transform, opacity;
+}
 .hero-lily > svg {
   position: absolute;
 }

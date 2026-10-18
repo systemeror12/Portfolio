@@ -111,11 +111,17 @@ export function liftPanes(from: SVGSVGElement) {
   });
 }
 
+// How many paces a swaying lily's twinkles share, spread evenly over
+// star-twinkle's 5 s (hero.css). Each twinkle with its own pace cost more
+// than #83's frame at 4× (#80), so they take #82's fallback.
+const paces = 3;
+
 // The swaying lilies. Each becomes an HTML wrapper that the compositor turns
 // about the lily's centre, as .lily-sway turned it. It holds the lily, still,
-// and over it each of its twinkles in an <svg> of its own, with that
-// twinkle's opacity. The wrapper takes the lily's opacity, so the lily and
-// its twinkles fade as one, as they did in one group.
+// and over it its twinkles, an <svg> per pace, each twinkle keeping its own
+// opacity, so it dims to 0.08 of it, as a far twinkle does. The wrapper takes
+// the lily's opacity, so the lily and its twinkles fade as one, as they did
+// in one group.
 export function liftLilies(from: SVGSVGElement) {
   return [...from.querySelectorAll<SVGGElement>(".lily-sway")].map((sway) => {
     const lily = sway.closest<SVGGElement>(".lily")!;
@@ -131,10 +137,15 @@ export function liftLilies(from: SVGSVGElement) {
     handOver(sway, wrap);
     handOver(sway.parentElement as unknown as SVGElement, wrap);
     const drawing = layer("still", "hero-lily-drawing", box, box);
-    const twinkles = [...sway.querySelectorAll<SVGCircleElement>(".twinkle")].map((spark) => {
-      const svg = layer("compositor", "hero-twinkle", boxOf(spark, 1), box);
-      handOver(spark, svg);
-      move(spark, svg);
+    const sparks = [...sway.querySelectorAll<SVGCircleElement>(".twinkle")];
+    const twinkles = Array.from({ length: Math.min(paces, sparks.length) }, (_, pace) => {
+      const own = sparks.filter((_, i) => i % paces === pace);
+      const svg = layer("compositor", "hero-twinkle", union(own.map((spark) => boxOf(spark, 1))), box);
+      svg.style.animationDelay = `${(-pace * 5) / paces}s`;
+      for (const spark of own) {
+        spark.style.removeProperty("animation-delay");
+        move(spark, svg);
+      }
       return svg;
     });
     move(lily, drawing);
@@ -156,4 +167,39 @@ export function liftGlints(from: SVGSVGElement) {
     move(at, svg);
     return svg;
   });
+}
+
+// Folds the opacity of each shape drawn with only a fill, or only a stroke,
+// into that paint, where it looks the same. An SVG element with opacity
+// starts a paint chunk of its own, and every frame that repaints anything in
+// the hero, Chromium sorts every chunk of every layer again, so a few
+// thousand of them cost more than the frame (#80).
+export function foldOpacity(root: Element) {
+  for (const shape of root.querySelectorAll<SVGElement>(
+    ":is(path, circle, ellipse, rect, line, polyline, polygon, text)[opacity]",
+  )) {
+    const style = getComputedStyle(shape);
+    // A single straight segment has no area, so nothing to fill.
+    const segment = shape.tagName === "line" || /^M[\d.,\s-]+L[\d.,\s-]+$/i.test(shape.getAttribute("d") ?? "");
+    const fill = style.fill !== "none" && !segment;
+    const stroke = style.stroke !== "none" && parseFloat(style.strokeWidth) > 0;
+    if (fill === stroke) continue;
+    const opacity = Number(shape.getAttribute("opacity"));
+    if (fill) shape.setAttribute("fill-opacity", String(Number(style.fillOpacity) * opacity));
+    else shape.setAttribute("stroke-opacity", String(Number(style.strokeOpacity) * opacity));
+    shape.removeAttribute("opacity");
+  }
+}
+
+// Pins group's paint to box, in its own coordinates: a dot at each corner,
+// which draws nothing, keeps the group's bounds the same however its paths
+// change. When those bounds change, Chromium sorts every chunk of every layer
+// again, as it does for a changed transform (#80).
+export function pin(group: SVGGElement, { l, t, r, b }: Box) {
+  const dots = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  dots.setAttribute("class", "hero-pin");
+  dots.setAttribute("d", `M${l},${t}h0.1M${r},${b}h0.1`);
+  dots.setAttribute("stroke", "#000");
+  dots.setAttribute("stroke-opacity", "0");
+  group.prepend(dots);
 }
