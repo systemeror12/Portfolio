@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { loopState } from "./hero-loop";
 
 // The strings' runs, by layer, and what each layer sits between.
 async function strings(page: Page) {
@@ -6,19 +7,19 @@ async function strings(page: Page) {
   await page.waitForTimeout(100);
   return page.evaluate(() => {
     const scene = document.querySelector(".hero-scene")!;
-    const layers = ["back", "mid", "near"].map((layer) => scene.querySelector(`:scope > .ribbons-${layer}`)!);
+    const layers = ["back", "mid", "near"].map((layer) => scene.querySelector(`.ribbons-${layer}`)!);
     const order = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
-    const dial = scene.querySelector(":scope > .dial")!;
-    const lilies = scene.querySelector(":scope > .lilies-front")!;
+    const dial = scene.querySelector(".dial")!;
+    const lilies = scene.querySelector(".lilies-front")!;
     const runs = [...scene.querySelectorAll("[data-string]")];
-    const face = scene.querySelector(":scope > .dial-face")!;
+    const face = scene.querySelector(".dial-face")!;
     return {
       strings: new Set(runs.map((run) => run.getAttribute("data-string"))).size,
       // Behind the dial; between the dial and the front lilies; in front of all.
       layered: order(layers[0], dial) && order(dial, layers[1]) && order(layers[1], lilies) && order(lilies, layers[2]),
       face: {
         fill: face.getAttribute("fill"),
-        opacity: Number(face.getAttribute("opacity")),
+        opacity: Number(face.getAttribute("fill-opacity")),
         r: Number(face.getAttribute("r")),
         behindDial: order(face, dial),
       },
@@ -89,27 +90,17 @@ test("on phones three strings stay above the copy", async ({ page }) => {
 
 test("when a record lands, a pink run plays along the strings", async ({ page }) => {
   await page.goto("/");
-  const lit = () =>
-    page.evaluate(
-      () =>
-        [...document.querySelectorAll(".hero-scene .key-lamps path")].filter(
-          (lamp) => Number(lamp.getAttribute("opacity")) > 0,
-        ).length,
-    );
-  await expect.poll(lit, { timeout: 15_000 }).toBeGreaterThan(0);
-  await expect(page.locator(".hero-scene .key-lamps path").first()).toHaveAttribute("fill", "#f0b4dc");
+  // The loop lights the lamps on canvas (ADR 0002), and the lamps' layers
+  // show while the run plays.
+  await expect.poll(async () => (await loopState(page)).lamps, { timeout: 15_000 }).toBeGreaterThan(0);
+  await expect(page.locator(".hero-scene > [data-band$=lamps]").first()).toBeVisible();
 });
 
 test("under reduced motion no run plays", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.clock.install();
   await page.goto("/");
-  await page.clock.runFor(20_000);
-  const lit = await page.evaluate(
-    () =>
-      [...document.querySelectorAll(".hero-scene .key-lamps path")].filter(
-        (lamp) => Number(lamp.getAttribute("opacity")) > 0,
-      ).length,
-  );
-  expect(lit).toBe(0);
+  await page.waitForTimeout(3000);
+  const { lamps, run } = await loopState(page);
+  expect({ lamps, run }).toEqual({ lamps: 0, run: false });
+  for (const layer of await page.locator(".hero-scene > [data-band$=lamps]").all()) await expect(layer).toBeHidden();
 });

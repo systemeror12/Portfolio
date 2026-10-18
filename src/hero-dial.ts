@@ -1,8 +1,9 @@
 import { lilyDefs } from "./glass-lily";
 import { tabletDial, type HeroLayout } from "./hero-layout";
 import { drawBackLilies, drawFrontLilies } from "./hero-lilies";
-import { drawHeroRecords } from "./hero-records";
 import { drawGlints, skyDefs } from "./hero-sky";
+import { fit, foldOpacity, liftGlints, liftLilies, liftPanes, liftPhases, type Box } from "./hero-layers";
+import { createLoop, pulseFade, pulseStep, type LoopEvent, type LoopMessage, type LoopState } from "./hero-loop";
 import { drawStrings } from "./hero-strings";
 import { hourHand, minuteHand } from "./iron-hands";
 import { seeded } from "./space";
@@ -22,7 +23,6 @@ const manilaTime = new Intl.DateTimeFormat("en-GB", {
 });
 const paneTones = ["#2b2436", "#3a2d4d", "#4a3a63", "#33293f"];
 const defs = `<defs>
-  <radialGradient id="hero-glow"><stop offset="0" stop-color="#f0b4dc" stop-opacity=".9"/><stop offset=".25" stop-color="#bb6688" stop-opacity=".42"/><stop offset=".55" stop-color="#4a3a63" stop-opacity=".2"/><stop offset="1" stop-color="#4a3a63" stop-opacity="0"/></radialGradient>
   ${lilyDefs}${skyDefs}
 </defs>`;
 
@@ -34,7 +34,7 @@ const petalShade = "M0,0 C-34,-16 -40,-56 -8,-80 C-2,-85 4,-92 9,-100 C2,-70 1,-
 // the heart. Its seed makes it the same on every load.
 function heartLily(parent: Element, scale: number) {
   const random = seeded(5);
-  const group = draw("g", { transform: `scale(${scale})`, opacity: 0.85 }, parent);
+  const group = draw("g", { transform: `scale(${scale})` }, parent);
   const line = { fill: "none", stroke: "#9b8794", "vector-effect": "non-scaling-stroke" };
   const ring = (count: number, size: number, fill: string, turn: number, veins: boolean) => {
     for (let i = 0; i < count; i++) {
@@ -88,16 +88,13 @@ function heartLily(parent: Element, scale: number) {
   return group;
 }
 
-// The dial's panes, numerals, rings, and ticks, with the hands and the boss
-// on top. Returns the hands for the clock to turn, and the lily the records
-// light.
-function dial(parent: Element, radius: number, reduce: boolean) {
+// The dial's panes, numerals, rings, and ticks.
+function dial(parent: Element, radius: number) {
   const r1 = radius * 0.79;
   const r2 = radius * 0.95;
   const step = (2 * Math.PI) / 25;
   const up = -Math.PI / 2;
   const at = (r: number, a: number) => [r * Math.cos(a), r * Math.sin(a)];
-  const bloom = heartLily(parent, radius * 0.0048);
   for (let k = 0; k < 25; k++) {
     const a0 = (k - 0.5) * step + up;
     const a1 = (k + 0.5) * step + up;
@@ -112,6 +109,7 @@ function dial(parent: Element, radius: number, reduce: boolean) {
       {
         d: `M${x0},${y0} L${x1},${y1} A${r2},${r2} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x0},${y0} Z`,
         class: k % 3 ? "dial-pane" : "dial-pane glass",
+        "data-pane": k,
         fill,
         opacity: 0.78,
         stroke: "#9b8794",
@@ -163,31 +161,182 @@ function dial(parent: Element, radius: number, reduce: boolean) {
     const [x1, y1] = at(radius * (k % 5 ? 0.725 : 0.745), a);
     draw("path", { class: "dial-tick", d: `M${x0},${y0} L${x1},${y1}`, stroke: "#9b8794", "stroke-width": 0.7, opacity: 0.7 }, parent);
   }
-  const hour = hourHand(parent, radius * 0.56);
-  const minute = minuteHand(parent, radius * 0.72);
-  const second = draw("g", reduce ? { class: "dial-second-hand", display: "none" } : { class: "dial-second-hand" }, parent);
-  draw("path", { d: `M${-radius * 0.1},0 L${radius * 0.76},0`, stroke: "#f0b4dc", "stroke-width": 0.9, opacity: 0.8 }, second);
-  // The bronze boss, with a thin ring.
-  draw("circle", { class: "dial-boss", r: 7, fill: "#9b8794" }, parent);
-  draw("circle", { r: 10, fill: "none", stroke: "#9b8794", "stroke-width": 0.9, opacity: 0.8 }, parent);
-  draw("circle", { r: 2.5, fill: "#06060b" }, parent);
-  return { hour, minute, second, bloom };
 }
 
-// Draws the scene into svg, sized to its parent. Returns a cleanup function.
-export function drawHeroDial(svg: SVGSVGElement) {
-  const hero = svg.parentElement!;
+// The hour and minute hands, for the clock to turn. The second hand and the
+// boss over it are drawn by the loop (hero-loop.ts).
+function clockHands(parent: Element, radius: number) {
+  return { hour: hourHand(parent, radius * 0.56), minute: minuteHand(parent, radius * 0.72) };
+}
+
+// The scene's depth bands, bottom to top, each drawn into a layer of its own:
+// an <svg> in the hero's coordinates, so a change inside one band repaints
+// only that band (ADR 0001, Layered scenes; the plans are on #81). On desktop
+// and phones the far lilies lie behind the strings and the near lilies among
+// them; on a tablet every string runs under every lily, and the mid and near
+// strings share a layer. What the animation loop moves every frame is drawn
+// on canvases, in a worker (ADR 0002): the clockwork (the second hand, the
+// boss, the records, and the glow) and each depth's lamps over its keys. The
+// hour and minute hands turn in a layer of their own, under the clockwork.
+// What CSS moves is lifted into layers the compositor moves (hero-layers.ts):
+// the far lilies' twinkles, a layer per phase; the dial's glass, a layer per
+// pane; the near lilies, a wrapper each with a layer per pace of twinkles;
+// and a layer per glint. The glass goes under the rest of the dial rather
+// than over it (#81 has it over), as over it would cover each pane's facet
+// and numeral.
+type Band = (typeof stacks)[keyof typeof stacks][number];
+const stacks = {
+  desktop: [
+    "back-lilies",
+    "back-twinkles",
+    "back-strings",
+    "back-lamps",
+    "heart",
+    "bloom",
+    "shimmer",
+    "dial",
+    "hands",
+    "clockwork",
+    "mid-strings",
+    "mid-lamps",
+    "sprigs",
+    "near-lilies",
+    "near-strings",
+    "near-lamps",
+    "glints",
+  ],
+  tablet: [
+    "back-strings",
+    "back-lamps",
+    "heart",
+    "bloom",
+    "shimmer",
+    "dial",
+    "hands",
+    "clockwork",
+    "front-strings",
+    "front-lamps",
+    "back-lilies",
+    "back-twinkles",
+    "sprigs",
+    "near-lilies",
+    "glints",
+  ],
+} as const;
+// Each layer's kind, as data-layer: nothing in a still layer changes once
+// drawn; the compositor moves the lifted layers whole, and fades the heart's
+// lily (bloom) when a record arrives; the rest repaint.
+const still = new Set<Band>(["back-lilies", "back-strings", "heart", "dial", "mid-strings", "sprigs", "near-strings", "front-strings"]);
+const lifted = new Set<Band>(["back-twinkles", "shimmer", "near-lilies", "glints"]);
+const moved = new Set<Band>([...lifted, "bloom"]);
+const painted = new Set<Band>(["clockwork", "back-lamps", "mid-lamps", "near-lamps", "front-lamps"]);
+// How far a layer reaches past what it holds, as lines have width. Bands not
+// listed fill the hero, or are sized as they are drawn.
+const reach: Partial<Record<Band, number>> = {
+  "back-lilies": 4,
+  "back-strings": 4,
+  heart: 4,
+  bloom: 4,
+  dial: 4,
+  "mid-strings": 4,
+  sprigs: 4,
+  "near-strings": 4,
+  "front-strings": 4,
+};
+// The heart's lily rests at 0.85 and a pulse lights it to 1, fading as the
+// pulse does: sampled every 150 ms for 3 s, by when it is back at rest.
+const bloomPulse = Array.from({ length: 21 }, (_, k) => ({
+  offset: k / 20,
+  opacity: 0.85 + 0.15 * pulseFade ** ((k * 150) / pulseStep),
+}));
+
+// Runs the loop in a worker, handing it the canvases, or where a canvas
+// can't be handed to a worker, on the main thread. Scripts and tests that
+// drive the page's frames themselves set window.heroLoopOnMain. Events go to
+// onEvent; state asks the loop what it shows.
+function loopHost(onEvent: (event: LoopEvent) => void) {
+  const asked = new Map<number, (state: LoopState) => void>();
+  let id = 0;
+  const receive = (event: LoopEvent) => {
+    if (event.type !== "state") return onEvent(event);
+    asked.get(event.id)?.(event.state);
+    asked.delete(event.id);
+  };
+  const onMain =
+    (window as unknown as { heroLoopOnMain?: boolean }).heroLoopOnMain || !("transferControlToOffscreen" in HTMLCanvasElement.prototype);
+  const worker = onMain ? null : new Worker(new URL("./hero-loop.worker.ts", import.meta.url), { type: "module" });
+  const loop = onMain ? createLoop(receive) : null;
+  if (worker) worker.onmessage = (event: MessageEvent<LoopEvent>) => receive(event.data);
+  return {
+    inWorker: !onMain,
+    // measure-hero.mjs sets window.heroLoopSlowdown to its CPU throttle,
+    // which only the main thread feels.
+    slowdown: onMain ? 1 : ((window as unknown as { heroLoopSlowdown?: number }).heroLoopSlowdown ?? 1),
+    // Hands the loop a canvas: in a worker, the canvas's control.
+    canvas: (canvas: HTMLCanvasElement) => (worker ? canvas.transferControlToOffscreen() : canvas),
+    send(message: LoopMessage, transfer: Transferable[] = []) {
+      if (worker) worker.postMessage(message, transfer);
+      else loop!(message);
+    },
+    state() {
+      return new Promise<LoopState>((resolve) => {
+        asked.set(++id, resolve);
+        this.send({ type: "state", id });
+      });
+    },
+    end() {
+      this.send({ type: "stop" });
+      worker?.terminate();
+    },
+  };
+}
+
+// Draws the scene into container, sized to its parent, as a stack of layers.
+// Returns a cleanup function.
+export function drawHeroDial(container: HTMLElement) {
+  const hero = container.parentElement!;
   const reduce = window.matchMedia(reducedMotion).matches;
-  const start = performance.now();
   let width = 0;
   let height = 0;
-  let hands: ReturnType<typeof dial>;
-  let glow: SVGCircleElement;
-  let ring: SVGCircleElement;
-  let core: SVGCircleElement;
-  let records: ReturnType<typeof drawHeroRecords>;
-  let play: (now: number, arrived: boolean) => void;
-  let pulse = 0;
+  let hands: ReturnType<typeof clockHands>;
+  let bloom: SVGSVGElement;
+  let pulse: Animation | undefined;
+  let lamps: HTMLCanvasElement[] = [];
+  let visible = false;
+  const host = loopHost((event) => {
+    if (event.type === "run") for (const canvas of lamps) canvas.style.display = event.on ? "" : "none";
+    else {
+      // The compositor fades the heart's lily as the pulse fades.
+      pulse?.cancel();
+      pulse = bloom.animate(bloomPulse, { duration: 3000 });
+      if (!visible) pulse.pause();
+    }
+  });
+  // Tests and scripts read what the loop shows from here.
+  Object.assign(container, { heroLoop: { state: () => host.state(), inWorker: host.inWorker } });
+
+  // Sizes a layer to the box l, t, r, b, kept within the hero and to whole
+  // pixels, so its drawing lands on the same pixels as in the hero. Returns
+  // the box.
+  function bound(layer: SVGSVGElement | HTMLCanvasElement, l: number, t: number, r: number, b: number): Box {
+    [l, t] = [Math.max(0, Math.floor(l)), Math.max(0, Math.floor(t))];
+    [r, b] = [Math.max(l, Math.min(width, Math.ceil(r))), Math.max(t, Math.min(height, Math.ceil(b)))];
+    fit(layer, { l, t, r, b });
+    return { l, t, r, b };
+  }
+
+  // A canvas for band, sized to box at the screen's pixel ratio.
+  function canvas(band: Band, box: Box) {
+    const layer = document.createElement("canvas");
+    Object.assign(layer, { className: "hero-layer" });
+    Object.assign(layer.dataset, { band, layer: "repaints" });
+    layer.setAttribute("aria-hidden", "true");
+    const ratio = window.devicePixelRatio;
+    const fitted = bound(layer, box.l, box.t, box.r, box.b);
+    layer.width = Math.round((fitted.r - fitted.l) * ratio);
+    layer.height = Math.round((fitted.b - fitted.t) * ratio);
+    return { layer, box: fitted };
+  }
 
   function build() {
     width = hero.clientWidth;
@@ -198,60 +347,117 @@ export function drawHeroDial(svg: SVGSVGElement) {
     let radius = mobile ? Math.min(width * 0.36, 150) : Math.min(300, height * 0.36, width * 0.22);
     if (tablet) ({ heart, radius } = tabletDial(hero, width, height));
     const layout: HeroLayout = { width, height, heart, radius, mobile, tablet, reduce, hero };
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    svg.innerHTML = defs;
+    // Every layer starts the size of the hero, so the drawing code measures
+    // in the hero's coordinates, and is fitted to its contents once drawn.
+    // The loop's bands hold a placeholder until their canvases are sized.
+    container.replaceChildren();
+    const layers = Object.fromEntries(
+      stacks[tablet ? "tablet" : "desktop"].map((band) => [
+        band,
+        draw(
+          "svg",
+          {
+            class: "hero-layer",
+            "data-band": band,
+            "data-layer": still.has(band) ? "still" : moved.has(band) ? "compositor" : "repaints",
+            "aria-hidden": "true",
+          },
+          container,
+        ),
+      ]),
+    ) as Record<Band, SVGSVGElement>;
+    for (const layer of Object.values(layers)) bound(layer, 0, 0, width, height);
+    container.firstElementChild!.innerHTML = defs;
     // Far lilies and strings behind the dial, whose face is faintly smoked
-    // glass so what runs behind it reads as behind. On a tablet the far
-    // lilies wait until the strings are all down.
-    if (!tablet) drawBackLilies(svg, layout);
+    // glass so what runs behind it reads as behind.
+    drawBackLilies(layers["back-lilies"], layout);
     const strings = drawStrings(layout);
-    strings.paint(svg, "back");
-    draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, svg);
-    hands = dial(draw("g", { class: "dial", transform: `translate(${heart.x} ${heart.y})` }, svg), radius, reduce);
-    records = drawHeroRecords(svg, layout);
-    glow = draw("circle", { fill: "url(#hero-glow)", cx: heart.x, cy: heart.y }, svg);
-    ring = draw("circle", { class: "heart-ring", fill: "none", stroke: "#f0b4dc", cx: heart.x, cy: heart.y }, svg);
-    core = draw("circle", { fill: "#fff4fb", cx: heart.x, cy: heart.y }, svg);
-    // Nearer strings among the near lilies, and glints over all. On a tablet
-    // every string runs under every lily.
-    strings.paint(svg, "mid");
-    if (tablet) {
-      strings.paint(svg, "near");
-      drawBackLilies(svg, layout);
-      drawFrontLilies(svg, layout);
-    } else {
-      drawFrontLilies(svg, layout);
-      strings.paint(svg, "near");
+    strings.paint(layers["back-strings"], "back-lamps", "back");
+    // The dial over its heart, and the hands over both.
+    const centre = `translate(${heart.x} ${heart.y})`;
+    draw("circle", { class: "dial-face", cx: heart.x, cy: heart.y, r: radius * 1.03, fill: "#06060b", opacity: 0.42 }, layers.heart);
+    heartLily(draw("g", { class: "dial-heart", transform: centre }, layers.bloom), radius * 0.0048);
+    bloom = layers.bloom;
+    bloom.style.opacity = "0.85";
+    pulse = undefined;
+    dial(draw("g", { class: "dial", transform: centre }, layers.dial), radius);
+    hands = clockHands(draw("g", { class: "dial-hands", transform: centre }, layers.hands), radius);
+    // Nearer strings among the near lilies, and glints over all.
+    const mid = tablet ? "front" : "mid";
+    const near = tablet ? "front" : "near";
+    strings.paint(layers[`${mid}-strings`], `${mid}-lamps`, "mid");
+    drawFrontLilies(layers.sprigs, layout);
+    strings.paint(layers[`${near}-strings`], `${near}-lamps`, "near");
+    const glints = strings.finish(layers.glints);
+    const places = [glints.place, drawGlints(layers.glints, layout)];
+    // Each part CSS moves takes the place of its band's layer, in a layer of
+    // its own; a glint on the copy stays hidden, layer and all.
+    const parts: Partial<Record<Band, (HTMLElement | SVGSVGElement)[]>> = {
+      "back-twinkles": liftPhases(layers["back-lilies"]),
+      shimmer: liftPanes(layers.dial),
+      "near-lilies": liftLilies(layers.sprigs),
+      glints: liftGlints(layers.glints),
+    };
+    for (const place of places) place();
+    for (const glint of parts.glints!) glint.style.display = glint.querySelector("[display=none]") ? "none" : "";
+    for (const [band, elements] of Object.entries(parts) as [Band, (HTMLElement | SVGSVGElement)[]][]) {
+      for (const element of elements) element.dataset.band = band;
+      layers[band].replaceWith(...elements);
     }
-    const glints = strings.finish(svg);
-    play = glints.play;
-    for (const place of [glints.place, drawGlints(svg, layout)]) place();
-    tick(start);
+    // A shape's own opacity would make it a paint chunk of its own; what
+    // doesn't move draws it in its fill or stroke instead (#80).
+    for (const layer of container.querySelectorAll("[data-layer=still], [data-layer=compositor]")) foldOpacity(layer);
+    turn();
+    for (const [band, layer] of Object.entries(layers) as [Band, SVGSVGElement][]) {
+      if (lifted.has(band) || painted.has(band)) continue;
+      const pad = reach[band];
+      // The hands reach round the dial as they turn.
+      if (band === "hands") bound(layer, heart.x - radius * 0.75, heart.y - radius * 0.75, heart.x + radius * 0.75, heart.y + radius * 0.75);
+      else if (pad === undefined) bound(layer, 0, 0, width, height);
+      else {
+        const { x, y, width: w, height: h } = layer.getBBox();
+        bound(layer, x - pad, y - pad, x + w + pad, y + h + pad);
+      }
+    }
+    // The loop's canvases take their bands' places: the clockwork fills the
+    // hero, and each lamps band reaches as far as its keys. Lamps are hidden
+    // until a run plays.
+    const clockwork = canvas("clockwork", { l: 0, t: 0, r: width, b: height });
+    layers.clockwork.replaceWith(clockwork.layer);
+    const bands = (Object.keys(layers) as Band[]).filter((band) => band !== "clockwork" && painted.has(band));
+    const lit = bands.map((band) => {
+      const made = canvas(band, glints.boxes[band] ?? { l: 0, t: 0, r: 0, b: 0 });
+      made.layer.style.display = "none";
+      layers[band].replaceWith(made.layer);
+      return { band, ...made };
+    });
+    lamps = lit.map(({ layer }) => layer);
+    const handed = [clockwork, ...lit].map(({ layer }) => host.canvas(layer));
+    host.send(
+      {
+        type: "layout",
+        layout: { width, height, heart, radius, mobile, reduce, dpr: window.devicePixelRatio, slowdown: host.slowdown },
+        clockwork: { canvas: handed[0], box: clockwork.box },
+        lamps: lit.map(({ band, box }, i) => ({ band, canvas: handed[i + 1], box })),
+        ribbons: glints.lamps,
+      },
+      host.inWorker ? (handed as OffscreenCanvas[]) : [],
+    );
   }
 
   // The dial keeps Manila minutes and seconds; the hour hand stays near 25,
-  // creeping one pane an hour, so its heart stays upright.
-  function tick(now: number) {
+  // creeping one pane an hour, so its heart stays upright. Each hand is
+  // written only when it moves.
+  function turn() {
     const parts = Object.fromEntries(
       manilaTime.formatToParts(new Date()).map((part) => [part.type, Number(part.value)]),
     );
-    const millis = reduce ? 0 : (Date.now() % 1000) / 1000;
-    const turn = (hand: SVGGElement, degrees: number) => hand.setAttribute("transform", `rotate(${degrees.toFixed(2)})`);
-    turn(hands.hour, -90 + (parts.minute / 60) * (360 / 25));
-    turn(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
-    turn(hands.second, -90 + ((parts.second + millis) / 60) * 360);
-    // Each record that reaches the heart pulses it and lights the lily a
-    // little, and sets a run playing along the strings.
-    const arrived = records.advance(now);
-    if (arrived) pulse = 1;
-    if (!reduce) play(now, arrived);
-    const breathe = reduce ? 0 : (Math.sin(((now - start) / 1000) * 1.4) + 1) / 2;
-    glow.setAttribute("r", String(130 + breathe * 18 + pulse * 30));
-    ring.setAttribute("r", String(10 + (1 - pulse) * 30));
-    ring.setAttribute("opacity", (pulse * 0.6).toFixed(2));
-    core.setAttribute("r", String(3.2 + pulse * 1.4));
-    hands.bloom.setAttribute("opacity", (0.85 + pulse * 0.15).toFixed(2));
-    pulse *= 0.96;
+    const set = (hand: SVGGElement, degrees: number) => {
+      const value = `rotate(${degrees.toFixed(2)})`;
+      if (hand.getAttribute("transform") !== value) hand.setAttribute("transform", value);
+    };
+    set(hands.hour, -90 + (parts.minute / 60) * (360 / 25));
+    set(hands.minute, -90 + ((parts.minute + parts.second / 60) / 60) * 360);
   }
 
   build();
@@ -273,32 +479,36 @@ export function drawHeroDial(svg: SVGSVGElement) {
   });
   resize.observe(hero);
 
-  // Run only while the hero is on screen. Reduced motion keeps the time on a
-  // timer, without a sweeping second hand.
-  let frame = 0;
-  const loop = (now: number) => {
-    tick(now);
-    frame = requestAnimationFrame(loop);
+  // Run only while the hero is on screen: the loop, the hands on the second,
+  // and the heart's pulse. Reduced motion keeps the time on a timer, and
+  // runs no frames.
+  let timer = 0;
+  const everySecond = () => {
+    turn();
+    timer = window.setTimeout(everySecond, 1000 - (Date.now() % 1000));
   };
-  const visible = new IntersectionObserver(([entry]) => {
-    svg.classList.toggle("is-paused", !entry.isIntersecting);
+  const visibility = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    container.classList.toggle("is-paused", !visible);
     if (reduce) return;
-    if (entry.isIntersecting && !frame) frame = requestAnimationFrame(loop);
-    else if (!entry.isIntersecting) {
-      cancelAnimationFrame(frame);
-      frame = 0;
-    }
+    host.send({ type: "visible", on: visible });
+    window.clearTimeout(timer);
+    if (visible) everySecond();
+    // A finished pulse stays finished: playing it again would rewind it.
+    if (!visible && pulse?.playState === "running") pulse.pause();
+    else if (visible && pulse?.playState === "paused") pulse.play();
   });
-  visible.observe(hero);
-  const timer = reduce ? window.setInterval(() => tick(performance.now()), 15_000) : 0;
+  visibility.observe(hero);
+  const slow = reduce ? window.setInterval(turn, 15_000) : 0;
 
   return () => {
     live = false;
     resize.disconnect();
-    visible.disconnect();
+    visibility.disconnect();
     cancelAnimationFrame(pending);
-    cancelAnimationFrame(frame);
-    window.clearInterval(timer);
-    svg.replaceChildren();
+    window.clearTimeout(timer);
+    window.clearInterval(slow);
+    host.end();
+    container.replaceChildren();
   };
 }

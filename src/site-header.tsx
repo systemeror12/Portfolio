@@ -102,6 +102,13 @@ export function Header({ currentPath }: { currentPath?: string }) {
         to="/"
         aria-label="Jerome Mendoza, home"
       >
+        <img
+          className="identity-mark"
+          src="/crystal-pendant.svg"
+          alt=""
+          width="30"
+          height="30"
+        />
         Jerome Mendoza
       </InternalLink>
       <nav className={open ? "open" : ""} aria-label="Primary navigation">

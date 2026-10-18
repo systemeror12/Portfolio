@@ -6,7 +6,7 @@ async function bed(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(100);
   return page.evaluate(() => {
-    const scene = document.querySelector<SVGSVGElement>(".hero-scene")!;
+    const scene = document.querySelector(".hero-scene")!;
     const dial = scene.querySelector(".dial")!.getAttribute("transform")!;
     const [x, y] = /translate\(([\d.]+) ([\d.]+)\)/.exec(dial)!.slice(1).map(Number);
     const radius = Number(scene.querySelector(".dial-ring")!.getAttribute("r"));
@@ -24,12 +24,13 @@ async function bed(page: Page) {
       let nearest = Infinity;
       let onCopy = false;
       for (const path of lily.querySelectorAll("path")) {
-        const matrix = path.getCTM()!;
+        // In page coordinates, as each layer has its own viewport.
+        const matrix = path.getScreenCTM()!;
         const total = path.getTotalLength();
         for (let i = 0; i <= 24; i++) {
           const p = path.getPointAtLength((total * i) / 24).matrixTransform(matrix);
-          nearest = Math.min(nearest, Math.hypot(p.x - x, p.y - y) / radius);
-          const [px, py] = [p.x + origin.left, p.y + origin.top];
+          nearest = Math.min(nearest, Math.hypot(p.x - origin.left - x, p.y - origin.top - y) / radius);
+          const [px, py] = [p.x, p.y];
           onCopy ||= text.some((k) => px > k.left && px < k.right && py > k.top && py < k.bottom);
         }
       }
@@ -95,11 +96,11 @@ test("the bed looks the same on every load", async ({ page }) => {
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     return page
-      .locator(".hero-scene .lilies-back, .hero-scene .lilies-front")
+      .locator(".hero-scene .lilies-back, .hero-scene .lilies-front, .hero-scene .hero-lily")
       .evaluateAll((groups) => groups.map((group) => group.outerHTML));
   };
   const first = await lilies();
-  expect(first).toHaveLength(2);
+  expect(first).toHaveLength(2 + 18);
   expect(await lilies()).toEqual(first);
 });
 
@@ -107,7 +108,7 @@ test("off screen and under reduced motion the lilies hold still", async ({ page 
   await page.goto("/");
   const states = () =>
     page.evaluate(() =>
-      [...document.querySelectorAll(".hero-scene .lily-sway")].flatMap((element) =>
+      [...document.querySelectorAll(".hero-scene .hero-lily")].flatMap((element) =>
         element.getAnimations().map((animation) => animation.playState),
       ),
     );
@@ -118,6 +119,6 @@ test("off screen and under reduced motion the lilies hold still", async ({ page 
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator(".hero-scene .lily-sway")).not.toHaveCount(0);
+  await expect(page.locator(".hero-scene .hero-lily")).not.toHaveCount(0);
   expect(await states()).toEqual([]);
 });

@@ -106,9 +106,18 @@ svg {
   background: linear-gradient(rgba(6, 6, 11, 0.92), rgba(6, 6, 11, 0));
 }
 .identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-right: auto;
   font: 500 18px/1 var(--serif);
   white-space: nowrap;
+}
+/* The Crystal Pendant's flower, beside the name. */
+.identity-mark {
+  flex: none;
+  width: 30px;
+  height: 30px;
 }
 .site-header nav {
   display: flex;
@@ -141,6 +150,16 @@ svg {
   background: none;
   border: 0;
   color: var(--silver);
+}
+/* Just above the phone menu, the mark, the name, every link, and the clock
+   only fit in one row with tighter gaps. */
+@media (max-width: 1140px) {
+  .site-header {
+    gap: 20px;
+  }
+  .site-header nav {
+    gap: 18px;
+  }
 }
 @media (max-width: 1060px) {
   .site-header {
