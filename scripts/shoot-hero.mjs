@@ -54,7 +54,7 @@ function pauseAt(ms) {
     animation.pause();
     const { delay, duration } = animation.effect.getTiming();
     const target = animation.effect.target;
-    animation.currentTime = target.closest(".lily-far") ? ((delay % duration) + duration) % duration : ms;
+    animation.currentTime = target.closest(".lily-far, [data-band=back-twinkles]") ? ((delay % duration) + duration) % duration : ms;
     const { transform, opacity } = getComputedStyle(target);
     held.push([target, transform, opacity]);
   }
@@ -75,6 +75,9 @@ function pauseAt(ms) {
 // does: performance.now holds at 0, and frames run only when runFrames steps
 // them, at 60 Hz, up to a time.
 function crankFrames() {
+  // Since #80 the hero's loop draws in a worker, on frames of its own (ADR
+  // 0002); this keeps it on the main thread, on the frames stepped here.
+  window.heroLoopOnMain = true;
   const queue = new Map();
   let id = 0;
   let now = 0;

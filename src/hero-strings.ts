@@ -1,6 +1,8 @@
 import { away, copyFrame, hideOnCopy, textLines, type HeroLayout } from "./hero-layout";
 import { glint } from "./hero-sky";
-import { camera, crossings, keyLights, layRibbons, paintRuns, ribbon3d } from "./piano-ribbon";
+import type { Box } from "./hero-layers";
+import type { LampRibbon } from "./hero-loop";
+import { camera, crossings, lampOutlines, layRibbons, paintRuns, ribbon3d } from "./piano-ribbon";
 import { deg, type Flat, type Vec } from "./space";
 import { draw } from "./svg";
 
@@ -161,46 +163,42 @@ function tabletRoutes({ width: W, height: H, heart, radius: R, hero }: HeroLayou
 }
 
 // Builds the strings and sorts their keys into three depths. The scene
-// paints each depth where it belongs, with its lamps in a layer of their own
-// over it: back behind the dial, mid between the dial and the front lilies,
-// and near over everything; then calls finish to glint where they cross.
-// finish returns place, to keep the glints off the copy, and play, which runs
-// a pink glissando along every string. The lamps' layers are hidden while no
-// run plays.
+// paints each depth where it belongs, naming the band whose lamps light it:
+// back behind the dial, mid between the dial and the front lilies, and near
+// over everything; then calls finish to glint where they cross. finish
+// returns place, to keep the glints off the copy, and what the hero's loop
+// needs to play a pink glissando along every string (ADR 0002): each
+// ribbon's keys, and each lamps band's box.
 export function drawStrings(layout: HeroLayout) {
   const { width, height, heart, mobile, hero } = layout;
   const cam = camera(heart, width, height);
   const ribbons = routes(layout).map(({ through, width }, i) => ribbon3d(cam, through, width, i));
   const layers = layRibbons(ribbons);
-  const lampLayers = new Set<SVGSVGElement>();
-  const show = (on: boolean) => lampLayers.forEach((lamps) => (lamps.style.display = on ? "" : "none"));
-  const paint = (parent: Element, lamps: SVGSVGElement, layer: keyof typeof layers) => {
-    lampLayers.add(lamps);
-    show(false);
-    paintRuns(draw("g", { class: `ribbons-${layer}` }, parent), layers[layer], lamps);
+  const paint = (parent: Element, band: string, layer: keyof typeof layers) => {
+    paintRuns(draw("g", { class: `ribbons-${layer}` }, parent), layers[layer], band);
   };
 
   function finish(parent: Element) {
     const group = draw("g", { class: "string-glints" }, parent);
     const glints = crossings(ribbons, width, height).map(([x, y], i) => glint(group, x, y, mobile ? 10 : 14, -i * 2.3));
-    const runs = ribbons.map(({ keys }) => ({ light: keyLights(keys, { trail: 10 }), count: keys.length }));
-    let run = 0;
-    // When a record lands and none is already playing, a run plays along
-    // every string over 2.2 seconds.
-    const play = (now: number, arrived: boolean) => {
-      if (arrived && !run) {
-        run = now;
-        show(true);
+    const lamps: LampRibbon[] = ribbons.map(({ keys }) => {
+      const outlines = lampOutlines(keys);
+      return { keys: keys.map((key, i) => ({ outline: outlines[i], face: key.face, band: key.band!, run: key.run! })) };
+    });
+    // Each lamps band reaches as far as the keys it lights.
+    const boxes: Record<string, Box> = {};
+    for (const key of ribbons.flatMap((ribbon) => ribbon.keys)) {
+      const points = [...key.quad, ...(key.black ?? [])];
+      const box = boxes[key.band!] ?? { l: Infinity, t: Infinity, r: -Infinity, b: -Infinity };
+      for (const [x, y] of points) {
+        box.l = Math.min(box.l, x - 2);
+        box.t = Math.min(box.t, y - 2);
+        box.r = Math.max(box.r, x + 2);
+        box.b = Math.max(box.b, y + 2);
       }
-      if (!run) return;
-      const t = (now - run) / 2200;
-      for (const { light, count } of runs) light(t > 1 ? null : t * (count + 10));
-      if (t > 1) {
-        run = 0;
-        show(false);
-      }
-    };
-    return { place: () => hideOnCopy(hero, glints), play };
+      boxes[key.band!] = box;
+    }
+    return { place: () => hideOnCopy(hero, glints), lamps, boxes };
   }
 
   return { paint, finish };

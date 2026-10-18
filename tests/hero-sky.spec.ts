@@ -118,7 +118,7 @@ test("off screen the stars and glints stop twinkling", async ({ page }) => {
   const top = page.locator(".night-sky-band").first();
   const states = () =>
     page.evaluate(() =>
-      [...document.querySelectorAll(".night-sky-band:first-child .twinkles, .hero-scene .glint")].flatMap((element) =>
+      [...document.querySelectorAll(".night-sky-band:first-child .twinkles, .hero-scene .hero-glint")].flatMap((element) =>
         element.getAnimations().map((animation) => animation.playState),
       ),
     );

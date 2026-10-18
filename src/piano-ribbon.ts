@@ -24,7 +24,9 @@ export type Key = {
   string: number;
   d: string;
   blacks: [string, string];
-  lamps?: SVGGElement;
+  // The layer whose lamps light this key, and the order its run paints in.
+  band?: string;
+  run?: number;
 };
 export type Ribbon = { keys: Key[]; line: Flat[] };
 type Run = { keys: Key[]; z: number };
@@ -156,8 +158,10 @@ export function layRibbons(ribbons: Ribbon[]) {
 }
 
 // Paints runs far to near: the white keys by tone, the black keys over them,
-// and the bronze edges. Each run's lit keys light in lamps, over the keys.
-export function paintRuns(group: Element, runs: Run[], lamps: Element) {
+// and the bronze edges. Each run's keys are lit by the lamps of band, drawn
+// over the keys.
+let painted = 0;
+export function paintRuns(group: Element, runs: Run[], band: string) {
   for (const { keys } of runs) {
     const g = draw("g", { "data-string": keys[0].string }, group);
     const fills = new Map<string, string>();
@@ -170,7 +174,6 @@ export function paintRuns(group: Element, runs: Run[], lamps: Element) {
     for (const [fill, d] of fills) {
       draw("path", { d, fill, stroke: "#06060b", "stroke-width": 0.6, "stroke-opacity": 0.5, "stroke-linejoin": "round" }, g);
     }
-    const lit = draw("g", { class: "key-lamps" }, lamps);
     if (black.length) draw("path", { d: black.join(""), fill: "#06060b", opacity: 0.92 }, g);
     draw(
       "path",
@@ -183,40 +186,43 @@ export function paintRuns(group: Element, runs: Run[], lamps: Element) {
       },
       g,
     );
-    for (const key of keys) key.lamps = lit;
+    const run = ++painted;
+    for (const key of keys) Object.assign(key, { band, run });
   }
 }
 
-// Lights a run of a painted ribbon's keys: the head brightest, the keys
-// behind it fading. light(head) moves the run to key head; light(null) puts
-// it out.
-export function keyLights(keys: Key[], { trail = 9, color = "#f0b4dc" } = {}) {
-  // A lamp lies over the keys, so it lights a key's face less the black keys
-  // drawn over it (even-odd): its own, and the one before when that one's
-  // run paints later in the same layer.
-  const lit = keys.map((key, i) => {
-    const before = keys[i - 1]?.lamps;
-    const covers =
-      before === key.lamps ||
-      (before?.ownerSVGElement === key.lamps!.ownerSVGElement &&
-        key.lamps!.compareDocumentPosition(before!) & Node.DOCUMENT_POSITION_FOLLOWING);
+// The outline a lamp lights on each of a ribbon's keys. A lamp lies over the
+// keys, so it lights a key's face less the black keys drawn over it
+// (even-odd): its own, and the one before when that one's run paints later
+// in the same layer.
+export function lampOutlines(keys: Key[]) {
+  return keys.map((key, i) => {
+    const before = keys[i - 1];
+    const covers = before && (before.run === key.run || (before.band === key.band && before.run! > key.run!));
     return key.d + (covers ? key.blacks[0] : "") + key.blacks[1];
   });
-  const lamps = Array.from({ length: trail }, () =>
-    draw("path", { fill: color, "fill-rule": "evenodd", opacity: 0 }, keys[0].lamps!),
-  );
-  let last: number | null = null;
-  return (head: number | null) => {
+}
+
+export type Lamp = { key: number; trail: number; opacity: number };
+
+// Lights a run of a ribbon's keys, given each key's face: the head
+// brightest, the keys behind it fading. light(head) moves the run to key
+// head, light(null) puts it out; each returns the lamps lit, or undefined
+// when nothing changed.
+export function keyLights(faces: number[], trail = 9) {
+  let last: number | null | undefined;
+  return (head: number | null): Lamp[] | undefined => {
     const i = head === null ? null : Math.floor(head);
     if (i === last) return;
     last = i;
-    lamps.forEach((lamp, j) => {
-      const key = i === null ? null : keys[i - j];
-      if (!key || !key.face) return lamp.setAttribute("opacity", "0");
-      if (lamp.parentNode !== key.lamps) key.lamps!.appendChild(lamp);
-      lamp.setAttribute("d", lit[i! - j]);
-      lamp.setAttribute("opacity", ((1 - j / trail) ** 1.5 * (0.35 + 0.65 * Math.min(1, key.face))).toFixed(2));
-    });
+    if (i === null) return [];
+    const lamps: Lamp[] = [];
+    for (let j = 0; j < trail; j++) {
+      const face = faces[i - j];
+      if (!face) continue;
+      lamps.push({ key: i - j, trail: j, opacity: Number(((1 - j / trail) ** 1.5 * (0.35 + 0.65 * Math.min(1, face))).toFixed(2)) });
+    }
+    return lamps;
   };
 }
 

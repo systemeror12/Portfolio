@@ -96,11 +96,11 @@ test("the bed looks the same on every load", async ({ page }) => {
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     return page
-      .locator(".hero-scene .lilies-back, .hero-scene .lilies-front")
+      .locator(".hero-scene .lilies-back, .hero-scene .lilies-front, .hero-scene .hero-lily")
       .evaluateAll((groups) => groups.map((group) => group.outerHTML));
   };
   const first = await lilies();
-  expect(first).toHaveLength(2);
+  expect(first).toHaveLength(2 + 18);
   expect(await lilies()).toEqual(first);
 });
 
@@ -108,7 +108,7 @@ test("off screen and under reduced motion the lilies hold still", async ({ page 
   await page.goto("/");
   const states = () =>
     page.evaluate(() =>
-      [...document.querySelectorAll(".hero-scene .lily-sway")].flatMap((element) =>
+      [...document.querySelectorAll(".hero-scene .hero-lily")].flatMap((element) =>
         element.getAnimations().map((animation) => animation.playState),
       ),
     );
@@ -119,6 +119,6 @@ test("off screen and under reduced motion the lilies hold still", async ({ page 
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator(".hero-scene .lily-sway")).not.toHaveCount(0);
+  await expect(page.locator(".hero-scene .hero-lily")).not.toHaveCount(0);
   expect(await states()).toEqual([]);
 });

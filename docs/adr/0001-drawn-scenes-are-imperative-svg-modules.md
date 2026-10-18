@@ -1,6 +1,7 @@
 # Drawn scenes are imperative SVG modules mounted by thin components
 
-Status: accepted (#29, resolves D3 of #27), amended (#81, resolves D3 and D4 of #77)
+Status: accepted (#29, resolves D3 of #27), amended (#81, resolves D3 and D4 of #77),
+amended by ADR 0002 (#80) for the hero's animation loop
 
 ## Context
 
@@ -70,7 +71,8 @@ A layered scene follows these rules:
    compositor moves it without a repaint. Where a moving part holds its own
    moving parts, such as a swaying lily with twinkling glitter, an HTML wrapper
    carries the outer motion and holds the inner `<svg>`s. Parts moved by the
-   animation loop go in layers that repaint.
+   animation loop go in layers that repaint; in the hero, those layers are
+   canvases drawn in a worker (ADR 0002).
 3. **Still parts in moving layers.** A small still part next to a moving layer
    may go in that layer, rather than a layer of its own. A large still area
    never goes in a layer that repaints.
